@@ -7,16 +7,18 @@ import livereload from "rollup-plugin-livereload";
 import typescript from "rollup-plugin-typescript2";
 import babel from "rollup-plugin-babel";
 import postcss from "rollup-plugin-postcss";
+import multiInput from "rollup-plugin-multi-input";
 
 const production = process.env.NODE_ENV === "production";
 
 export default {
-  input: "src/index.tsx",
+  input: ["src/popup.tsx", "src/background.ts", "src/content.ts"],
   output: {
-    file: "public/build/bundle.js",
-    format: "iife"
+    dir: "public/build",
+    format: "esm"
   },
   plugins: [
+    multiInput(),
     replace({
       "process.env.NODE_ENV": JSON.stringify(
         production ? "production" : "development"
