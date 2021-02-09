@@ -1,0 +1,21 @@
+name: fmt
+
+on: [push, pull_request]
+
+jobs:
+  fmt:
+    name: Check code formatting
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-node@v1
+
+      - name: Install yarn
+        run: npm i -g yarn
+
+      - name: Install dependencies
+        run: yarn
+
+      - name: Check fmt
+        run: yarn fmt:check
