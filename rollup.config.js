@@ -9,10 +9,16 @@ import babel from "rollup-plugin-babel";
 import postcss from "rollup-plugin-postcss";
 import multiInput from "rollup-plugin-multi-input";
 
-const production = process.env.NODE_ENV === "production";
+const production = !process.env.ROLLUP_WATCH;
 
 export default {
-  input: ["src/popup.tsx", "src/background.ts", "src/content.ts"],
+  input: [
+    // you can add more entries here
+    "src/popup.tsx",
+    "src/background.ts",
+    "src/content.ts",
+    "src/injected.ts"
+  ],
   output: {
     dir: "public/build",
     format: "esm"

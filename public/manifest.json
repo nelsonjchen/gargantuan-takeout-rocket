@@ -20,7 +20,7 @@
     "default_title": "Popup",
     "default_popup": "popup.html"
   },
-  "web_accessible_resources": [],
+  "web_accessible_resources": ["build/injected.js"],
   "content_scripts": [
     {
       "matches": ["file://*/*", "http://*/*", "https://*/*"],
