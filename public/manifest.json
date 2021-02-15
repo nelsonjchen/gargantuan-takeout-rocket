@@ -1,9 +1,9 @@
 {
   "manifest_version": 2,
-  "name": "ReTyRoExt",
+  "name": "Esbuild-React-Extension",
   "version": "0.1.0",
   "author": "Marton Lederer",
-  "description": "An example react-typescript extension with rollup",
+  "description": "An example react-typescript extension with esbuild",
   "permissions": [],
   "background": {
     "scripts": ["build/background.js"]
