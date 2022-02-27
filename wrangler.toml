@@ -1,7 +1,7 @@
 name = "gtr-proxy"
 type = "javascript"
 zone_id = ""
-account_id = ""
+account_id = "c455dc5b9661861484370320794ab63c"
 route = ""
 workers_dev = true
 compatibility_date = "2022-02-27"
