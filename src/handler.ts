@@ -15,7 +15,16 @@ export async function handleRequest(request: Request): Promise<Response> {
   }
 
   // Decode URL from base64
-  const base64Url = url.pathname.substring(3)
+  const base64strMatches =
+    /\/p\/((?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?)/.exec(
+      url.pathname,
+    )
+  if (!base64strMatches) {
+    return new Response('could not find base64 url', {
+      status: 500,
+    })
+  }
+  const base64Url = base64strMatches[1]
   const decoded_argument = atob(base64Url)
   if (decoded_argument == null) {
     return new Response('invalid base64', {

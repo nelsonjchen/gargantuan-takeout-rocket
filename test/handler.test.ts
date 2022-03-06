@@ -37,9 +37,31 @@ describe('handle', () => {
     expect(result.status).toEqual(200)
   })
 
+  test('handle a real google takeout url that is expired and has bs at the end', async () => {
+    const encoded_url = btoa(real_url.toString())
+    // Seen with calls by Azure
+    const request_url = `https://example.com/p/${encoded_url}?timeout=901`
+    console.debug(request_url)
+    const result = await handleRequest(
+      new Request(request_url, { method: 'GET' }),
+    )
+
+    expect(await result.text()).toEqual(
+      expect.stringContaining('Locked Domain'),
+    )
+    expect(result.status).toEqual(200)
+  })
+
   test('redirect all other urls to somewhere else, like GitHub maybe', async () => {
     const result = await handleRequest(
       new Request(`https://example.com/`, { method: 'GET' }),
+    )
+    expect(result.status).toEqual(302)
+  })
+
+  test('redirect another other urls to somewhere else, like GitHub maybe', async () => {
+    const result = await handleRequest(
+      new Request(`https://example.com/sadgasdg`, { method: 'GET' }),
     )
     expect(result.status).toEqual(302)
   })
