@@ -23,7 +23,10 @@ export async function handleRequest(request: Request): Promise<Response> {
     })
   }
 
-  const originalResponse = await fetch(decoded_url)
+  const originalResponse = await fetch(decoded_url, {
+    method: 'GET',
+    headers: request.headers,
+  })
   const response = new Response(originalResponse.body, {
     status: 200,
     headers: originalResponse.headers,
