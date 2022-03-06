@@ -18,7 +18,7 @@ export async function handleRequest(request: Request): Promise<Response> {
   const decoded_url = decode(url.pathname.substring(2))
 
   const originalResponse = await fetch(decoded_url)
-  let response = new Response(originalResponse.body, {
+  const response = new Response(originalResponse.body, {
     status: 200,
     headers: originalResponse.headers,
   })
