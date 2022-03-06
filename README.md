@@ -14,7 +14,7 @@ A public instance is hosted at https://gtr-proxy.mindflakes.com that anybody may
 
 For the concerned, Cloudflare's logs are not persistently stored and are only shown during viewing in the dashboard as a stream. That said, you can always clone this repository down and host an instance in your own Cloudflare account if this is a concern. Obviously, change the proxy's domain in the URL as needed. If you are in this camp of concern, perhaps you may want to try the public proxy with a Google Takeout of a Google Service that isn't very sensitive as a trial to test viablity before setting up your own.
 
-As for my public instance, while theorectically I am able to see your Google Takeout URLs that expire in half an hour by observing the Cloudflare logs, I actually really don't have any interest in your Googlely life and far more interest in my own. You have my assurance I do not care about you. The service is there for convenience.
+As for my public instance, while theorectically I am able to see your Google Takeout URLs that expire in 15 minutes by observing the streamed Cloudflare logs, I actually really don't have any interest in your Googlely life and far more interest in my own. You have my assurance I do not care about you. The public instance is there for convenience and you are welcome to use it if you aren't interested in the trust concern and/or capable of setting up your own.
 
 ## Demo using the test server
 
