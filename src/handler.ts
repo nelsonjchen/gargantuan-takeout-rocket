@@ -33,7 +33,7 @@ export async function handleRequest(request: Request): Promise<Response> {
   }
 
   const originalResponse = await fetch(decoded_argument, {
-    method: 'request.method',
+    method: request.method,
     headers: request.headers,
   })
 
@@ -41,6 +41,6 @@ export async function handleRequest(request: Request): Promise<Response> {
     status: 200,
     headers: originalResponse.headers,
   })
-  
+
   return response
 }
