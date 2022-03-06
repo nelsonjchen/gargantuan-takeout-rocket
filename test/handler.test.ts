@@ -34,7 +34,7 @@ describe('handle', () => {
     expect(await result.text()).toEqual(
       expect.stringContaining('Locked Domain'),
     )
-    expect(result.status).toEqual(200)
+    expect(result.status).toEqual(401)
   })
 
   test('handle a real google takeout url that is expired and has bs at the end', async () => {
@@ -49,7 +49,7 @@ describe('handle', () => {
     expect(await result.text()).toEqual(
       expect.stringContaining('Locked Domain'),
     )
-    expect(result.status).toEqual(200)
+    expect(result.status).toEqual(401)
   })
 
   test('redirect all other urls to somewhere else, like GitHub maybe', async () => {

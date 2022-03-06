@@ -56,7 +56,7 @@ export async function handleRequest(request: Request): Promise<Response> {
   })
 
   const response = new Response(originalResponse.body, {
-    status: 200,
+    status: originalResponse.status,
     headers: originalResponse.headers,
   })
 
