@@ -1,5 +1,7 @@
 # Gargantuan Takeout Rocket Proxy
 
+🏗️ This is still WIP and under test.
+
 This is the proxy component of [GTR][gtr]. This proxy is required as [Microsoft's Azure Storage is unable to download from download URLs used in Google Takeout directly due to a URL Escaping issue][msqa].
 
 By base64-encoding the offending URLs and proxying the traffic through Cloudflare, Azure's limitation on acceptable URLs for its "server-to-server" download capabilities is circumvented in a high performance and low cost manner.
