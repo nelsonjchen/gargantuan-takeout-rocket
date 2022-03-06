@@ -1,4 +1,4 @@
-import { atob } from 'abab';
+import { atob } from 'abab'
 
 export async function handleRequest(request: Request): Promise<Response> {
   const url = new URL(request.url)
@@ -16,24 +16,31 @@ export async function handleRequest(request: Request): Promise<Response> {
   // Decode URL from base64
 
   const base64Url = url.pathname.substring(3)
-  const decoded_url = atob(base64Url)
-  if (decoded_url == null) {
-    return new Response("invalid base64", {
+  const decoded_argument = atob(base64Url)
+  if (decoded_argument == null) {
+    return new Response('invalid base64', {
       status: 500,
     })
   }
 
-  const originalResponse = await fetch(decoded_url, {
-    method: 'GET',
+  // Check if the URL is a valid URL
+  try {
+    const url = new URL(decoded_argument)
+  } catch (_) {
+    return new Response('invalid URL', {
+      status: 500,
+    })
+  }
+
+  const originalResponse = await fetch(decoded_argument, {
+    method: 'request.method',
     headers: request.headers,
   })
+
   const response = new Response(originalResponse.body, {
     status: 200,
     headers: originalResponse.headers,
   })
-  // response.headers.append(
-  //   'Content-Disposition',
-  //   'attachment; filename="1GB.bin"',
-  // )
+  
   return response
 }
