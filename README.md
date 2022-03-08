@@ -53,7 +53,7 @@ For anti-abuse reasons, the service is limited to a test server and Google Takeo
 This tool is implemented to run on Cloudflare Workers as:
 
 - [Cloudflare does not charge for incoming or outgoing data. No egress or ingress charges.][egress_free]
-- [Cloudflare does not charge for memory used while the request has finished processing, the response headers are sent, and the worker is just shoveling bytes.][fetch_free]
+- [Cloudflare does not charge for memory used while the request has finished processing, the response headers are sent, and the worker is just shoveling bytes between two sockets.][fetch_free]
 - [Cloudflare has the peering, compute, and scalability to handle the massive transfer from Google Takeout to Azure Storage. Many of its peering points are peered with Azure and Google with high capacity links.][cf_capacity]
 
 The tool parses and decodes a base64 URL from the URL in the request, requests from the remote server with the same headers, and serves a stream as the response with the same headers. Base64 is used as it has maximum compatibility and universality.
