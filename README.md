@@ -21,12 +21,14 @@ As for my public instance, to repeat, Cloudflare filters out and redacts Base64 
 The usage to use the tool to download from the test server is as follows:
 
 1. Encode the URL you wish to download to base64. For our example, we'll encode "https://put-block-from-url-esc-issue-demo-server-3vngqvvpoq-uc.a.run.app/red%2Fblue.txt". The "`%2F`" in the URL would be silently transformed into a `/` by Azure if it wasn't base64 encoded. The URL should be this in base64: `aHR0cHM6Ly9wdXQtYmxvY2stZnJvbS11cmwtZXNjLWlzc3VlLWRlbW8tc2VydmVyLTN2bmdxdnZwb3EtdWMuYS5ydW4uYXBwL3JlZCUyRmJsdWUudHh0`
-   
+
    Append that to the proxy URL at https://gtr-proxy.mindflakes.com/p/.
 
 2. Do a `GET` of https://gtr-proxy.mindflakes.com/p/aHR0cHM6Ly9wdXQtYmxvY2stZnJvbS11cmwtZXNjLWlzc3VlLWRlbW8tc2VydmVyLTN2bmdxdnZwb3EtdWMuYS5ydW4uYXBwL3JlZCUyRmJsdWUudHh0 through a web browser or an application.
 
 3. You should see "`This path exists!`" from your download.
+
+You can append a `/<a file name here of your choice>` to the end of the URL after the base64 URL to name the file a specific way for download clients that aren't aware of `Content-Disposition`'s `filename` headers.
 
 ## Google Takeout Example/Demo
 
@@ -42,10 +44,15 @@ As this example original Takeout URL has long expired so you would see `Locked D
 
 ## Limits
 
-For anti-abuse reasons, the service is limited to a test server and Google Takeout download URLs for the aformentioned pathing issue and the Google Takeout URLs as unrestricted open proxies on the internet may be abused.
+For anti-abuse reasons, the service is limited to test servers and Google Takeout download URLs for the aformentioned pathing issue and the Google Takeout URLs as unrestricted open proxies on the internet may be abused.
 
 - One of the following must be true:
   - The URL is a test URL from `*-3vngqvvpoq-uc.a.run.app` which can respond with paths that can cause issues for Azure direct downloads. The source for this can be found at: https://github.com/nelsonjchen/put-block-from-url-esc-issue-demo-server/blob/master/main.go
+  - Select Linux ISO Test Mirrors. They are useful for testing large-ish file downloads with some heft.
+    - `mirrors.advancedhosters.com`
+      - They seem to have resources to spare. Known to work. Can max out 500Mbps connections at least.
+    - `*releases.ubuntu.com*`
+      - Known to really work. But they aren't as fast and are only in the UK. Only included here as a historical interest for an early version of this proxy.
   - The URL must be a valid Google Takeout download URL.
 
 ## Design and Implementation

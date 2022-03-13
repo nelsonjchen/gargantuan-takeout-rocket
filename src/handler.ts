@@ -65,7 +65,11 @@ export async function handleRequest(request: Request): Promise<Response> {
 
 export function validTestServerURL(url: URL): boolean {
   // https://github.com/nelsonjchen/put-block-from-url-esc-issue-demo-server/
-  return url.hostname.endsWith('3vngqvvpoq-uc.a.run.app')
+  return (
+    url.hostname.endsWith('3vngqvvpoq-uc.a.run.app') ||
+    url.hostname.endsWith('releases.ubuntu.com') ||
+    url.hostname == 'mirrors.advancedhosters.com'
+  )
 }
 
 export function validGoogleTakeoutUrl(url: URL): boolean {
