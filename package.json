@@ -1,6 +1,7 @@
 {
   "scripts": {
     "build": "node esbuild.js",
+    "build:watch": "ESB_WATCH=true node esbuild.js",
     "test": "jest",
     "test:watch": "jest --watch",
     "fmt": "prettier --write .",
