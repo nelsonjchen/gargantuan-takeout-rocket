@@ -1,6 +1,8 @@
 {
   "scripts": {
-    "build": "NODE_ENV=\"production\" node esbuild.js",
+    "build": "node esbuild.js",
+    "test": "jest",
+    "test:watch": "jest --watch",
     "fmt": "prettier --write .",
     "fmt:check": "prettier --check ."
   },
@@ -11,9 +13,11 @@
   "devDependencies": {
     "@babel/core": "^7.12.13",
     "@types/chrome": "^0.0.129",
+    "@types/jest": "^27.4.1",
     "@types/react": "^17.0.1",
     "@types/react-dom": "^17.0.0",
     "esbuild": "^0.8.46",
+    "jest": "^27.5.1",
     "prettier": "^2.2.1",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
