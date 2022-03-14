@@ -1,10 +1,10 @@
 {
   "manifest_version": 2,
-  "name": "Esbuild-React-Extension",
+  "name": "Gargantuan Takeout Rocket Extension Helper",
   "version": "0.1.0",
-  "author": "Marton Lederer",
-  "description": "An example react-typescript extension with esbuild",
-  "permissions": [],
+  "author": "Nelson Chen",
+  "description": "Temporary extension to help with evacuating Google Takeout files to Azure.",
+  "permissions": [ "notifications", "downloads", "<all_urls>", "storage"],
   "background": {
     "scripts": ["build/background.js"]
   },
