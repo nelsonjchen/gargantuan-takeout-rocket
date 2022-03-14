@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "author": "Nelson Chen",
   "description": "Extension to help with evacuating Google Takeout files to Azure.",
-  "permissions": [ "notifications", "downloads", "<all_urls>", "storage"],
+  "permissions": ["notifications", "downloads", "<all_urls>", "storage"],
   "background": {
     "scripts": ["build/background.js"]
   },

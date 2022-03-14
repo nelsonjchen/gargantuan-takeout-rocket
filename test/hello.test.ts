@@ -1,9 +1,7 @@
 //
 
-describe('hello', () => {
-
-  test('can say hello', () => {
+describe("hello", () => {
+  test("can say hello", () => {
     expect("hello").toBe("hello");
   });
-
 });
