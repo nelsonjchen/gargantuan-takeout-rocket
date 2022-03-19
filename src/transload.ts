@@ -57,18 +57,15 @@ export async function transload(
   const jobPlan = await createJobPlan(source);
   console.log(`Got job plan: `, jobPlan);
   console.log(`Staging Blocks`);
-  const responses = jobPlan.chunks.map(async chunk =>
-    blobClient.stageBlockFromURL(
-      chunk.blockId,
-      source,
-      chunk.start,
-      chunk.size,
-    )
+  const responses = jobPlan.chunks.map(async (chunk) =>
+    blobClient.stageBlockFromURL(chunk.blockId, source, chunk.start, chunk.size)
   );
   const results = await Promise.all(responses);
   console.log(`Staged blocks: `, results);
   console.log(`Committing Block List`);
-  const commitResp = await blobClient.commitBlockList(jobPlan.chunks.map(c => c.blockId));
+  const commitResp = await blobClient.commitBlockList(
+    jobPlan.chunks.map((c) => c.blockId)
+  );
   console.log(`Committed Block List`);
   // await blobClient.beginCopyFromURL
   // console.log(`Copied ${source} to ${destination}`);
