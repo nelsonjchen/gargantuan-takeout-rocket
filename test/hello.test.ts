@@ -1,4 +1,5 @@
 //
+export {};
 
 describe("hello", () => {
   test("can say hello", () => {

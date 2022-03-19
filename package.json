@@ -11,6 +11,7 @@
     "pre-commit": "prettier --write . && git add -A"
   },
   "jest": {
+    "preset": "ts-jest/presets/js-with-ts",
     "setupFiles": [
       "dotenv/config"
     ]
@@ -29,6 +30,7 @@
     "prettier": "^2.2.1",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
+    "ts-jest": "^27.1.3",
     "typescript": "^4.1.3",
     "yorkie": "^2.0.0"
   }
