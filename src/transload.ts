@@ -5,9 +5,17 @@ import {
 } from "@azure/storage-blob";
 import fetch from "node-fetch";
 
-interface TransloadOptions {}
+interface TransloadOptions { }
 
-export async function createJobPlan(source: string) {
+interface JobPlan {
+  chunks: {
+    start: number;
+    size: number;
+  }[]
+  length: number;
+}
+
+export async function createJobPlan(source: string): Promise<JobPlan> {
   // Fetch HEAD of source
   const resp = await fetch(source, {
     method: "HEAD"
@@ -20,12 +28,18 @@ export async function createJobPlan(source: string) {
 
   // Divide into 100MB chunks
   const chunkSize = 100 * 1024 * 1024;
-  const numChunks = Math.ceil(length / chunkSize);
+  const numChunks = Math.floor(length / chunkSize);
   console.log(`Will divide into ${numChunks} chunks`);
   let chunks = [];
-  for (var i = 0; i < length; i += chunkSize)
-    chunks.push([i, Math.min(i + chunkSize, length)]);
-  chunks;
+  for (var i = 0; i <= length; i += chunkSize)
+    chunks.push({
+      start: i,
+      size: Math.min(length - i, chunkSize)
+    });
+  return {
+    chunks: chunks,
+    length
+  };
 }
 
 export async function transload(
