@@ -6,3 +6,4 @@
 *.local
 *.log
 /public/build
+.env
