@@ -5,13 +5,13 @@ import {
 } from "@azure/storage-blob";
 import fetch from "node-fetch";
 
-interface TransloadOptions { }
+interface TransloadOptions {}
 
 interface JobPlan {
   chunks: {
     start: number;
     size: number;
-  }[]
+  }[];
   length: number;
 }
 
