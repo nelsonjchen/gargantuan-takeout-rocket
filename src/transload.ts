@@ -54,6 +54,7 @@ export async function transload(
     console.log(`- ${blob.name}`);
   }
   const blobClient = containerClient.getBlobClient("test.dat");
+  const jobPlan = await createJobPlan(source);
   // await blobClient.beginCopyFromURL
   // console.log(`Copied ${source} to ${destination}`);
 }
