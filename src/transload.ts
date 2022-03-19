@@ -9,10 +9,23 @@ interface TransloadOptions {}
 
 export async function createJobPlan(source: string) {
   // Fetch HEAD of source
-  const headers = await fetch(source, {
+  const resp = await fetch(source, {
     method: "HEAD"
   });
-  console.log(headers);
+  const length = parseInt(resp.headers.get("content-length")|| "0");
+  if (!length) {
+    throw new Error("No content-length header");
+  }
+  console.log(`Got length bytes: ${length}`);
+
+  // Divide into 100MB chunks
+  const chunkSize = 100 * 1024 * 1024;
+  const numChunks = Math.ceil(length / chunkSize);
+  console.log(`Will divide into ${numChunks} chunks`);
+  let chunks = [];
+  for (var i = 0; i < length; i += chunkSize)
+      chunks.push([i, Math.min(i + chunkSize, length)]);
+  chunks;
 }
 
 export async function transload(
@@ -22,7 +35,7 @@ export async function transload(
 ) {
   console.log(`Transloading ${source} to ${destination}`);
   const containerClient = new ContainerClient(destination);
-  console.log("Stuf:");
+  console.log("Stuff:");
   for await (const blob of containerClient.listBlobsFlat()) {
     console.log(`- ${blob.name}`);
   }
