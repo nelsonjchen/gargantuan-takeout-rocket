@@ -1,14 +1,13 @@
-import {
-  BlobServiceClient,
-  ContainerClient,
-  StorageSharedKeyCredential
-} from "@azure/storage-blob";
+import { ContainerClient } from "@azure/storage-blob";
 import fetch from "node-fetch";
+import { v4 as uuidv4 } from "uuid";
+import { btoa } from "abab";
 
 interface TransloadOptions {}
 
 interface JobPlan {
   chunks: {
+    blockId: string;
     start: number;
     size: number;
   }[];
@@ -33,6 +32,7 @@ export async function createJobPlan(source: string): Promise<JobPlan> {
   let chunks = [];
   for (var i = 0; i <= length; i += chunkSize)
     chunks.push({
+      blockId: btoa(uuidv4())!,
       start: i,
       size: Math.min(length - i, chunkSize)
     });
