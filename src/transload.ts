@@ -2,6 +2,7 @@ import { BlobServiceClient, ContainerClient, StorageSharedKeyCredential } from "
 
 interface TransloadOptions { }
 
+
 export async function transload(
   source: string,
   destination: string,
@@ -13,4 +14,7 @@ export async function transload(
   for await (const blob of containerClient.listBlobsFlat()) {
     console.log(`- ${blob.name}`);
   }
+  const blobClient = containerClient.getBlobClient("test.dat");
+  // await blobClient.beginCopyFromURL
+  // console.log(`Copied ${source} to ${destination}`);
 }
