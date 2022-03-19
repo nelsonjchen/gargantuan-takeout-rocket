@@ -12,7 +12,7 @@ export async function createJobPlan(source: string) {
   const resp = await fetch(source, {
     method: "HEAD"
   });
-  const length = parseInt(resp.headers.get("content-length")|| "0");
+  const length = parseInt(resp.headers.get("content-length") || "0");
   if (!length) {
     throw new Error("No content-length header");
   }
@@ -24,7 +24,7 @@ export async function createJobPlan(source: string) {
   console.log(`Will divide into ${numChunks} chunks`);
   let chunks = [];
   for (var i = 0; i < length; i += chunkSize)
-      chunks.push([i, Math.min(i + chunkSize, length)]);
+    chunks.push([i, Math.min(i + chunkSize, length)]);
   chunks;
 }
 
