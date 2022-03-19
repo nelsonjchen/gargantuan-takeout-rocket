@@ -1,7 +1,19 @@
-import { BlobServiceClient, ContainerClient, StorageSharedKeyCredential } from "@azure/storage-blob";
+import {
+  BlobServiceClient,
+  ContainerClient,
+  StorageSharedKeyCredential
+} from "@azure/storage-blob";
+import fetch from "node-fetch";
 
-interface TransloadOptions { }
+interface TransloadOptions {}
 
+export async function createJobPlan(source: string) {
+  // Fetch HEAD of source
+  const headers = await fetch(source, {
+    method: "HEAD"
+  });
+  console.log(headers);
+}
 
 export async function transload(
   source: string,

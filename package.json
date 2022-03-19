@@ -12,6 +12,11 @@
   },
   "jest": {
     "preset": "ts-jest/presets/js-with-ts",
+    "transform": {
+      "^.+\\.(ts|tsx)$": "ts-jest",
+      "^.+\\.(js)$": "babel-jest"
+    },
+    "transformIgnorePatterns": [],
     "setupFiles": [
       "dotenv/config"
     ]
@@ -20,14 +25,17 @@
   "devDependencies": {
     "@azure/storage-blob": "^12.9.0",
     "@babel/core": "^7.12.13",
+    "@babel/preset-env": "^7.16.11",
     "@types/chrome": "^0.0.129",
     "@types/jest": "^27.4.1",
     "@types/react": "^17.0.1",
     "@types/react-dom": "^17.0.0",
+    "babel-jest": "^27.5.1",
     "cross-env": "^7.0.3",
     "dotenv": "^16.0.0",
     "esbuild": "^0.8.46",
     "jest": "^27.5.1",
+    "node-fetch": "^3.2.3",
     "prettier": "^2.2.1",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
