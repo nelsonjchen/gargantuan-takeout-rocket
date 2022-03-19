@@ -18,6 +18,7 @@
   },
   "dependencies": {},
   "devDependencies": {
+    "@azure/storage-blob": "^12.9.0",
     "@babel/core": "^7.12.13",
     "@types/chrome": "^0.0.129",
     "@types/jest": "^27.4.1",
