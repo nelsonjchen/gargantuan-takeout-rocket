@@ -4,10 +4,22 @@
  * You can debug it by clicking the "background page"
  * button in the extension settings
  *
- * Read more about background scripts:
- * https://developer.chrome.com/docs/extensions/mv2/background_pages/
  */
 
-console.log("background script");
+console.log("Initialized GTR Extension");
 
 export {};
+
+function captureDownload(
+  downloadItem: chrome.downloads.DownloadItem,
+  suggestion: Function
+) {
+  console.log("Download started", downloadItem);
+  suggestion();
+  console.log("Got final URL", downloadItem.finalUrl);
+  chrome.downloads.cancel(downloadItem.id);
+  console.log("Download cancelled", downloadItem);
+}
+
+//  Stop all the downloading
+chrome.downloads.onDeterminingFilename.addListener(captureDownload);
