@@ -2,12 +2,7 @@ const esbuild = require("esbuild");
 
 esbuild
   .build({
-    entryPoints: [
-      "./src/background.ts",
-      "./src/content.ts",
-      "./src/popup.tsx",
-      "./src/injected.ts"
-    ],
+    entryPoints: ["./src/background.ts", "./src/popup.tsx"],
     bundle: true,
     minify: true,
     sourcemap: process.env.NODE_ENV !== "production",
