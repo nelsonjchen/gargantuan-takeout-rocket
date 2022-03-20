@@ -6,7 +6,7 @@
  *
  */
 
-console.log("Initialized GTR Extension");
+console.log("initialized gtr extension");
 
 export {};
 
@@ -14,11 +14,12 @@ function captureDownload(
   downloadItem: chrome.downloads.DownloadItem,
   suggestion: Function
 ) {
-  console.log("Download started", downloadItem);
+  console.log("download started:", downloadItem);
   suggestion();
-  console.log("Got final URL", downloadItem.finalUrl);
+  console.log("final url:", downloadItem.finalUrl);
+  console.log("filename:", downloadItem.filename);
   chrome.downloads.cancel(downloadItem.id);
-  console.log("Download cancelled", downloadItem);
+  console.log("download cancelled:", downloadItem);
 }
 
 //  Stop all the downloading
