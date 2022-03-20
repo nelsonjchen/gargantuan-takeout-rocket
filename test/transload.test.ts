@@ -24,6 +24,6 @@ describe("transload", () => {
   });
 
   test("can transload a test file from a linux iso mirror directly to azure", async () => {
-    await transload(ubuntuIso, process.env.AZ_BLOB_SAS_URL!);
+    await transload(ubuntuIso, process.env.AZ_BLOB_SAS_URL!, "iso.dat");  
   }, 30000);
 });

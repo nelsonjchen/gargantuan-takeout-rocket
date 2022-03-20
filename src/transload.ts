@@ -45,6 +45,7 @@ export async function createJobPlan(source: string): Promise<JobPlan> {
 export async function transload(
   source: string,
   destination: string,
+  name: string,
   options: TransloadOptions = {}
 ) {
   console.log(`Transloading ${source} to ${destination}`);
@@ -53,7 +54,7 @@ export async function transload(
   for await (const blob of containerClient.listBlobsFlat()) {
     console.log(`- ${blob.name}`);
   }
-  const blobClient = containerClient.getBlockBlobClient("test.dat");
+  const blobClient = containerClient.getBlockBlobClient(name);
   const jobPlan = await createJobPlan(source);
   console.log(`Got job plan: `, jobPlan);
   console.log(`Staging Blocks`);
