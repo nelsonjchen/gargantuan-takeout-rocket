@@ -14,6 +14,12 @@ interface JobPlan {
   length: number;
 }
 
+export function sourceToGtrProxySource(source: string): string {
+  const base = "https://gtr-proxy.mindflakes.com/p/";
+  const url = btoa(source);
+  return `${base}${url}`;
+}
+
 export async function createJobPlan(source: string): Promise<JobPlan> {
   // Fetch HEAD of source
   const resp = await fetch(source, {
