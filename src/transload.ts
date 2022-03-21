@@ -1,5 +1,5 @@
 import { ContainerClient } from "@azure/storage-blob";
-import fetch from "node-fetch";
+import fetch from "cross-fetch";
 import { v4 as uuidv4 } from "uuid";
 import { btoa } from "abab";
 
@@ -56,10 +56,6 @@ export async function transload(
 ) {
   console.log(`Transloading ${source} to ${destination}`);
   const containerClient = new ContainerClient(destination);
-  console.log("Stuff:");
-  for await (const blob of containerClient.listBlobsFlat()) {
-    console.log(`- ${blob.name}`);
-  }
   const blobClient = containerClient.getBlockBlobClient(name);
   const jobPlan = await createJobPlan(source);
   console.log(`Got job plan: `, jobPlan);
