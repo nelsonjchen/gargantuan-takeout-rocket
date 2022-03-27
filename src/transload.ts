@@ -66,9 +66,11 @@ export async function transload(
   const results = await Promise.all(responses);
   console.log(`Staged blocks: `, results);
   console.log(`Committing Block List`);
-  // const commitResp = await blobClient.commitBlockList(
-  //   jobPlan.chunks.map((c) => c.blockId)
-  // );
+  const commitResp = await blobClient.commitBlockList(
+    jobPlan.chunks.map((c) => c.blockId)
+  );
+  console.log(`Blocklist: `, commitResp);
+
   console.log(`Committed Block List`);
   // await blobClient.beginCopyFromURL
   // console.log(`Copied ${source} to ${destination}`);

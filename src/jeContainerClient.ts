@@ -52,4 +52,32 @@ export class BlockBlobClient {
     });
     return resp;
   }
+
+  async commitBlockList(blocks: string[]): Promise<Response> {
+    console.log(`Committing block list: ${blocks}`);
+    const containerUrl = new URL(this.containerClient.containerUrl);
+    const blobUrl = new URL(
+      containerUrl.protocol +
+        "//" +
+        containerUrl.host +
+        containerUrl.pathname +
+        `/${this.blobName}` +
+        containerUrl.search +
+        `&comp=blocklist`
+    );
+    const data = `<?xml version="1.0" encoding="utf-8"?>
+<BlockList>
+${blocks.map((blockId) => `<Latest>${blockId}</Latest>`).join("\n")}
+</BlockList>`;
+
+    const resp = fetch(blobUrl.toString(), {
+      method: "PUT",
+      body: data,
+      headers: {
+        "x-ms-version": "2020-10-02"
+      }
+    });
+
+    return resp;
+  }
 }
