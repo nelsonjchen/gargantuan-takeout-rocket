@@ -1,5 +1,5 @@
 import { ContainerClient } from "./jeContainerClient";
-import fetch from "node-fetch";
+import "isomorphic-fetch";
 import { v4 as uuidv4 } from "uuid";
 import { btoa } from "abab";
 

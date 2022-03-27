@@ -2,8 +2,7 @@
 // A reimplementation of the Azure Storage ContainerClient that only supports
 // the methods we need.
 
-import fetch from "node-fetch";
-import { Response } from "node-fetch";
+import "isomorphic-fetch";
 
 export class ContainerClient {
   constructor(public readonly containerUrl: string) {
