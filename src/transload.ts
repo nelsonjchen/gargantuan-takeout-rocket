@@ -55,6 +55,7 @@ export async function transload(
   options: TransloadOptions = {}
 ) {
   console.log(`Transloading ${source} to ${destination}`);
+
   const containerClient = new ContainerClient(destination);
   const blobClient = containerClient.getBlockBlobClient(name);
   const jobPlan = await createJobPlan(source);
@@ -72,6 +73,6 @@ export async function transload(
   console.log(`Blocklist: `, commitResp);
 
   console.log(`Committed Block List`);
-  // await blobClient.beginCopyFromURL
-  // console.log(`Copied ${source} to ${destination}`);
+
+  console.log(`Transloaded ${source} to ${destination}`);
 }
