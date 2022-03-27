@@ -3,6 +3,9 @@
 // the methods we need.
 
 import "isomorphic-fetch";
+import fetchBuilder from "fetch-retry";
+
+var fetch = fetchBuilder(globalThis.fetch);
 
 export class ContainerClient {
   constructor(public readonly containerUrl: string) {
@@ -43,6 +46,9 @@ export class BlockBlobClient {
     );
     const resp = fetch(blobUrl.toString(), {
       method: "PUT",
+      retries: 3,
+      retryDelay: 1000,
+      retryOn: [409],
       headers: {
         "x-ms-version": "2020-10-02",
         "x-ms-source-range": `bytes=${offset}-${offset + count - 1}`,

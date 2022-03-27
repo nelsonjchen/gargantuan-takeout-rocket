@@ -34,6 +34,7 @@
     "cross-env": "^7.0.3",
     "dotenv": "^16.0.0",
     "esbuild": "^0.8.46",
+    "fetch-retry": "^5.0.2",
     "isomorphic-fetch": "^3.0.0",
     "jest": "^27.5.1",
     "node-fetch": "^3.2.3",
