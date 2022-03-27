@@ -1,5 +1,5 @@
-import { ContainerClient } from "@azure/storage-blob";
-import fetch from "cross-fetch";
+import { ContainerClient } from "./jeContainerClient";
+import fetch from "node-fetch";
 import { v4 as uuidv4 } from "uuid";
 import { btoa } from "abab";
 
@@ -66,9 +66,9 @@ export async function transload(
   const results = await Promise.all(responses);
   console.log(`Staged blocks: `, results);
   console.log(`Committing Block List`);
-  const commitResp = await blobClient.commitBlockList(
-    jobPlan.chunks.map((c) => c.blockId)
-  );
+  // const commitResp = await blobClient.commitBlockList(
+  //   jobPlan.chunks.map((c) => c.blockId)
+  // );
   console.log(`Committed Block List`);
   // await blobClient.beginCopyFromURL
   // console.log(`Copied ${source} to ${destination}`);
