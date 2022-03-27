@@ -44,7 +44,7 @@ export class BlockBlobClient {
         `&blockid=${blockId}` +
         `&comp=block`
     );
-    const resp = fetch(blobUrl.toString(), {
+    const resp = await fetch(blobUrl.toString(), {
       method: "PUT",
       retries: 3,
       retryDelay: 1000,
@@ -55,7 +55,10 @@ export class BlockBlobClient {
         "x-ms-copy-source": sourceUrl
       }
     });
-    return resp;
+    if (resp.ok) {
+      return resp;
+    }
+    throw new Error(`Failed to stage block: ${resp.status}`);
   }
 
   async commitBlockList(blocks: string[]): Promise<Response> {
@@ -75,7 +78,7 @@ export class BlockBlobClient {
 ${blocks.map((blockId) => `<Latest>${blockId}</Latest>`).join("\n")}
 </BlockList>`;
 
-    const resp = fetch(blobUrl.toString(), {
+    const resp = await fetch(blobUrl.toString(), {
       method: "PUT",
       body: data,
       headers: {
@@ -83,6 +86,9 @@ ${blocks.map((blockId) => `<Latest>${blockId}</Latest>`).join("\n")}
       }
     });
 
-    return resp;
+    if (resp.ok) {
+      return resp;
+    }
+    throw new Error(`Failed to commit block list: ${resp.status}`);
   }
 }
