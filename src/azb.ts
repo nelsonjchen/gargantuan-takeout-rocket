@@ -9,10 +9,15 @@ export function azBlobSASUrlToProxyPathname(azb_url: URL, base: string): URL {
   if (!container_name) {
     throw new Error('invalid azblob url')
   }
+  const blob_name = url_parts.slice(2).join('/')
+  if (!blob_name) {
+    throw new Error('invalid azblob url')
+  }
+
   const query_params = azb_url.searchParams.toString()
 
   const proxified_path = new URL(
-    `/p-azb/${account_name}/${container_name}?${query_params}`,
+    `/p-azb/${account_name}/${container_name}/${blob_name}?${query_params}`,
     base,
   )
   return proxified_path
@@ -28,8 +33,12 @@ export function proxyPathnameToAzBlobSASUrl(proxy_path: URL): URL {
   if (!container_name) {
     throw new Error('invalid proxy url')
   }
+  const blob_name = url_parts.slice(4).join('/')
+  if (!blob_name) {
+    throw new Error('invalid proxy url')
+  }
   const query_params = proxy_path.searchParams.toString()
   return new URL(
-    `https://${account_name}.blob.core.windows.net/${container_name}?${query_params}`,
+    `https://${account_name}.blob.core.windows.net/${container_name}/${blob_name}?${query_params}`,
   )
 }
