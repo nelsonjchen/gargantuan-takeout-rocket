@@ -1,5 +1,5 @@
 import { atob } from 'abab'
-import { azBlobSASUrlToProxyPathname, proxyPathnameToAzBlobSASUrl } from './azb'
+import { proxyPathnameToAzBlobSASUrl } from './azb'
 
 export async function handleRequest(request: Request): Promise<Response> {
   const url = new URL(request.url)
