@@ -1,9 +1,13 @@
-import { handleRequest, validGoogleTakeoutUrl, azBlobSASUrlToProxyPathname, proxyPathnameToAzBlobSASUrl } from '../src/handler'
+import { handleRequest, validGoogleTakeoutUrl } from '../src/handler'
+import {
+  azBlobSASUrlToProxyPathname,
+  proxyPathnameToAzBlobSASUrl,
+} from '../src/azb'
 
 import { btoa } from 'abab'
 
 // URL is too long, just move it to another file.
-import { real_takeout_url, real_azb_url }  from './real_url'
+import { real_takeout_url, real_azb_url } from './real_url'
 
 describe('handle', () => {
   test('has a function that can determine if a URL is from takeout or not', async () => {
@@ -61,7 +65,10 @@ describe('handle', () => {
 
   test('handles urls to somewhere else, like GitHub maybe', async () => {
     const result = await handleRequest(
-      new Request(`https://example.com/p-azb/urlcopytest/some-container?sp=racwd&st=2022-04-03T02%3A09%3A13Z&se=2022-04-03T02%3A20%3A13Z&spr=https&sv=2020-08-04&sr=c&sig=u72iEGi5SLkPg8B7QVI5HXfHSnr3MOse%2FzWzhaYdbbU%3D`, { method: 'GET' }),
+      new Request(
+        `https://example.com/p-azb/urlcopytest/some-container?sp=racwd&st=2022-04-03T02%3A09%3A13Z&se=2022-04-03T02%3A20%3A13Z&spr=https&sv=2020-08-04&sr=c&sig=u72iEGi5SLkPg8B7QVI5HXfHSnr3MOse%2FzWzhaYdbbU%3D`,
+        { method: 'GET' },
+      ),
     )
 
     // This should be a rejection, as if we visited the URL with a GET directly.
@@ -71,9 +78,15 @@ describe('handle', () => {
 
 describe('url-parser', () => {
   test('can proxify the azure blob SAS URL', async () => {
-    const path = azBlobSASUrlToProxyPathname(real_azb_url, "https://example.com")
+    const path = azBlobSASUrlToProxyPathname(
+      real_azb_url,
+      'https://example.com',
+    )
     expect(path).toEqual(
-      new URL("/p-azb/urlcopytest/some-container?sp=racwd&st=2022-04-03T02%3A09%3A13Z&se=2022-04-03T02%3A20%3A13Z&spr=https&sv=2020-08-04&sr=c&sig=u72iEGi5SLkPg8B7QVI5HXfHSnr3MOse%2FzWzhaYdbbU%3D", "https://example.com")
+      new URL(
+        '/p-azb/urlcopytest/some-container?sp=racwd&st=2022-04-03T02%3A09%3A13Z&se=2022-04-03T02%3A20%3A13Z&spr=https&sv=2020-08-04&sr=c&sig=u72iEGi5SLkPg8B7QVI5HXfHSnr3MOse%2FzWzhaYdbbU%3D',
+        'https://example.com',
+      ),
     )
     const url = proxyPathnameToAzBlobSASUrl(path)
     expect(url).toEqual(real_azb_url)
