@@ -57,9 +57,12 @@ export async function handleTakeoutRequest(
   if (
     !(validGoogleTakeoutUrl(decoded_url) || validTestServerURL(decoded_url))
   ) {
-    return new Response('encoded url was not a google takeout or test server url', {
-      status: 403,
-    })
+    return new Response(
+      'encoded url was not a google takeout or test server url',
+      {
+        status: 403,
+      },
+    )
   }
 
   const originalResponse = await fetch(decoded_url.toString(), {
