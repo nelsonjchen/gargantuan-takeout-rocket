@@ -2,9 +2,18 @@
 
 🏗️ This is still WIP and under test.
 
-This is the proxy component of [GTR][gtr]. This proxy is required as [Microsoft's Azure Storage is unable to download from download URLs used in Google Takeout directly due to a URL Escaping issue][msqa].
+This is the proxy component of [Gargantuan Takeout Rocket (GTR)][gtr].
 
-By base64-encoding the offending URLs and proxying the traffic through Cloudflare, Azure's limitation on acceptable URLs for its "server-to-server" download capabilities is circumvented in a high performance and low cost manner.
+This proxy is required as:
+
+*  [Microsoft's Azure Storage is unable to download from download URLs used in Google Takeout directly due to an URL Escaping issue][msqa].
+*  To transfer fast, we tell Azure to fetch from Google with 600MB chunks simutaneously at nearly 89 connections at a time for 50GB files from the extension. [Unfortunately, Chromium-based browsers have a limit of 6 connections per HTTP 1.1 host][chrome_connection_limit]. [Azure only supports HTTP 1.1][azblob_http11] and only 6 chunks can be copied simutaneously from the browser directly. As a contrast, [Azure's azcopy][azcopy], the command line copier application, can copy far more than 6 chunks simutaneously.
+
+Cloudflare Workers can be used to address these issues:
+
+* By base64-encoding the offending URLs and proxying the traffic through Cloudflare, Azure's limitation on acceptable URLs for its "server-to-server" download capabilities is circumvented in a high performance and low cost manner.
+* Cloudflare Workers are accessed over HTTP/3 which multiplex over a single connection and aren't bound by the 6 connections limit. This can be used to convert the Azure Blob HTTP 1.1 endpoint to HTTP/3 and the extension can command more chunks to be downloaded simutaneously.
+Speeds of up to around 1.5GB/s can be achieved with this proxy from the browser versus 180MB/s with a direct connection to Azure's endpoint.
 
 # Usage
 
@@ -16,7 +25,9 @@ For the concerned, Cloudflare's logs are not persistently stored, are only shown
 
 As for my public instance, to repeat, Cloudflare filters out and redacts Base64 in the URLs for the log stream. Theorectically, it's possible to upload a version with pushing the source a version that reports the URL to a third party service without the redaction. You have my assurance I do not care about you and I am too lazy to do this. The service is there for convenience.
 
-## Demo using the test server
+## Demos using the test server
+
+### URL Workaround
 
 The usage to use the tool to download from the test server is as follows:
 
@@ -29,6 +40,13 @@ The usage to use the tool to download from the test server is as follows:
 3. You should see "`This path exists!`" from your download.
 
 You can append a `/<a file name here of your choice>` to the end of the URL after the base64 URL to name the file a specific way for download clients that aren't aware of `Content-Disposition`'s `filename` headers.
+### HTTP/3 to HTTP 1.1 Proxy
+
+1. Get your original SAS URL from Azure. For our example, we'll use this:
+   https://urlcopytest.blob.core.windows.net/some-container?sp=r&st=2022-04-02T18:23:20Z&se=2022-04-03T06:24:20Z&spr=https&sv=2020-08-04&sr=c&sig=KNz4a1xHnmfi7afzrnkBFtls52YIZ0xtzn1Y7udqXBw%3D
+2. The account name is `urlcopytest`. Construct a new proxyfied URL as such:
+   https://gtr-proxy.mindflakes.com/azp/urlcopytest/some-container?sp=r&st=2022-04-02T18:23:20Z&se=2022-04-03T06:24:20Z&spr=https&sv=2020-08-04&sr=c&sig=KNz4a1xHnmfi7afzrnkBFtls52YIZ0xtzn1Y7udqXBw%3D
+3. Perform any `PUT` operaitons you wish through that URL as it will go through the proxy. Observe that the endpoint of the proxy is HTTP/3.
 
 ## Google Takeout Example/Demo
 
@@ -62,6 +80,7 @@ This tool is implemented to run on Cloudflare Workers as:
 - [Cloudflare does not charge for incoming or outgoing data. No egress or ingress charges.][egress_free]
 - [Cloudflare does not charge for memory used while the request has finished processing, the response headers are sent, and the worker is just shoveling bytes between two sockets.][fetch_free]
 - [Cloudflare has the peering, compute, and scalability to handle the massive transfer from Google Takeout to Azure Storage. Many of its peering points are peered with Azure and Google with high capacity links.][cf_capacity]
+- Cloudflare Worker endpoints are HTTP/3 compatible.
 
 The tool parses and decodes a base64 URL from the URL in the request, requests from the remote server with the same headers, and serves a stream as the response with the same headers. Base64 is used as it has maximum compatibility and universality.
 
@@ -73,3 +92,6 @@ I am not aware of any other provider with the same characteristics as Cloudflare
 [cloudflare_workers]: https://cloudflare.com/workers
 [gtr]: https://github.com/nelsonjchen/gtr
 [msqa]: https://docs.microsoft.com/en-us/answers/questions/641723/i-can39t-get-azure-storage-to-support-putting-data.html
+[azblob_http11]: https://docs.microsoft.com/en-us/rest/api/storageservices/http-version-support
+[chrome_connection_limit]: https://chromium.googlesource.com/chromium/src/net/+/master/socket/client_socket_pool_manager.cc#51
+[azcopy]: https://docs.microsoft.com/en-us/azure/storage/common/storage-use-azcopy-v10
