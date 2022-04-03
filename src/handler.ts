@@ -96,3 +96,20 @@ export function azBlobSASUrlToProxyPathname(azb_url: URL): string {
   return proxified_path
 }
 
+export function proxyPathnameToAzBlobSASUrl(azb_url: URL): string {
+  const hostname_parts = azb_url.hostname.split('.')
+  const url_parts = azb_url.pathname.split('/')
+  const account_name = hostname_parts[0]
+  if (!account_name) {
+    throw new Error('invalid azblob url')
+  }
+  const container_name = url_parts[1]
+  if (!container_name) {
+    throw new Error('invalid azblob url')
+  }
+  const query_params = azb_url.searchParams.toString()
+
+  const proxified_path = `/p-azb/${account_name}/${container_name}?${query_params}`
+  return proxified_path
+}
+
