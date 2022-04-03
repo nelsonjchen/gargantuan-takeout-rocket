@@ -4,6 +4,7 @@
 
 import "isomorphic-fetch";
 import fetchBuilder from "fetch-retry";
+import { azBlobSASUrlToProxyPathname } from "./azb";
 
 var fetch = fetchBuilder(globalThis.fetch);
 
@@ -12,18 +13,20 @@ export class ContainerClient {
     containerUrl = containerUrl;
   }
 
-  getBlockBlobClient(blobName: string): BlockBlobClient {
-    return new BlockBlobClient(this, blobName);
+  getBlockBlobClient(blobName: string, gtrProxyBase?: string): BlockBlobClient {
+    return new BlockBlobClient(this, blobName, gtrProxyBase);
   }
 }
 
 export class BlockBlobClient {
   constructor(
     public readonly containerClient: ContainerClient,
-    public readonly blobName: string
+    public readonly blobName: string,
+    public readonly gtrProxyBase?: string
   ) {
     containerClient = containerClient;
     blobName = blobName;
+    gtrProxyBase = gtrProxyBase;
   }
 
   async stageBlockFromURL(
@@ -44,7 +47,15 @@ export class BlockBlobClient {
         `&blockid=${blockId}` +
         `&comp=block`
     );
-    const resp = await fetch(blobUrl.toString(), {
+
+    let fetchBlobUrl;
+    if (this.gtrProxyBase) {
+      fetchBlobUrl = azBlobSASUrlToProxyPathname(blobUrl, this.gtrProxyBase);
+    } else {
+      fetchBlobUrl = blobUrl;
+    }
+
+    const resp = await fetch(fetchBlobUrl.toString(), {
       method: "PUT",
       retries: 3,
       retryDelay: 1000,
@@ -58,9 +69,8 @@ export class BlockBlobClient {
     if (resp.ok) {
       return resp;
     }
-    throw new Error(
-      `Failed to stage block: ${resp.status} ${await resp.text()}`
-    );
+    const text = await resp.text();
+    throw new Error(`Failed to stage block: ${resp.status} ${text}`);
   }
 
   async commitBlockList(blocks: string[]): Promise<Response> {

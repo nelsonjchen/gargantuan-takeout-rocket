@@ -57,7 +57,8 @@ export async function transload(
   console.log(`Transloading ${source} to ${destination}`);
 
   const containerClient = new ContainerClient(destination);
-  const blobClient = containerClient.getBlockBlobClient(name);
+  const proxyBase = "https://gtr-proxy.mindflakes.com";
+  const blobClient = containerClient.getBlockBlobClient(name, proxyBase);
   const jobPlan = await createJobPlan(source);
   console.log(`Got job plan: `, jobPlan);
   console.log(`Staging Blocks`);
