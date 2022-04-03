@@ -1,4 +1,4 @@
-import { handleRequest, validGoogleTakeoutUrl } from '../src/handler'
+import { handleRequest, validGoogleTakeoutUrl, azBlobSASUrlToProxyPathname } from '../src/handler'
 
 import { btoa } from 'abab'
 
@@ -71,9 +71,9 @@ describe('handle', () => {
 
 describe('url-parser', () => {
   test('can proxify the azure blob SAS URL', async () => {
-    const proxify_url = proxifyAzureBlobSASUrl(real_azb_url, 'https://example.com')
-    expect(proxify_url).toEqual(
-      new URL("https://urlcopytest.blob.core.windows.net/some-container?sp=racwd&st=2022-04-03T02:09:13Z&se=2022-04-03T02:20:13Z&spr=https&sv=2020-08-04&sr=c&sig=u72iEGi5SLkPg8B7QVI5HXfHSnr3MOse%2FzWzhaYdbbU%3D")
+    const path = azBlobSASUrlToProxyPathname(real_azb_url)
+    expect(path).toEqual(
+      "/p-azb/urlcopytest/some-container?sp=racwd&st=2022-04-03T02%3A09%3A13Z&se=2022-04-03T02%3A20%3A13Z&spr=https&sv=2020-08-04&sr=c&sig=u72iEGi5SLkPg8B7QVI5HXfHSnr3MOse%2FzWzhaYdbbU%3D"
     )
   })
 })

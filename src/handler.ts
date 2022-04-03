@@ -78,3 +78,16 @@ export function validGoogleTakeoutUrl(url: URL): boolean {
     url.pathname.startsWith('/download/storage/v1/b/dataliberation/o/')
   )
 }
+
+export function azBlobSASUrlToProxyPathname(azb_url: URL): string {
+  const hostname_parts = azb_url.hostname.split('.')
+  const url_parts = azb_url.pathname.split('/')
+  const account_name = hostname_parts[0]
+  const container_name = url_parts[1]
+  const query_params = azb_url.searchParams.toString()
+
+
+  const proxified_path = `/p-azb/${account_name}/${container_name}?${query_params}`
+  return proxified_path
+}
+
