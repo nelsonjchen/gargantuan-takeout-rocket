@@ -58,7 +58,9 @@ export class BlockBlobClient {
     if (resp.ok) {
       return resp;
     }
-    throw new Error(`Failed to stage block: ${resp.status}`);
+    throw new Error(
+      `Failed to stage block: ${resp.status} ${await resp.text()}`
+    );
   }
 
   async commitBlockList(blocks: string[]): Promise<Response> {
