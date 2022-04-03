@@ -7,6 +7,10 @@ export async function handleRequest(request: Request): Promise<Response> {
     return handleTakeoutRequest(request)
   }
 
+  if (url.pathname.startsWith('/p-azb/')) {
+    return handleAzBlobRequest(request)
+  }
+
   // Check if the URL matches the path desired. If not, just redirect to GitHub
   // for project information
   return new Response(null, {
@@ -69,6 +73,28 @@ export async function handleTakeoutRequest(
   })
 
   return response
+}
+
+export async function handleAzBlobRequest(request: Request): Promise<Response> {
+  const url = new URL(request.url)
+  try {
+    const azUrl = proxyPathnameToAzBlobSASUrl(url)
+    const originalResponse = await fetch(azUrl.toString(), {
+      method: request.method,
+      headers: request.headers,
+    })
+
+    const response = new Response(originalResponse.body, {
+      status: originalResponse.status,
+      headers: originalResponse.headers,
+    })
+
+    return response
+  } catch {
+    return new Response('invalid URL', {
+      status: 500,
+    })
+  }
 }
 
 export function validTestServerURL(url: URL): boolean {
