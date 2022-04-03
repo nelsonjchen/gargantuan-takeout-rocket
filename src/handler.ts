@@ -3,16 +3,24 @@ import { atob } from 'abab'
 export async function handleRequest(request: Request): Promise<Response> {
   const url = new URL(request.url)
 
+  if (url.pathname.startsWith('/p/')) {
+    return handleTakeoutRequest(request)
+  }
+
   // Check if the URL matches the path desired. If not, just redirect to GitHub
   // for project information
-  if (url.pathname == '/' || !url.pathname.startsWith('/p/')) {
-    return new Response(null, {
-      status: 302,
-      headers: {
-        Location: 'https://github.com/nelsonjchen/gtr-proxy#readme',
-      },
-    })
-  }
+  return new Response(null, {
+    status: 302,
+    headers: {
+      Location: 'https://github.com/nelsonjchen/gtr-proxy#readme',
+    },
+  })
+}
+
+export async function handleTakeoutRequest(
+  request: Request,
+): Promise<Response> {
+  const url = new URL(request.url)
 
   // Decode URL from base64
   const base64strMatches =
@@ -92,7 +100,10 @@ export function azBlobSASUrlToProxyPathname(azb_url: URL, base: string): URL {
   }
   const query_params = azb_url.searchParams.toString()
 
-  const proxified_path = new URL(`/p-azb/${account_name}/${container_name}?${query_params}`, base)
+  const proxified_path = new URL(
+    `/p-azb/${account_name}/${container_name}?${query_params}`,
+    base,
+  )
   return proxified_path
 }
 
@@ -111,4 +122,3 @@ export function proxyPathnameToAzBlobSASUrl(proxy_path: URL): URL {
     `https://${account_name}.blob.core.windows.net/${container_name}?${query_params}`,
   )
 }
-
