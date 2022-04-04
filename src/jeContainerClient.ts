@@ -1,6 +1,9 @@
 // Just Enough ContainerClient
 // A reimplementation of the Azure Storage ContainerClient that only supports
 // the methods we need.
+//
+// Also modified to allow replacing the URL with a gtr-proxy base URL as an
+// option.
 
 import "isomorphic-fetch";
 import fetchBuilder from "fetch-retry";
