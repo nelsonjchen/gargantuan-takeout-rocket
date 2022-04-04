@@ -13,7 +13,7 @@ Cloudflare Workers can be used to address these issues:
 
 * By base64-encoding the offending URLs and proxying the traffic through Cloudflare, Azure's limitation on acceptable URLs for its "server-to-server" download capabilities is circumvented in a high performance and low cost manner.
 * Cloudflare Workers are accessed over HTTP/3 which multiplex over a single connection and aren't bound by the 6 connections limit. This can be used to convert the Azure Blob HTTP 1.1 endpoint to HTTP/3 and the extension can command more chunks to be downloaded simutaneously.
-Speeds of up to around 1.5GB/s can be achieved with this proxy from the browser versus 180MB/s with a direct connection to Azure's endpoint.
+Speeds of up to around 8.7GB/s can be achieved with this proxy from the browser versus 180MB/s with a direct connection to Azure's endpoint.
 
 # Usage
 
