@@ -9,7 +9,7 @@ import "isomorphic-fetch";
 import fetchBuilder from "fetch-retry";
 import { azBlobSASUrlToProxyPathname } from "./azb";
 
-var fetch = fetchBuilder(globalThis.fetch);
+const fetch = fetchBuilder(globalThis.fetch);
 
 export class ContainerClient {
   constructor(public readonly containerUrl: string) {
