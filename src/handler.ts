@@ -113,6 +113,7 @@ export function validTestServerURL(url: URL): boolean {
 export function validGoogleTakeoutUrl(url: URL): boolean {
   return (
     url.hostname.endsWith('apidata.googleusercontent.com') &&
-    url.pathname.startsWith('/download/storage/v1/b/dataliberation/o/')
+    (url.pathname.startsWith('/download/storage/v1/b/dataliberation/o/') ||
+      url.pathname.startsWith('/download/storage/v1/b/takeout'))
   )
 }
