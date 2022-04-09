@@ -1,52 +1,64 @@
 # Gargantuan Takeout Rocket Proxy
 
-🏗️ This is still WIP and under test.
-
-This is the proxy component of [Gargantuan Takeout Rocket (GTR)][gtr].
+This is the proxy component of [Gargantuan Takeout Rocket (GTR)][gtr], a solution to quickly backup Google Takeout archives to Azure Storage.
 
 This proxy is required as:
 
-*  [Microsoft's Azure Storage is unable to download from download URLs used in Google Takeout directly due to an URL Escaping issue][msqa].
-*  To transfer fast, we tell Azure to fetch from Google with 600MB chunks simutaneously at nearly 89 connections at a time for 50GB files from the extension. [Unfortunately, Chromium-based browsers have a limit of 6 connections per HTTP 1.1 host][chrome_connection_limit]. [Azure only supports HTTP 1.1][azblob_http11] and only 6 chunks can be copied simutaneously from the browser directly. As a contrast, [Azure's azcopy][azcopy], the command line copier application, can copy far more than 6 chunks simutaneously.
+*  [Microsoft's Azure Storage is unable to download from download URLs used in Google Takeout directly due to an URL Escaping issue of Google's URLs][msqa].
+*  To transfer fast, we tell Azure to fetch from Google with 600MB chunks simutaneously at nearly 89 connections at a time for 50GB files from the extension. [Unfortunately, Chromium-based browsers have a limit of 6 connections per HTTP 1.1 host][chrome_connection_limit]. [Azure only supports HTTP 1.1][azblob_http11] and only 6 chunks can be command to be copied simutaneously via the browser. As a contrast, [Azure's azcopy][azcopy], the command line copier application, can command copies of far more than 6 chunks simutaneously as it is not limited by browser limitations on connections.
 
 Cloudflare Workers can be used to address these issues:
 
-* By base64-encoding the offending URLs and proxying the traffic through Cloudflare, Azure's limitation on acceptable URLs for its "server-to-server" download capabilities is circumvented in a high performance and low cost manner.
-* Cloudflare Workers are accessed over HTTP/3 which multiplex over a single connection and aren't bound by the 6 connections limit. This can be used to convert the Azure Blob HTTP 1.1 endpoint to HTTP/3 and the extension can command more chunks to be downloaded simutaneously.
-Speeds of up to around 8.7GB/s can be achieved with this proxy from the browser versus 180MB/s with a direct connection to Azure's endpoint.
+* By base64-encoding the offending URLs when passed to Azure, decoding the exact Google URLs required in the workers, and proxying the traffic through Cloudflare Workers, Azure's mangling of Google's URLs for its "server-to-server" download capabilities is circumvented. Cloudflare charges nothing for ingress and egress as well and the bandwidth to do this proxying is pretty much free.
+* Cloudflare Workers are accessed over HTTP/3 or HTTP/2 which multiplex requests over a single connection and aren't bound by the 6 connections limit in the browser. This can be used to convert Azure's HTTP 1.1 endpoint to HTTP/3 or HTTP/2 and the extension in the browser can command more chunks to be downloaded simutaneously through the proxy. Speeds of up to around 8.7GB/s can be achieved with this proxy from the browser versus 180MB/s with a direct connection to Azure's endpoint.
+
+A public instance of this service is provided but you may want to run your own private instance of this proxy for privacy reasons. If so, here is the source.
 
 # Usage
 
 ## Public Instance
 
-A public instance is hosted at https://gtr-proxy.mindflakes.com that anybody may use. The front page of https://gtr-proxy.mindflakes.com just goes to the GitHub repository.
+A public instance is hosted at https://gtr-proxy.677472.xyz that anybody may use with GTR. The front page of https://gtr-proxy.677472.xyz just goes to the GitHub repository for the proxy. The 677472.xyz (`67=g`, `74=t`, and `72=r` from ASCII) domain was chosen because it was $0.75 every year for numeric only `.xyz` domains and I wanted the bandwidth metrics for my personal site separated from this service. Visiting the domain will redirect to this GitHub repository.
 
-For the concerned, Cloudflare's logs are not persistently stored, are only shown during viewing in the dashboard as a stream, and the base64 in the URL is filtered out. That said, you can always clone this repository down and host an instance in your own Cloudflare account if this is a concern. Obviously, change the proxy's domain in the URL as needed. If you are in this camp of concern, perhaps you may want to try the public proxy with a Google Takeout of a Google Service that isn't very sensitive as a trial to test viablity before setting up your own.
+Logs are not stored on this service but I reserve the right to stream the logs temporarily to observe and curb abuse if necessary.
 
-As for my public instance, to repeat, Cloudflare filters out and redacts Base64 in the URLs for the log stream. Theorectically, it's possible to upload a version with pushing the source a version that reports the URL to a third party service without the redaction. You have my assurance I do not care about you and I am too lazy to do this. The service is there for convenience.
+## Private Instance
 
-## Demos using the test server
+You may be interested in running your own private instance so it does not go through my public proxy.
 
-### URL Workaround
+Use this easy-to-use button:
 
-The usage to use the tool to download from the test server is as follows:
+[![Deploy to Cloudflare Workers](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/nelsonjchen/gtr-proxy)
 
-1. Encode the URL you wish to download to base64. For our example, we'll encode "https://put-block-from-url-esc-issue-demo-server-3vngqvvpoq-uc.a.run.app/red%2Fblue.txt". The "`%2F`" in the URL would be silently transformed into a `/` by Azure if it wasn't base64 encoded. The URL should be this in base64: `aHR0cHM6Ly9wdXQtYmxvY2stZnJvbS11cmwtZXNjLWlzc3VlLWRlbW8tc2VydmVyLTN2bmdxdnZwb3EtdWMuYS5ydW4uYXBwL3JlZCUyRmJsdWUudHh0`
+Out of the box, you should be able to use your `workers.dev` domain.
 
-   Append that to the proxy URL at https://gtr-proxy.mindflakes.com/p/.
+Updates to this proxy may or may not be required in the future. If so, simply delete the old repository and old worker and redeploy.
 
-2. Do a `GET` of https://gtr-proxy.mindflakes.com/p/aHR0cHM6Ly9wdXQtYmxvY2stZnJvbS11cmwtZXNjLWlzc3VlLWRlbW8tc2VydmVyLTN2bmdxdnZwb3EtdWMuYS5ydW4uYXBwL3JlZCUyRmJsdWUudHh0 through a web browser or an application.
+The proxy should be usable within the free tier limits of Cloudflare Workers at a personal scale.
+
+## Functionality Demos using the public service
+
+### Azure URL Encoding Mangling Workaround
+
+The usage to use the tool to download from the URL encoding test server is as follows:
+
+1. Encode the URL you wish to download to base64. For our example, we'll encode "https://put-block-from-url-esc-issue-demo-server-3vngqvvpoq-uc.a.run.app/red%2Fblue.txt". The "`%2F`" in the URL would be silently transformed into a `/` by Azure if it wasn't base64 encoded due to the [bug][msqa]. The URL should be this in base64: `aHR0cHM6Ly9wdXQtYmxvY2stZnJvbS11cmwtZXNjLWlzc3VlLWRlbW8tc2VydmVyLTN2bmdxdnZwb3EtdWMuYS5ydW4uYXBwL3JlZCUyRmJsdWUudHh0`
+
+   Append that to the proxy URL at https://gtr-proxy.677472.xyz/p/.
+
+2. Do a `GET` of https://gtr-proxy.677472.xyz/p/aHR0cHM6Ly9wdXQtYmxvY2stZnJvbS11cmwtZXNjLWlzc3VlLWRlbW8tc2VydmVyLTN2bmdxdnZwb3EtdWMuYS5ydW4uYXBwL3JlZCUyRmJsdWUudHh0 through a web browser or an application.
 
 3. You should see "`This path exists!`" from your download.
 
-You can append a `/<a file name here of your choice>` to the end of the URL after the base64 URL to name the file a specific way for download clients that aren't aware of `Content-Disposition`'s `filename` headers.
-### HTTP/3 to HTTP 1.1 Proxy
+You can append a `/<a file name here of your choice>` to the end of the URL after the base64 URL to name the file a specific way for download clients that aren't aware of `Content-Disposition`'s `filename` headers such as `azcopy`.
+
+### HTTP/3 to HTTP 1.1 Proxy for Azure Blob Storage Endpoint
 
 1. Get your original SAS URL from Azure. For our example, we'll use this:
    https://urlcopytest.blob.core.windows.net/some-container?sp=r&st=2022-04-02T18:23:20Z&se=2022-04-03T06:24:20Z&spr=https&sv=2020-08-04&sr=c&sig=KNz4a1xHnmfi7afzrnkBFtls52YIZ0xtzn1Y7udqXBw%3D
 2. The account name is `urlcopytest`. Construct a new proxyfied URL as such:
-   https://gtr-proxy.mindflakes.com/azp/urlcopytest/some-container?sp=r&st=2022-04-02T18:23:20Z&se=2022-04-03T06:24:20Z&spr=https&sv=2020-08-04&sr=c&sig=KNz4a1xHnmfi7afzrnkBFtls52YIZ0xtzn1Y7udqXBw%3D
-3. Perform any `PUT` operaitons you wish through that URL as it will go through the proxy. Observe that the endpoint of the proxy is HTTP/3.
+   https://gtr-proxy.677472.xyz/azp/urlcopytest/some-container?sp=r&st=2022-04-02T18:23:20Z&se=2022-04-03T06:24:20Z&spr=https&sv=2020-08-04&sr=c&sig=KNz4a1xHnmfi7afzrnkBFtls52YIZ0xtzn1Y7udqXBw%3D
+3. Perform any `PUT` operations you wish through that URL as it will go through the proxy. Observe that the endpoint of the proxy is HTTP/3.
 
 ## Google Takeout Example/Demo
 
@@ -56,7 +68,7 @@ https://00f74ba44b071b761059aef3fd79738daea1be7829-apidata.googleusercontent.com
 
 The proxified URL would be:
 
-https://gtr-proxy.mindflakes.com/p/aHR0cHM6Ly8wMGY3NGJhNDRiMDcxYjc2MTA1OWFlZjNmZDc5NzM4ZGFlYTFiZTc4MjktYXBpZGF0YS5nb29nbGV1c2VyY29udGVudC5jb20vZG93bmxvYWQvc3RvcmFnZS92MS9iL2RhdGFsaWJlcmF0aW9uL28vMjAyMTExMTNUMjEyNTAyWiUyRi00MzExNjkzNzE3NzE2MDEyNTQ1JTJGNDk4ZDgzYTUtMWFiMy00YTc5LTgxNWYtZTVjZmRhODU1ZTdhJTJGMSUyRjg2OTc3N2MzLTQ5ZmYtNGQ0ZS1hOTMyLTIzMGE2YjBiMmE3OD9qaz1BRnNoRTNYVDdsNGdPM29sUkQyM0FTeUF1YUstTGJpMVo0b2M0ZU1CamU4ZUxkQTFtSFBrLVZlTk5NQ0RubzJzRGxSS1RLRDJOcWF1MUhka0U5blg1ZjQ2Mnl5bGdjU3U1a21Ja25XMGxVLTFYeDNNYjhPbk81TC1ETXEzVzh4c2xBSTZ2bEtucXJLYVR6dGZPS1NRT2ZuLTVYV2Y0T3VpdURDVGRzdFNTQ2NzTkRNdThiNE5YNmNudVJoR1JkVm9ucXRIM2xmOVRWN2ZJQkpNY2h4eTNsLWkzV190aUdITzdOUDlCMlJudm8ydUpQNy1wZ2JmeEhfa2kwRExlclFoS0s0aFJ4NktlSFdmWEwyWFQ4MGxMVll3ZlMyZGs1WFZBcGxGSUlWN0xwOUg3eDNIRVJRelI3XzFKc2hobHVReW9HNlZxdjdnUll5YXY4UzdQcndrS1hTdENobzVmYzg1RXJaMGRRcUpYbXZOcUN0ZFdDQjgtS3pJQTUtVWdqbExjRHprX21WWU1VZmNyLV9pLVItNXRBX1JuYjBNbWF2Qjk0YUlqOUVmRWgwZzBCNnlDUm5BSEFJdW9iNkVZRlRlQ1ZUczdYWEJscWxNS0YtUDBBNUwyZDQ3ZjBwU1Fyb3NRVU5zaG9aS0tpZVNsNzF2RDNraUZEWjRPSWc1Sy15UGxrbmlvZEZ1eVJyLWhmNUxlQklaaE1GTm96QTJuZkdPVTNjVzNpX3NKWmdOSk5mNjhVS19sMWJlVERKNVpLRVo1b3QwamdhUTd3X0tsTEVvbmFHSk00THc3b1ZieS1HYnFtbEZZZTJTSTl3d3hjWFVSZFc4OEFXNHppcHFDTU96X043Y0JZQzB6bTF0NFRSU1cyLV91dnNRV0xRUkFfOWc4YXZHbjhSSUtyOGktSVNhN3NmTWFVUUVrWTRlT3RzVjdsM0pITmVLam1KdHhTT0pQd2c0ODdDdjBodHdHdF8zS2Q2SWJ5Rk9iMWwwbDl3S3RrSXhrUXFsaVR2QUs3VlhaVUdyMUNkc2JiaHExcXkzQUYxYU1WUEExdmdoVjJUT09yNXJPelZrUlVtVExRelU1V2ZzWU9vTmNLako3bVB2dU9pckZrS3ZTSHpCUUR2WjhfQjJSZ3dUN3pNWjdMc2pBaEcxelMzZURUaWpVTWk5UUVNX0ZZa3VnUnBaMzZlZzlTWldyRWJIQ3AzNnkwa0w3UUs4Z1pIVlA2ZVB2T3F1alhHMUJDcnlyeHA1VVE5QWhaUzNzemhlNTRNRGYxODc3TFRFbUNINV91dEJ2UXFGMzFkbGlubUVXaUw0WVR3aVNFd3dVVG9KMzhIN2dtSS1DV0VyWUpzSnlsbXVPU2ZVb0pGcEVMU1JpNFF3NGZGLWZpZ2JhQjN3X0JOaFh2RUJkVXNNZVNOa0JrVTV1NG53QWZHOElKNlR4a3laWktnSzR1SWhHMVI3bXI3UWFSSl9iaXpJUlZVbCZpc2NhPTEr
+https://gtr-proxy.677472.xyz/p/aHR0cHM6Ly8wMGY3NGJhNDRiMDcxYjc2MTA1OWFlZjNmZDc5NzM4ZGFlYTFiZTc4MjktYXBpZGF0YS5nb29nbGV1c2VyY29udGVudC5jb20vZG93bmxvYWQvc3RvcmFnZS92MS9iL2RhdGFsaWJlcmF0aW9uL28vMjAyMTExMTNUMjEyNTAyWiUyRi00MzExNjkzNzE3NzE2MDEyNTQ1JTJGNDk4ZDgzYTUtMWFiMy00YTc5LTgxNWYtZTVjZmRhODU1ZTdhJTJGMSUyRjg2OTc3N2MzLTQ5ZmYtNGQ0ZS1hOTMyLTIzMGE2YjBiMmE3OD9qaz1BRnNoRTNYVDdsNGdPM29sUkQyM0FTeUF1YUstTGJpMVo0b2M0ZU1CamU4ZUxkQTFtSFBrLVZlTk5NQ0RubzJzRGxSS1RLRDJOcWF1MUhka0U5blg1ZjQ2Mnl5bGdjU3U1a21Ja25XMGxVLTFYeDNNYjhPbk81TC1ETXEzVzh4c2xBSTZ2bEtucXJLYVR6dGZPS1NRT2ZuLTVYV2Y0T3VpdURDVGRzdFNTQ2NzTkRNdThiNE5YNmNudVJoR1JkVm9ucXRIM2xmOVRWN2ZJQkpNY2h4eTNsLWkzV190aUdITzdOUDlCMlJudm8ydUpQNy1wZ2JmeEhfa2kwRExlclFoS0s0aFJ4NktlSFdmWEwyWFQ4MGxMVll3ZlMyZGs1WFZBcGxGSUlWN0xwOUg3eDNIRVJRelI3XzFKc2hobHVReW9HNlZxdjdnUll5YXY4UzdQcndrS1hTdENobzVmYzg1RXJaMGRRcUpYbXZOcUN0ZFdDQjgtS3pJQTUtVWdqbExjRHprX21WWU1VZmNyLV9pLVItNXRBX1JuYjBNbWF2Qjk0YUlqOUVmRWgwZzBCNnlDUm5BSEFJdW9iNkVZRlRlQ1ZUczdYWEJscWxNS0YtUDBBNUwyZDQ3ZjBwU1Fyb3NRVU5zaG9aS0tpZVNsNzF2RDNraUZEWjRPSWc1Sy15UGxrbmlvZEZ1eVJyLWhmNUxlQklaaE1GTm96QTJuZkdPVTNjVzNpX3NKWmdOSk5mNjhVS19sMWJlVERKNVpLRVo1b3QwamdhUTd3X0tsTEVvbmFHSk00THc3b1ZieS1HYnFtbEZZZTJTSTl3d3hjWFVSZFc4OEFXNHppcHFDTU96X043Y0JZQzB6bTF0NFRSU1cyLV91dnNRV0xRUkFfOWc4YXZHbjhSSUtyOGktSVNhN3NmTWFVUUVrWTRlT3RzVjdsM0pITmVLam1KdHhTT0pQd2c0ODdDdjBodHdHdF8zS2Q2SWJ5Rk9iMWwwbDl3S3RrSXhrUXFsaVR2QUs3VlhaVUdyMUNkc2JiaHExcXkzQUYxYU1WUEExdmdoVjJUT09yNXJPelZrUlVtVExRelU1V2ZzWU9vTmNLako3bVB2dU9pckZrS3ZTSHpCUUR2WjhfQjJSZ3dUN3pNWjdMc2pBaEcxelMzZURUaWpVTWk5UUVNX0ZZa3VnUnBaMzZlZzlTWldyRWJIQ3AzNnkwa0w3UUs4Z1pIVlA2ZVB2T3F1alhHMUJDcnlyeHA1VVE5QWhaUzNzemhlNTRNRGYxODc3TFRFbUNINV91dEJ2UXFGMzFkbGlubUVXaUw0WVR3aVNFd3dVVG9KMzhIN2dtSS1DV0VyWUpzSnlsbXVPU2ZVb0pGcEVMU1JpNFF3NGZGLWZpZ2JhQjN3X0JOaFh2RUJkVXNNZVNOa0JrVTV1NG53QWZHOElKNlR4a3laWktnSzR1SWhHMVI3bXI3UWFSSl9iaXpJUlZVbCZpc2NhPTEr
 
 As this example original Takeout URL has long expired so you would see `Locked Domain Expired: Not valid after 2021-11-13T13:44:21.231-08:00` when visiting Google's URL above. But now you can see it through the GTR proxy in full fidelity too!
 
@@ -71,7 +83,7 @@ For anti-abuse reasons, the service is limited to test servers and Google Takeou
       - They seem to have resources to spare. Known to work. Can max out 500Mbps connections at least.
     - `*releases.ubuntu.com*`
       - Known to really work. But they aren't as fast and are only in the UK. Only included here as a historical interest for an early version of this proxy.
-  - The URL must be a valid Google Takeout download URL.
+  - The URL must be a valid Google Takeout download URL. Regions may have different data policies. Please create an issue if your region is unsupported.
 
 ## Design and Implementation
 
@@ -80,9 +92,8 @@ This tool is implemented to run on Cloudflare Workers as:
 - [Cloudflare does not charge for incoming or outgoing data. No egress or ingress charges.][egress_free]
 - [Cloudflare does not charge for memory used while the request has finished processing, the response headers are sent, and the worker is just shoveling bytes between two sockets.][fetch_free]
 - [Cloudflare has the peering, compute, and scalability to handle the massive transfer from Google Takeout to Azure Storage. Many of its peering points are peered with Azure and Google with high capacity links.][cf_capacity]
-- Cloudflare Worker endpoints are HTTP/3 compatible.
-
-The tool parses and decodes a base64 URL from the URL in the request, requests from the remote server with the same headers, and serves a stream as the response with the same headers. Base64 is used as it has maximum compatibility and universality.
+- Cloudflare Workers are serverless.
+- [Cloudflare Worker endpoints are HTTP/3 compatible and can comfortably connect to HTTP 1.1 endpoints.][cfhttp3]
 
 I am not aware of any other provider with the same characteristics as Cloudflare.
 
@@ -95,3 +106,4 @@ I am not aware of any other provider with the same characteristics as Cloudflare
 [azblob_http11]: https://docs.microsoft.com/en-us/rest/api/storageservices/http-version-support
 [chrome_connection_limit]: https://chromium.googlesource.com/chromium/src/net/+/master/socket/client_socket_pool_manager.cc#51
 [azcopy]: https://docs.microsoft.com/en-us/azure/storage/common/storage-use-azcopy-v10
+[cfhttp3]: https://developers.cloudflare.com/http3/
