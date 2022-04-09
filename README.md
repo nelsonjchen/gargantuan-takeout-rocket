@@ -4,13 +4,13 @@ This is the proxy component of [Gargantuan Takeout Rocket (GTR)][gtr], a solutio
 
 This proxy is required as:
 
-*  [Microsoft's Azure Storage is unable to download from download URLs used in Google Takeout directly due to an URL Escaping issue of Google's URLs][msqa].
-*  To transfer fast, we tell Azure to fetch from Google with 600MB chunks simutaneously at nearly 89 connections at a time for 50GB files from the extension. [Unfortunately, Chromium-based browsers have a limit of 6 connections per HTTP 1.1 host][chrome_connection_limit]. [Azure only supports HTTP 1.1][azblob_http11] and only 6 chunks can be command to be copied simutaneously via the browser. As a contrast, [Azure's azcopy][azcopy], the command line copier application, can command copies of far more than 6 chunks simutaneously as it is not limited by browser limitations on connections.
+- [Microsoft's Azure Storage is unable to download from download URLs used in Google Takeout directly due to an URL Escaping issue of Google's URLs][msqa].
+- To transfer fast, we tell Azure to fetch from Google with 600MB chunks simutaneously at nearly 89 connections at a time for 50GB files from the extension. [Unfortunately, Chromium-based browsers have a limit of 6 connections per HTTP 1.1 host][chrome_connection_limit]. [Azure only supports HTTP 1.1][azblob_http11] and only 6 chunks can be command to be copied simutaneously via the browser. As a contrast, [Azure's azcopy][azcopy], the command line copier application, can command copies of far more than 6 chunks simutaneously as it is not limited by browser limitations on connections.
 
 Cloudflare Workers can be used to address these issues:
 
-* By base64-encoding the offending URLs when passed to Azure, decoding the exact Google URLs required in the workers, and proxying the traffic through Cloudflare Workers, Azure's mangling of Google's URLs for its "server-to-server" download capabilities is circumvented. Cloudflare charges nothing for ingress and egress as well and the bandwidth to do this proxying is pretty much free.
-* Cloudflare Workers are accessed over HTTP/3 or HTTP/2 which multiplex requests over a single connection and aren't bound by the 6 connections limit in the browser. This can be used to convert Azure's HTTP 1.1 endpoint to HTTP/3 or HTTP/2 and the extension in the browser can command more chunks to be downloaded simutaneously through the proxy. Speeds of up to around 8.7GB/s can be achieved with this proxy from the browser versus 180MB/s with a direct connection to Azure's endpoint.
+- By base64-encoding the offending URLs when passed to Azure, decoding the exact Google URLs required in the workers, and proxying the traffic through Cloudflare Workers, Azure's mangling of Google's URLs for its "server-to-server" download capabilities is circumvented. Cloudflare charges nothing for ingress and egress as well and the bandwidth to do this proxying is pretty much free.
+- Cloudflare Workers are accessed over HTTP/3 or HTTP/2 which multiplex requests over a single connection and aren't bound by the 6 connections limit in the browser. This can be used to convert Azure's HTTP 1.1 endpoint to HTTP/3 or HTTP/2 and the extension in the browser can command more chunks to be downloaded simutaneously through the proxy. Speeds of up to around 8.7GB/s can be achieved with this proxy from the browser versus 180MB/s with a direct connection to Azure's endpoint.
 
 A public instance of this service is provided but you may want to run your own private instance of this proxy for privacy reasons. If so, here is the source.
 
@@ -54,11 +54,11 @@ You can append a `/<a file name here of your choice>` to the end of the URL afte
 
 ### HTTP/3 to HTTP 1.1 Proxy for Azure Blob Storage Endpoint
 
-1. Get your original SAS URL from Azure. For our example, we'll use this:
-   https://urlcopytest.blob.core.windows.net/some-container?sp=r&st=2022-04-02T18:23:20Z&se=2022-04-03T06:24:20Z&spr=https&sv=2020-08-04&sr=c&sig=KNz4a1xHnmfi7afzrnkBFtls52YIZ0xtzn1Y7udqXBw%3D
+1. Get your original SAS URL from Azure and append a blob name to it in the path. For our example, we'll use this:
+   https://urlcopytest.blob.core.windows.net/some-container/data.dat?sp=r&st=2022-04-02T18:23:20Z&se=2022-04-03T06:24:20Z&spr=https&sv=2020-08-04&sr=c&sig=KNz4a1xHnmfi7afzrnkBFtls52YIZ0xtzn1Y7udqXBw%3D
 2. The account name is `urlcopytest`. Construct a new proxyfied URL as such:
-   https://gtr-proxy.677472.xyz/azp/urlcopytest/some-container?sp=r&st=2022-04-02T18:23:20Z&se=2022-04-03T06:24:20Z&spr=https&sv=2020-08-04&sr=c&sig=KNz4a1xHnmfi7afzrnkBFtls52YIZ0xtzn1Y7udqXBw%3D
-3. Perform any `PUT` operations you wish through that URL as it will go through the proxy. Observe that the endpoint of the proxy is HTTP/3.
+   https://gtr-proxy.677472.xyz/p-azb/urlcopytest/some-container/data.dat?sp=r&st=2022-04-02T18:23:20Z&se=2022-04-03T06:24:20Z&spr=https&sv=2020-08-04&sr=c&sig=KNz4a1xHnmfi7afzrnkBFtls52YIZ0xtzn1Y7udqXBw%3D
+3. Perform any `PUT` operations you wish through that URL as it will go through the proxy. You can observe that the endpoint of the proxy is HTTP/3 after the first initial connection in the Network tab.
 
 ## Google Takeout Example/Demo
 
