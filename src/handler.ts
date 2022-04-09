@@ -12,6 +12,24 @@ export async function handleRequest(request: Request): Promise<Response> {
     return handleAzBlobRequest(request)
   }
 
+  if (url.pathname.startsWith('/version/')) {
+    return new Response(
+      JSON.stringify(
+        {
+          apiVersion: '1.0.0',
+        },
+        null,
+        2,
+      ),
+      {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      },
+    )
+  }
+
   // Check if the URL matches the path desired. If not, just redirect to GitHub
   // for project information
   return new Response(null, {
