@@ -12,6 +12,11 @@ export default function App() {
   useEffect(() => {
     chrome.storage.local.get("state", function (result) {
       setState(result.state);
+      chrome.storage.onChanged.addListener((changes, area) => {
+        if (area === "local" && changes.state?.newValue) {
+          setState(changes.state.newValue);
+        }
+      });
     });
   }, []);
 
