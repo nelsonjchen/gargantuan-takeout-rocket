@@ -76,4 +76,5 @@ export async function transload(
   console.log(`Committed Block List`);
 
   console.log(`Transloaded ${source} to ${destination}`);
+  return { source, name, destination };
 }

@@ -11,25 +11,17 @@ import { State } from "./state";
 
 console.log("initialized gtr extension");
 
-// Reads all data out of storage.sync and exposes it via a promise.
-//
-// Note: Once the Storage API gains promise support, this function
-// can be greatly simplified.
-function isDownloaderEnabled(): Promise<boolean> {
+function getState(): Promise<State> {
   // Immediately return a promise and start asynchronous work
   return new Promise((resolve, reject) => {
     // Asynchronously fetch all data from storage.sync.
-    chrome.storage.sync.get("state", (result) => {
+    chrome.storage.local.get("state", (result) => {
       // Pass any observed errors down the promise chain.
       if (chrome.runtime.lastError) {
         return reject(chrome.runtime.lastError);
       }
       const state = result.state as State;
-      if (state.enabled) {
-        resolve(true);
-      }
-
-      resolve(false);
+      resolve(state);
     });
   });
 }
@@ -38,8 +30,9 @@ async function captureDownload(
   downloadItem: chrome.downloads.DownloadItem,
   suggestion: Function
 ) {
-  if (!(await isDownloaderEnabled())) {
-    console.log("Downloader is disabled");
+  const state = await getState();
+  if (!state.enabled) {
+    console.log("Skipping inter");
     return;
   }
 
@@ -48,16 +41,24 @@ async function captureDownload(
   console.log("filename:", downloadItem.filename);
   chrome.downloads.cancel(downloadItem.id);
   console.log("download cancelled:", downloadItem);
-  chrome.storage.sync.get("sas", async function (result) {
-    let sas = result.sas;
-    console.log("Value currently is " + sas);
-    await transload(
-      sourceToGtrProxySource(downloadItem.finalUrl),
-      sas,
-      downloadItem.filename
-    );
-    console.log("Transload complete");
+  const sas = state.azureSasUrl;
+  console.log("SAS currently is " + sas);
+  const download = await transload(
+    sourceToGtrProxySource(downloadItem.finalUrl),
+    sas,
+    downloadItem.filename
+  );
+  chrome.storage.sync.set({
+    state: (() => {
+      const downloads = { ...state.downloads };
+      downloads[download.name] = download;
+      return {
+        ...state,
+        downloads
+      };
+    })()
   });
+  console.log("Transload complete");
 }
 
 //  Stop all the downloading

@@ -5,17 +5,18 @@ export default function App() {
   const [state, setState] = useState({
     enabled: false,
     proxyUrl: "",
-    azureSasUrl: ""
+    azureSasUrl: "",
+    downloads: {}
   } as State);
 
   useEffect(() => {
-    chrome.storage.sync.get("state", function (result) {
+    chrome.storage.local.get("state", function (result) {
       setState(result.state);
     });
   }, []);
 
   useEffect(() => {
-    chrome.storage.sync.set({ state: state }, function () {
+    chrome.storage.local.set({ state: state }, function () {
       console.log("State value currently is " + state);
     });
   });
@@ -35,7 +36,7 @@ export default function App() {
         <label htmlFor="">Enabled</label>
         <input
           type="checkbox"
-          checked={state.enabled}
+          defaultChecked={state.enabled}
           onChange={(e) => setState({ ...state, enabled: e.target.checked })}
         />
         <label>
@@ -43,7 +44,7 @@ export default function App() {
           <input
             type="text"
             name="name"
-            value={state.azureSasUrl}
+            defaultValue={state.azureSasUrl}
             onChange={(e) =>
               setState({
                 ...state,
@@ -53,6 +54,22 @@ export default function App() {
           />
         </label>
       </form>
+      <h2>Downloads</h2>
+      <button
+        onClick={() =>
+          setState({
+            ...state,
+            downloads: {}
+          })
+        }
+      >
+        Clear
+      </button>
+      <ul>
+        {Object.entries(state.downloads).map(([key, value]) => (
+          <li>{value.name}</li>
+        ))}
+      </ul>
     </div>
   );
 }
