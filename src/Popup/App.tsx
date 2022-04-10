@@ -36,7 +36,7 @@ export default function App() {
           <input
             type="text"
             name="name"
-            value={state.azureSasUrl}
+            defaultValue={state.azureSasUrl}
             onBlur={(e) =>
               setState({
                 ...state,
@@ -59,7 +59,7 @@ export default function App() {
       </button>
       <ul>
         {Object.entries(state.downloads).map(([key, value]) => (
-          <li>{value.name}</li>
+          <li key={value.name}>{value.name}</li>
         ))}
       </ul>
     </div>
