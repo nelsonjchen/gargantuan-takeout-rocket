@@ -21,14 +21,6 @@ export default function App() {
     });
   });
 
-  chrome.storage.onChanged.addListener(function (changes, namespace) {
-    for (let [key, { newValue }] of Object.entries(changes)) {
-      if (key === "state") {
-        setState(newValue);
-      }
-    }
-  });
-
   return (
     <div>
       <h1>Garguantuan Takeout Helper</h1>
@@ -36,7 +28,7 @@ export default function App() {
         <label htmlFor="">Enabled</label>
         <input
           type="checkbox"
-          defaultChecked={state.enabled}
+          checked={state.enabled}
           onChange={(e) => setState({ ...state, enabled: e.target.checked })}
         />
         <label>
@@ -44,8 +36,8 @@ export default function App() {
           <input
             type="text"
             name="name"
-            defaultValue={state.azureSasUrl}
-            onChange={(e) =>
+            value={state.azureSasUrl}
+            onBlur={(e) =>
               setState({
                 ...state,
                 azureSasUrl: e.target.value
