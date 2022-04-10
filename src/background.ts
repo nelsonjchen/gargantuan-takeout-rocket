@@ -49,7 +49,8 @@ async function captureDownload(
     downloadItem.filename
   );
   chrome.storage.local.set({
-    state: (() => {
+    state: (async () => {
+      const state = await getState();
       const downloads = { ...state.downloads };
       downloads[download.name] = download;
       return {
