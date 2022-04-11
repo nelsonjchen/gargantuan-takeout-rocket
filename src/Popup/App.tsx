@@ -64,7 +64,7 @@ export default function App() {
               azureSasUrl: e.target.value
             })
           }
-          style={{ width: "100%" }}
+          style={{ width: "90%" }}
         />
         <br />
         <br />
@@ -90,7 +90,7 @@ export default function App() {
               proxyBaseUrl: e.target.value
             })
           }
-          style={{ width: "100%" }}
+          style={{ width: "90%" }}
         />
       </form>
       <h2>Downloads</h2>
