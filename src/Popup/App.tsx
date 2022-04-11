@@ -31,13 +31,16 @@ export default function App() {
     <div>
       <h1>🚀 Garguantuan Takeout Helper</h1>
       <p>
-        <a href="https://github.com/nelsonjchen/gtr">
-          https://github.com/nelsonjchen/gtr
+        <a href="https://github.com/nelsonjchen/gtr" target="_blank">
+          Gargantuan Takeout Rocket (GTR) is a toolkit of instructions/guides
+          and software to help you take out your data from Google Takeout and
+          put it somewhere else safe easily, periodically, and fast. .For more
+          info, please see https://github.com/nelsonjchen/gtr.
         </a>
       </p>
 
       <form>
-        <label htmlFor="enabled">Enabled</label>
+        <label htmlFor="enabled">Enable Download Interception:</label>
         <br />
         <input
           id="enabled"
@@ -61,8 +64,15 @@ export default function App() {
         />
         <br />
         <label>
-          Proxy Base URL (optional, defaults to https://gtr-proxy.677472.xyz if
-          not specified):
+          GTR Proxy Base URL (optional, defaults to https://gtr-proxy.677472.xyz
+          if not specified) (
+          <a
+            href="https://github.com/nelsonjchen/gtr-proxy#readme"
+            target="_blank"
+          >
+            Why is a GTR proxy needed?
+          </a>
+          ):
         </label>
         <br />
         <input
