@@ -82,7 +82,9 @@ async function captureDownload(
     const then = new Date();
     const duration = then.getTime() - now.getTime();
     if (download.size) {
-      prettySpeed = `${prettyBytes((download.size / duration) * 1000)}/s`;
+      prettySpeed = `${prettyBytes(download.size)} @ ${prettyBytes(
+        (download.size / duration) * 1000
+      )}/s`;
     }
     download["reason"] = prettySpeed;
   } catch (err) {
