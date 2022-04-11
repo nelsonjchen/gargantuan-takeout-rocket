@@ -31,12 +31,14 @@ export default function App() {
     <div>
       <h1>🚀 Garguantuan Takeout Helper</h1>
       <p>
+        Gargantuan Takeout Rocket (GTR) is a toolkit of instructions/guides and
+        software to help you take out your data from Google Takeout and put it
+        somewhere else safe easily, periodically, and fast. For more info and
+        instructions, please see{" "}
         <a href="https://github.com/nelsonjchen/gtr" target="_blank">
-          Gargantuan Takeout Rocket (GTR) is a toolkit of instructions/guides
-          and software to help you take out your data from Google Takeout and
-          put it somewhere else safe easily, periodically, and fast. .For more
-          info, please see https://github.com/nelsonjchen/gtr.
+          https://github.com/nelsonjchen/gtr
         </a>
+        .
       </p>
 
       <form>
@@ -47,6 +49,7 @@ export default function App() {
           type="checkbox"
           checked={state.enabled}
           onChange={(e) => setState({ ...state, enabled: e.target.checked })}
+          style={{ zoom: 3.0 }}
         />
         <br />
         <label>Azure SAS Container URL:</label>
@@ -61,7 +64,9 @@ export default function App() {
               azureSasUrl: e.target.value
             })
           }
+          style={{ width: "100%" }}
         />
+        <br />
         <br />
         <label>
           GTR Proxy Base URL (optional, defaults to https://gtr-proxy.677472.xyz
@@ -85,6 +90,7 @@ export default function App() {
               proxyBaseUrl: e.target.value
             })
           }
+          style={{ width: "100%" }}
         />
       </form>
       <h2>Downloads</h2>
