@@ -63,9 +63,10 @@ async function captureDownload(
   let download: Download;
   try {
     download = await transload(
-      sourceToGtrProxySource(downloadItem.finalUrl),
+      sourceToGtrProxySource(downloadItem.finalUrl, state.proxyBaseUrl),
       sas,
-      downloadItem.filename
+      downloadItem.filename,
+      state.proxyBaseUrl
     );
   } catch (err) {
     download = {
