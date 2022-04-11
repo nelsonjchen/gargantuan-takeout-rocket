@@ -84,6 +84,7 @@ async function captureDownload(
     if (download.size) {
       prettySpeed = `${prettyBytes((download.size / duration) * 1000)}/s`;
     }
+    download["reason"] = prettySpeed;
   } catch (err) {
     download = {
       name: downloadItem.filename,
