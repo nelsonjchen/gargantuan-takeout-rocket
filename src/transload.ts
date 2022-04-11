@@ -84,5 +84,5 @@ export async function transload(
   console.log(`Committed Block List`);
 
   console.log(`Transloaded ${source} to ${destination}`);
-  return { name, status: "complete" };
+  return { name, status: "complete", size: jobPlan.length };
 }

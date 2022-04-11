@@ -39,6 +39,7 @@
     "jest": "^27.5.1",
     "node-fetch": "^3.2.3",
     "prettier": "^2.2.1",
+    "pretty-bytes": "^6.0.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "ts-jest": "^27.1.3",

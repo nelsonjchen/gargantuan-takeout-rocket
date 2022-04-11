@@ -8,6 +8,7 @@
 
 import { sourceToGtrProxySource, transload } from "./transload";
 import { Download, State } from "./state";
+import prettyBytes from "pretty-bytes";
 
 console.log("initialized gtr extension");
 
@@ -67,14 +68,22 @@ async function captureDownload(
       };
     })()
   });
+
   let download: Download;
+  let prettySpeed: string = "";
   try {
+    const now = new Date();
     download = await transload(
       sourceToGtrProxySource(downloadItem.finalUrl, state.proxyBaseUrl),
       sas,
       downloadItem.filename,
       state.proxyBaseUrl
     );
+    const then = new Date();
+    const duration = then.getTime() - now.getTime();
+    if (download.size) {
+      prettySpeed = `${prettyBytes((download.size / duration) * 1000)}/s`;
+    }
   } catch (err) {
     download = {
       name: downloadItem.filename,
@@ -100,7 +109,7 @@ async function captureDownload(
   if (download.status === "complete") {
     chrome.notifications.create(`transload-complete-${downloadItem.filename}`, {
       title: "GTR Transload Complete",
-      message: `✅ ${downloadItem.filename} complete (disable interception in extension popup)`,
+      message: `✅ ${downloadItem.filename} complete (${prettySpeed}) (disable interception in extension popup)`,
       type: "basic",
       iconUrl: "/logo512.png",
       priority: 0
