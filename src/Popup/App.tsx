@@ -64,7 +64,9 @@ export default function App() {
       </button>
       <ul>
         {Object.entries(state.downloads).map(([key, value]) => (
-          <li key={value.name}>{value.name}</li>
+          <li key={value.name}>
+            {value.name} - {value.status} - {value.reason}
+          </li>
         ))}
       </ul>
     </div>

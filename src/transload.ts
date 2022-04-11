@@ -2,6 +2,7 @@ import { ContainerClient } from "./jeContainerClient";
 import "isomorphic-fetch";
 import { v4 as uuidv4 } from "uuid";
 import { btoa } from "abab";
+import { Download } from "./state";
 
 interface TransloadOptions {}
 
@@ -53,7 +54,7 @@ export async function transload(
   destination: string,
   name: string,
   options: TransloadOptions = {}
-) {
+): Promise<Download> {
   console.log(`Transloading ${source} to ${destination}`);
 
   const containerClient = new ContainerClient(destination);
@@ -76,5 +77,5 @@ export async function transload(
   console.log(`Committed Block List`);
 
   console.log(`Transloaded ${source} to ${destination}`);
-  return { source, name, destination };
+  return { name, status: "complete" };
 }

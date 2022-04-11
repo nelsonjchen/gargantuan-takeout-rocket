@@ -7,7 +7,7 @@
  */
 
 import { sourceToGtrProxySource, transload } from "./transload";
-import { State } from "./state";
+import { Download, State } from "./state";
 
 console.log("initialized gtr extension");
 
@@ -32,7 +32,7 @@ async function captureDownload(
 ) {
   const state = await getState();
   if (!state.enabled) {
-    console.log("Skipping inter");
+    console.log("Skipping interception of download.");
     return;
   }
 
@@ -40,21 +40,50 @@ async function captureDownload(
   console.log("final url:", downloadItem.finalUrl);
   console.log("filename:", downloadItem.filename);
   chrome.downloads.cancel(downloadItem.id);
-  console.log("download cancelled:", downloadItem);
+  console.log("chrome native download cancelled:", downloadItem);
   const sas = state.azureSasUrl;
-  console.log("SAS currently is " + sas);
-  const download = await transload(
-    sourceToGtrProxySource(downloadItem.finalUrl),
-    sas,
-    downloadItem.filename
-  );
-  chrome.storage.local.set({
-    state: (async () => {
-      const state = await getState();
-      const downloads = { ...state.downloads };
+  console.log("Azure sas:", sas);
+
+  // Add download to pending
+  const pendingDownload: Download = {
+    name: downloadItem.filename,
+    status: "pending"
+  };
+  const preDownloadsState = await getState();
+  await chrome.storage.local.set({
+    state: (() => {
+      const downloads = { ...preDownloadsState.downloads };
+      downloads[pendingDownload.name] = pendingDownload;
+      return {
+        ...preDownloadsState,
+        downloads
+      };
+    })()
+  });
+  let download: Download;
+  try {
+    download = await transload(
+      sourceToGtrProxySource(downloadItem.finalUrl),
+      sas,
+      downloadItem.filename
+    );
+  } catch (err) {
+    download = {
+      name: downloadItem.filename,
+      status: "failed"
+    };
+    if (err instanceof Error) {
+      download["reason"] = err.message;
+    }
+  }
+
+  const updateDownloadsState = await getState();
+  await chrome.storage.local.set({
+    state: (() => {
+      const downloads = { ...updateDownloadsState.downloads };
       downloads[download.name] = download;
       return {
-        ...state,
+        ...updateDownloadsState,
         downloads
       };
     })()
