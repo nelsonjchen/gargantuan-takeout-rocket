@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from "uuid";
 import { btoa } from "abab";
 import { Download } from "./state";
 
-interface TransloadOptions {}
+const built_in_proxy_base = "https://gtr-proxy.677472.xyz";
 
 interface JobPlan {
   chunks: {
@@ -15,10 +15,15 @@ interface JobPlan {
   length: number;
 }
 
-export function sourceToGtrProxySource(source: string): string {
-  const base = "https://gtr-proxy.mindflakes.com/p/";
+export function sourceToGtrProxySource(
+  source: string,
+  proxyBase?: string
+): string {
+  if (!proxyBase) {
+    proxyBase = built_in_proxy_base;
+  }
   const url = btoa(source);
-  return `${base}${url}`;
+  return `${proxyBase}/p/${url}`;
 }
 
 export async function createJobPlan(source: string): Promise<JobPlan> {
@@ -53,12 +58,14 @@ export async function transload(
   source: string,
   destination: string,
   name: string,
-  options: TransloadOptions = {}
+  proxyBase?: string
 ): Promise<Download> {
   console.log(`Transloading ${source} to ${destination}`);
 
   const containerClient = new ContainerClient(destination);
-  const proxyBase = "https://gtr-proxy.mindflakes.com";
+  if (!proxyBase) {
+    proxyBase = built_in_proxy_base;
+  }
   const blobClient = containerClient.getBlockBlobClient(name, proxyBase);
   const jobPlan = await createJobPlan(source);
   console.log(`Got job plan: `, jobPlan);

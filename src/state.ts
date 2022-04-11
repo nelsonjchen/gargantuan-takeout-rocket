@@ -7,5 +7,6 @@ export interface State {
   enabled: boolean;
   proxyUrl: string;
   azureSasUrl: string;
+  proxyBaseUrl: string;
   downloads: { [key: string]: Download };
 }

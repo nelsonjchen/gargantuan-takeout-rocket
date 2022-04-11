@@ -6,6 +6,7 @@ export default function App() {
     enabled: false,
     proxyUrl: "",
     azureSasUrl: "",
+    proxyBaseUrl: "",
     downloads: {}
   } as State);
 
@@ -30,26 +31,45 @@ export default function App() {
     <div>
       <h1>Garguantuan Takeout Helper</h1>
       <form>
-        <label htmlFor="">Enabled</label>
+        <label htmlFor="enabled">Enabled</label>
+        <br />
         <input
+          id="enabled"
           type="checkbox"
           checked={state.enabled}
           onChange={(e) => setState({ ...state, enabled: e.target.checked })}
         />
+        <br />
+        <label>Azure SAS Container URL:</label>
+        <br />
+        <input
+          type="text"
+          name="name"
+          defaultValue={state.azureSasUrl}
+          onBlur={(e) =>
+            setState({
+              ...state,
+              azureSasUrl: e.target.value
+            })
+          }
+        />
+        <br />
         <label>
-          Azure SAS Container URL:
-          <input
-            type="text"
-            name="name"
-            defaultValue={state.azureSasUrl}
-            onBlur={(e) =>
-              setState({
-                ...state,
-                azureSasUrl: e.target.value
-              })
-            }
-          />
+          Proxy Base URL (optional, defaults to https://gtr-proxy.677472.xyz if
+          not specified):
         </label>
+        <br />
+        <input
+          type="text"
+          name="name"
+          defaultValue={state.proxyBaseUrl}
+          onBlur={(e) =>
+            setState({
+              ...state,
+              proxyBaseUrl: e.target.value
+            })
+          }
+        />
       </form>
       <h2>Downloads</h2>
       <button

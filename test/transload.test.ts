@@ -33,7 +33,7 @@ describe("transload", () => {
 
   test("can construct a valid base64 url using the gtr proxy", () => {
     expect(sourceToGtrProxySource(someFile)).toBe(
-      "https://gtr-proxy.mindflakes.com/p/aHR0cHM6Ly9taXJyb3JzLmFkdmFuY2VkaG9zdGVycy5jb20vZnJlZWJzZC9yZWxlYXNlcy9JU08tSU1BR0VTLzkuMy9GcmVlQlNELTkuMy1SRUxFQVNFLWFtZDY0LWRpc2MxLmlzby54eg=="
+      "https://gtr-proxy.677472.xyz/p/aHR0cHM6Ly9taXJyb3JzLmFkdmFuY2VkaG9zdGVycy5jb20vZnJlZWJzZC9yZWxlYXNlcy9JU08tSU1BR0VTLzkuMy9GcmVlQlNELTkuMy1SRUxFQVNFLWFtZDY0LWRpc2MxLmlzby54eg=="
     );
   });
 
