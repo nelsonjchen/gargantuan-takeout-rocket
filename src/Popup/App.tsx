@@ -29,7 +29,13 @@ export default function App() {
 
   return (
     <div>
-      <h1>Garguantuan Takeout Helper</h1>
+      <h1>🚀 Garguantuan Takeout Helper</h1>
+      <p>
+        <a href="https://github.com/nelsonjchen/gtr">
+          https://github.com/nelsonjchen/gtr
+        </a>
+      </p>
+
       <form>
         <label htmlFor="enabled">Enabled</label>
         <br />

@@ -41,7 +41,7 @@ async function captureDownload(
   console.log("final url:", downloadItem.finalUrl);
   console.log("filename:", downloadItem.filename);
   chrome.notifications.create(`transload-start-${downloadItem.filename}`, {
-    title: "GTR Transload Started",
+    title: "🚀 GTR Transload Started",
     message: `⏳ ${downloadItem.filename} started (disable interception in extension popup)`,
     type: "basic",
     iconUrl: "/logo512.png",
@@ -108,7 +108,7 @@ async function captureDownload(
   chrome.notifications.clear(`transload-start-${downloadItem.filename}`);
   if (download.status === "complete") {
     chrome.notifications.create(`transload-complete-${downloadItem.filename}`, {
-      title: "GTR Transload Complete",
+      title: "🚀 GTR Transload Complete",
       message: `✅ ${downloadItem.filename} complete (${prettySpeed}) (disable interception in extension popup)`,
       type: "basic",
       iconUrl: "/logo512.png",
@@ -116,7 +116,7 @@ async function captureDownload(
     });
   } else {
     chrome.notifications.create(`transload-failed-${downloadItem.filename}`, {
-      title: "GTR Transload Failed",
+      title: "🚀 GTR Transload Failed",
       message: `❌ ${downloadItem.filename} failed (disable interception in extension popup)`,
       type: "basic",
       iconUrl: "/logo512.png",
