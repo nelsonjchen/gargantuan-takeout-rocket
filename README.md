@@ -68,13 +68,13 @@ On your planner, remind yourself every 3 months to do this.
 
 ### Backing Up
 
-1. Initiate a [Google Takeout][gtr]. It may take hours or days to complete.
+1. Initiate a [Google Takeout](https://takeout.google.com). It may take hours or days to complete.
 2. Once complete, visit the Azure Blob container you made in preparation and "Create a SAS Signature" with all the permissions.
   * ![portal azure com_](https://user-images.githubusercontent.com/5363/163125758-7383aafa-ded8-4592-a753-5e8bb717c1df.png)
 3. `Generate SAS Token and URL` and copy the `Blob SAS URL`. Hint: there's a copy to clipboard button on the right of the field. 
   * ![portal azure com_ (1)](https://user-images.githubusercontent.com/5363/163125969-1e151b8c-43e7-49e9-87e9-d3d788220d90.png)
-4. Paste that URL into the extension popup.
-5. Enable the extension with the checkmark popup.
+4. Paste the Blob SAS URL into the extension popup at the correct field.
+5. Enable the extension to intercept downloads with the checkmark popup.
 6. Visit Google Takeout and click download on each archive. 
 7. Notifications will come and go as each archive is transloaded into Azure Blob Storage.
 8. Once complete, check Azure to make sure everything has been retrieved.
