@@ -22,45 +22,68 @@ GTR is right for you if:
 * You want to backup your account to somewhere that else isn't Google and are OK with Microsoft.
 * You want to back it up somewhere cheap ($1/TB/mo).
 * You have a to-do app or calendar app that can make recurring tasks, events, or alarms every 3 months.
-* You are OK with backing their Google Data to somewhere archival-oriented and not interested in looking at the backups unless something really bad actually happens. 
+* You are OK with backing their Google Data to somewhere archival-oriented with a high access cost and not interested in looking at the backups unless something really bad actually happens. 
 * You don't want to setup up temporary cloud compute instances or machines and manually facilitate the transfer.
 * You want to quickly transfer out at 5GB/s+, in parallel, outward.
 * You have a slow internet connection.
 * You don't have the space to temporaily store the data.
 
-## Preparation
+## Initial Preparation
 
-TODO
+👷 Guide under construction.
 
-init takeout a day before
+This guide is a continual work in progress.
 
-setup azure container with lifecycle rules
+### Setup Azure
 
-optional: setup gtr-proxy in own cloudflare account
+This is something that you'll only have to do once.
 
-get sas url
+1. You need a Microsoft Azure Account. Make one and put some payment information in.
+2. Setup a Storage Account. Here's a decent video on how to do so: https://www.youtube.com/watch?v=jeFb_scHuZQ
+  * Region: Look at cheapest for Archive, then preferred location at https://azure.microsoft.com/en-us/pricing/details/storage/blobs/. The par is $0.00099 per GB.
+  * Replication: LRS
+3. Create a blob container as seen in https://www.youtube.com/watch?v=jeFb_scHuZQ
+  * Record the name of your blob container.
+4. Setup Lifecycle Rules as seen in https://www.youtube.com/watch?v=-3k0hhngt7o
+  * Archive Tier after 1 day
+  * Delete after 100 days
 
-install extension
+### Configure Cloudflare Workers Proxy (Optional)
 
-enable extension
+See [proxy setup readme][proxy].
 
-paste sas url
+### Install Extension
 
-download all takeout links
+Install or load the [extension][ext]. It has a rocket icon.
 
-check files exist
+The extension UI can be seen by clicking on the rocket icon.
 
-disable extension
+If you've setup your own Cloudflare Workers proxy, set the `GTR Proxy Base URL` to yours.
 
-set calendar/todo app repeat
+### Setup Calendar or To-do
 
-## TODO
+On your planner, remind yourself every 3 months to do this.
 
-* Cleanup Extension
-* Investigate Azure Encryption Key Stuff. Have Azure encrypt at rest with a public key?
-* Document Document Document Refine
+## Every 3 Months
 
-## Social Posts of Interest
+### Backing Up
+
+1. Initiate a [Google Takeout][gtr]. It may take hours or days to complete.
+2. Once complete, visit the Azure Blob container you made in preparation and "Create a SAS Signature" with all the permissions.
+  * ![portal azure com_](https://user-images.githubusercontent.com/5363/163125758-7383aafa-ded8-4592-a753-5e8bb717c1df.png)
+3. `Generate SAS Token and URL` and copy the `Blob SAS URL`. Hint: there's a copy to clipboard button on the right of the field. 
+  * ![portal azure com_ (1)](https://user-images.githubusercontent.com/5363/163125969-1e151b8c-43e7-49e9-87e9-d3d788220d90.png)
+4. Paste that URL into the extension popup.
+5. Enable the extension with the checkmark popup.
+6. Visit Google Takeout and click download on each archive. 
+7. Notifications will come and go as each archive is transloaded into Azure Blob Storage.
+8. Once complete, check Azure to make sure everything has been retrieved.
+9. Disable the extension in the popup as it isnt needed.
+
+
+---
+
+# Social Posts of Interest
 
 ### "Google banned my account!"
 
