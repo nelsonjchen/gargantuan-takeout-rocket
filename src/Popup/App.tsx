@@ -52,7 +52,7 @@ export default function App() {
           style={{ zoom: 3.0 }}
         />
         <br />
-        <label>Azure SAS Container URL:</label>
+        <label>Azure SAS Container URL (Blob SAS URL):</label>
         <br />
         <input
           type="text"
