@@ -46,7 +46,7 @@ This is something that you'll only have to do once.
   * Record the name of your blob container.
 4. Setup Lifecycle Rules as seen in https://www.youtube.com/watch?v=-3k0hhngt7o
   * Archive Tier after 1 day
-  * Delete after 100 days
+  * Delete after 180 days
 
 ### Configure Cloudflare Workers Proxy (Optional)
 
