@@ -2,11 +2,11 @@
 
 *Liftoff from Google Takeout into Azure, **very** fast*
 
-Gargantuan Takeout Rocket (GTR) is a toolkit of guides and software to help you take out your data from Google Takeout and put it somewhere *else* safe easily, periodically, and fast to make it easy to do the right thing of backing up your Google account periodically.
+Gargantuan Takeout Rocket (GTR) is a toolkit of guides and software to help you take out your data from [Google Takeout][takeout] and put it somewhere *else* safe easily, periodically, and fast to make it easy to do the right thing of backing up your Google account periodically.
 
 GTR is not a fully automated solution as that is impossible with Google Takeout's anti-automation measures, but it is an assistive solution. GTR takes a less than an hour to setup and less than 10 minutes every 3 months to use. The cost to backup 1TB on Azure every 3 months is $1 dollar a month. You don't need a fast internet connection on your client to use this tool as all data transfer from Google to the backup destination is handled remotely by servers in data centers. There are no bandwidth charges for the backup process.
 
-The only backup destination available in GTR is Microsoft Azure Blob Storage due to Azure's unique ["API"][pbfu] which allows commanding Azure Blob Storage to download from a remote URL. A Cloudflare Worker proxy is used to work around a [URL escaping bug][azbesc] and [a parallelism limitation][azb11] in the Azure Blob Storage API. Speeds of up to 6GB/s or more from Google Takeout to Azure Blob Storage's Archive Tier can be seen with this setup.
+The only backup destination available in GTR is Microsoft Azure Blob Storage due to Azure's unique [API which allows commanding Azure Blob Storage to download from a remote URL][pbfu]. A Cloudflare Worker proxy is used to work around a [URL escaping bug][azbesc] and [a parallelism limitation][azb11] in the Azure Blob Storage API. Speeds of up to 6GB/s or more from Google Takeout to Azure Blob Storage's Archive Tier can be seen with this setup.
 
 A [browser extension][ext] is provided to intercept downloads from Google Takeout and command Azure to download the file. Behind the scenes, the extension immediately stops and prevents the local download, discovers the direct URL to download the Google Takeout Archive, analyzes the size of the source file remotely to generate a download plan consisting of file chunks of 600MB, specially encodes the URL so Azure is able download from Google via the Cloudflare Worker proxy, and executes the plan by shotgunning all the commands in parallel to Azure through the Cloudflare Worker proxy to transload the file from Google as quickly as possible. 
 
@@ -114,3 +114,4 @@ The general idea of these is to use a single EC2/VPS instance to handle the coor
 [congdon]: https://benjamincongdon.me/blog/2021/05/03/Backing-up-my-Google-Takeout-data/]
 [ext]: https://github.com/nelsonjchen/gtr-ext
 [proxy]: https://github.com/nelsonjchen/gtr-proxy
+[takeout]: https://takeout.google.com
