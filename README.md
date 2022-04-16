@@ -2,6 +2,8 @@
 
 *Liftoff from Google Takeout into Azure, **very** fast*
 
+🏗️: This project is still under construction. 
+
 Gargantuan Takeout Rocket (GTR) is a toolkit of guides and software to help you take out your data from [Google Takeout][takeout] and put it somewhere *else* safe easily, periodically, and fast to make it easy to do the right thing of backing up your Google account periodically.
 
 GTR is not a fully automated solution as that is impossible with Google Takeout's anti-automation measures, but it is an assistive solution. GTR takes a less than an hour to setup and less than 10 minutes every 3 months to use. The cost to backup 1TB on Azure every 3 months is $1 dollar a month. You don't need a fast internet connection on your client to use this tool as all data transfer from Google to the backup destination is handled remotely by servers in data centers. There are no bandwidth charges for the backup process.
