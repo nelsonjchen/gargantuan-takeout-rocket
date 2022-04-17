@@ -3,15 +3,15 @@ export function azBlobSASUrlToProxyPathname(azb_url: URL, base: string): URL {
   const url_parts = azb_url.pathname.split("/");
   const account_name = hostname_parts[0];
   if (!account_name) {
-    throw new Error("invalid azblob url");
+    throw new Error("invalid azblob url (no account name)");
   }
   const container_name = url_parts[1];
   if (!container_name) {
-    throw new Error("invalid azblob url");
+    throw new Error("invalid azblob url (no container name)");
   }
   const blob_name = url_parts.slice(2).join("/");
   if (!blob_name) {
-    throw new Error("invalid azblob url");
+    throw new Error("invalid azblob url (no blob name)");
   }
 
   const query_params = azb_url.searchParams.toString();
@@ -27,15 +27,15 @@ export function proxyPathnameToAzBlobSASUrl(proxy_path: URL): URL {
   const url_parts = proxy_path.pathname.split("/");
   const account_name = url_parts[2];
   if (!account_name) {
-    throw new Error("invalid proxy url");
+    throw new Error("invalid proxy url (no account name)");
   }
   const container_name = url_parts[3];
   if (!container_name) {
-    throw new Error("invalid proxy url");
+    throw new Error("invalid proxy url (no container name)");
   }
   const blob_name = url_parts.slice(4).join("/");
   if (!blob_name) {
-    throw new Error("invalid proxy url");
+    throw new Error("invalid proxy url (no blob name)");
   }
   const query_params = proxy_path.searchParams.toString();
   return new URL(
