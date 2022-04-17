@@ -24,14 +24,17 @@ export default function App() {
       <h1>🚀 Garguantuan Takeout Helper</h1>
       <p>
         Gargantuan Takeout Rocket (GTR) is a toolkit of instructions/guides and
-        software to help you take out your data from Google Takeout and put it
-        somewhere else safe easily, periodically, and fast. For more info and
-        instructions, please see{" "}
+        software to help you take out your data from Google Takeout or similar
+        services and put it into Azure safe easily, periodically, and fast.
+      </p>
+      <p>
+        For the guide, please see{" "}
         <a href="https://github.com/nelsonjchen/gtr" target="_blank">
           https://github.com/nelsonjchen/gtr
         </a>
         .
       </p>
+      <p>This is the extension part of the toolkit.</p>
 
       <form>
         <label htmlFor="enabled">Enable Download Interception:</label>
@@ -51,20 +54,20 @@ export default function App() {
           name="name"
           value={azureSasUrl}
           onChange={(e) => setAzureSasUrl(e.target.value)}
-          style={{ width: "90%" }}
+          style={{ width: "90%", zoom: 1.2 }}
         />
         <br />
         <br />
         <label>
-          GTR Proxy Base URL (optional, defaults to https://gtr-proxy.677472.xyz
-          if not specified) (
+          GTR Proxy Base URL (default: https://gtr-proxy.677472.xyz):
           <a
             href="https://github.com/nelsonjchen/gtr-proxy#readme"
             target="_blank"
           >
-            Why is a GTR proxy needed?
+            <br />
+            Why is a GTR proxy needed? / I'm interested in using my own GTR
+            Proxy.
           </a>
-          ):
         </label>
         <br />
         <input
@@ -72,7 +75,7 @@ export default function App() {
           name="name"
           value={proxyBaseUrl}
           onChange={(e) => setProxyBaseUrl(e.target.value)}
-          style={{ width: "90%" }}
+          style={{ width: "90%", zoom: 1.2 }}
         />
       </form>
       <h2>Downloads</h2>
@@ -80,7 +83,9 @@ export default function App() {
       <ul>
         {Object.entries(downloads).map(([key, value]) => (
           <li key={value.name}>
-            {value.name} - {value.status} - {value.reason}
+            {[value.name, value.status, value.reason]
+              .filter((x) => x !== undefined)
+              .join(" - ")}
           </li>
         ))}
       </ul>
