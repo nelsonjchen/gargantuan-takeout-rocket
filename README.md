@@ -1,10 +1,14 @@
 # Gargantuan Takeout Rocket Extension
 
-🏗️ This is still WIP and under test and heavy development. I'm not great at writing extensions. Definitely not ready for prime-time. Very POC! Not everything described is working yet or shareable. It also blocks all downloads and is at the moment completely unsuitable for public use.
-
 [Gargantuan Takeout Rocket (GTR)][gtr] is a toolkit to backup Google Takeout Data to Azure, quick.
 
 Please read the readme at the main repository of [Gargantuan Takeout Rocket (GTR)][gtr] first to get a sense of the whole toolkit and what it is for. This extension is one component of the toolkit.
+
+## Installation
+
+1. Download a release in `.crx` format from the Releases section in GitHub
+2. Enable Developer Mode in Chrome's Extensions page.
+3. Drag and drop the `.crx` file into the Extensions page.
 
 ## Usage
 
@@ -12,7 +16,7 @@ This is the Chromium-based browser extension component of [Gargantuan Takeout Ro
 
 The extension facilitates a server-to-server from Google Takeout to Microsoft Azure Blob Storage. Speeds of 7.0GB/s+ with unlimited parallelism atop of that too have been seen. Azure Blob Storage Archive tier is really cheap to store this data in with pricing very similar to AWS Deep Archive.
 
-The extension works with [gtr-proxy][gtr-proxy], a CloudFlare workers service, to workaround a bug and a lack of a certain feature in Azure Storage that greatly slows downloading from Google Takeout from Azure Storage. Please see the gtr-proxy repo for more details. The extension by default uses a public gtr-proxy service at https://gtr-proxy.677472.xyz, but you can also deploy and use your own service at your own address or Cloudflare account for privacy reasons. For details on setup of a private instance, please see [that repository][gtr-proxy] as well.
+The extension works with [gtr-proxy][gtr-proxy], a CloudFlare workers service, to workaround a bug and a lack of a certain feature in Azure Storage that greatly slows downloading from Google Takeout from Azure Storage. Please see the gtr-proxy repo for more details. The extension by default uses a public gtr-proxy service at https://gtr-proxy.677472.xyz, but you can also deploy and use your own service at your own address or Cloudflare account for privacy reasons. For details on setup of a private instance, please see [the gtr-proxy repository][gtr-proxy] as well.
 
 The extension stops downloads from Google Takeout in your local browser, captures the finalized download links, and tells Azure to download from Google's signed URLs instead via the proxy. It handles base64 encoding the URLs of Google Takeout files so Azure is able to download them at all via a [gtr-proxy][gtr-proxy] service and that [gtr-proxy][gtr-proxy] service is also used to command Azure over hundreds of requests simutaneously to fetch the files in chunks simultaneously in parallel to _very_ quickly transload archives to Azure.
 
