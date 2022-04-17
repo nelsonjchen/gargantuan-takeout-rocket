@@ -2,7 +2,7 @@
   "scripts": {
     "build": "node esbuild.js",
     "build:watch": "cross-env ESB_WATCH=true node esbuild.js",
-    "pkg": "cd public && zip -9 -r gtr-ext-unpacked.zip .",
+    "pkg": "cd public && zip -9 -r gtr-ext-unpacked.zip . && mv gtr-ext-unpacked.zip ../",
     "test": "jest",
     "test:watch": "jest --watch",
     "fmt": "prettier --write .",
