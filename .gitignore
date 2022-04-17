@@ -7,3 +7,4 @@
 *.log
 /public/build
 .env
+*.zip

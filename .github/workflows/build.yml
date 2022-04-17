@@ -22,3 +22,17 @@ jobs:
 
       - name: Build extension scripts
         run: yarn build
+
+      - name: Package Release Zip
+        run: yarn pkg
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: gtr-ext-unpacked
+          path: gtr-ext-unpacked.zip
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: gtr-ext-unpacked.zip

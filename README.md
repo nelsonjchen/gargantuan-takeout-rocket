@@ -6,9 +6,15 @@ Please read the readme at the main repository of [Gargantuan Takeout Rocket (GTR
 
 ## Installation
 
-1. Download a release in `.crx` format from the Releases section in GitHub
-2. Enable Developer Mode in Chrome's Extensions page.
-3. Drag and drop the `.crx` file into the Extensions page.
+Reference: https://www.youtube.com/watch?v=vW8W19W_X0I
+
+1. Download a release in `.zip` format from the Releases section in GitHub
+2. Extract the archive to a folder on your computer.
+3. Enable Developer Mode in Chrome's Extensions page.
+   1. You can visit this page by entering `chrome://extensions` in the address bar.
+4. Click the "Load unpacked extension..." button and select the folder you just extracted
+5. Enable the extension if it isn't enabled.
+6. Find the Rocket icon in the extension menu and click it for details.
 
 ## Usage
 
