@@ -19,7 +19,7 @@ A public instance of GTR Proxy is provided for evaluation and production use. Ho
 
 If the privacy policy of the public instance of GTR Proxy is a concern for you, you can run your own instance of GTR Proxy on Cloudflare. Instances of GTR Proxy only report information to the owners who are running them on Cloudflare and data from those instances of GTR Proxy are not accessible to me. There is no "phone home" in GTR Proxy self-hosted installations. Instructions to deploy self-hosted installation copies of GTR Proxy can be found in the [GTR Proxy repository][gtr-proxy]. GTR Proxy can only run on Cloudflare Workers and GTR users who wish to run their own self-hosted installations of GTR Proxy should mind Cloudflare's own [Privacy Policy][cfps].
 
-As all transcluded data is stored on Azure Blob Storage, users should refer to Microsoft's [Privacy Statement][msps] for their Privacy Policy and how Microsoft handles that data. Microsoft's policy is between you and Microsoft. I have no involvement in that arrangement.
+As all transcluded data is stored on Azure Blob Storage, users should refer to Microsoft's [Privacy Statement][msps] for their Privacy Policy and how Microsoft handles that data. Microsoft's policy is between you and Microsoft.
 
 [gtr-ext]: https://github.com/nelsonjchen/gtr-ext#readme
 [gtr-proxy]: https://github.com/nelsonjchen/gtr-proxy#readme
