@@ -4,7 +4,7 @@ esbuild
   .build({
     entryPoints: ["./src/background.ts", "./src/popup.tsx"],
     bundle: true,
-    // The app store does not permit minification.
+    // Let's not minify to make the
     minify: false,
     sourcemap: process.env.NODE_ENV !== "production",
     target: ["chrome58", "firefox57"],

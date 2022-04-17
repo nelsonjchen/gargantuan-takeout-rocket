@@ -16,5 +16,9 @@ The extension works with [gtr-proxy][gtr-proxy], a CloudFlare workers service, t
 
 The extension stops downloads from Google Takeout in your local browser, captures the finalized download links, and tells Azure to download from Google's signed URLs instead via the proxy. It handles base64 encoding the URLs of Google Takeout files so Azure is able to download them at all via a [gtr-proxy][gtr-proxy] service and that [gtr-proxy][gtr-proxy] service is also used to command Azure over hundreds of requests simutaneously to fetch the files in chunks simultaneously in parallel to _very_ quickly transload archives to Azure.
 
+## Logo
+
+The logo used in the extension is the Rocket logo of Twemoji.
+
 [gtr]: https://github.com/nelsonjchen/gtr
 [gtr-proxy]: https://github.com/nelsonjchen/gtr-proxy#readme

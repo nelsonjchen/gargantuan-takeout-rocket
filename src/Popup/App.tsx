@@ -24,11 +24,11 @@ export default function App() {
       <h1>🚀 Garguantuan Takeout Helper</h1>
       <p>
         Gargantuan Takeout Rocket (GTR) is a toolkit of instructions/guides and
-        software to help you take out your data from Google Takeout or similar
+        software to help you transload your data from Google Takeout or similar
         services and put it into Azure safe easily, periodically, and fast.
       </p>
       <p>
-        For the guide, please see{" "}
+        For a guide, please see{" "}
         <a href="https://github.com/nelsonjchen/gtr" target="_blank">
           https://github.com/nelsonjchen/gtr
         </a>
