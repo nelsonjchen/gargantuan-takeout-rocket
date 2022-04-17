@@ -1,31 +1,23 @@
 import React, { useEffect, useState } from "react";
-import { State } from "../state";
+import { useChromeStorageLocal } from "use-chrome-storage";
+import { Download } from "../state";
 
 export default function App() {
-  const [state, setState] = useState({
-    enabled: false,
-    proxyUrl: "",
-    azureSasUrl: "",
-    proxyBaseUrl: "",
-    downloads: {}
-  } as State);
-
-  useEffect(() => {
-    chrome.storage.local.get("state", function (result) {
-      setState(result.state);
-      chrome.storage.onChanged.addListener((changes, area) => {
-        if (area === "local" && changes.state?.newValue) {
-          setState(changes.state.newValue);
-        }
-      });
-    });
-  }, []);
-
-  useEffect(() => {
-    chrome.storage.local.set({ state: state }, function () {
-      console.log("State value currently is " + state);
-    });
-  });
+  const [enabled, setEnabled] = useChromeStorageLocal("enabled", false);
+  const [proxyBaseUrl, setProxyBaseUrl] = useChromeStorageLocal(
+    "proxyBaseUrl",
+    "https://gtr-proxy.677472.xyz"
+  );
+  const [azureSasUrl, setAzureSasUrl] = useChromeStorageLocal(
+    "azureSasUrl",
+    ""
+  );
+  const [downloads, setDownloads]: [
+    { [key: string]: Download },
+    (val: { [key: string]: Download }) => any,
+    any,
+    any
+  ] = useChromeStorageLocal("downloads", new Map());
 
   return (
     <div>
@@ -47,8 +39,8 @@ export default function App() {
         <input
           id="enabled"
           type="checkbox"
-          checked={state.enabled}
-          onChange={(e) => setState({ ...state, enabled: e.target.checked })}
+          checked={enabled}
+          onChange={(e) => setEnabled(e.target.checked)}
           style={{ zoom: 3.0 }}
         />
         <br />
@@ -57,13 +49,8 @@ export default function App() {
         <input
           type="text"
           name="name"
-          defaultValue={state.azureSasUrl}
-          onBlur={(e) =>
-            setState({
-              ...state,
-              azureSasUrl: e.target.value
-            })
-          }
+          value={azureSasUrl}
+          onChange={(e) => setAzureSasUrl(e.target.value)}
           style={{ width: "90%" }}
         />
         <br />
@@ -83,29 +70,15 @@ export default function App() {
         <input
           type="text"
           name="name"
-          defaultValue={state.proxyBaseUrl}
-          onBlur={(e) =>
-            setState({
-              ...state,
-              proxyBaseUrl: e.target.value
-            })
-          }
+          value={proxyBaseUrl}
+          onChange={(e) => setProxyBaseUrl(e.target.value)}
           style={{ width: "90%" }}
         />
       </form>
       <h2>Downloads</h2>
-      <button
-        onClick={() =>
-          setState({
-            ...state,
-            downloads: {}
-          })
-        }
-      >
-        Clear
-      </button>
+      <button onClick={() => setDownloads({})}>Clear</button>
       <ul>
-        {Object.entries(state.downloads).map(([key, value]) => (
+        {Object.entries(downloads).map(([key, value]) => (
           <li key={value.name}>
             {value.name} - {value.status} - {value.reason}
           </li>

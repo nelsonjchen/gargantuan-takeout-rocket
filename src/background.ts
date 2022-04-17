@@ -7,21 +7,41 @@
  */
 
 import { sourceToGtrProxySource, transload } from "./transload";
-import { Download, State } from "./state";
+import { Download } from "./state";
 import prettyBytes from "pretty-bytes";
 
 console.log("initialized gtr extension");
 
-function getState(): Promise<State> {
+function getConfig(): Promise<[boolean, string, string]> {
   // Immediately return a promise and start asynchronous work
   return new Promise((resolve, reject) => {
     // Asynchronously fetch all data from storage.sync.
-    chrome.storage.local.get("state", (result) => {
+    chrome.storage.local.get(
+      ["enabled", "azureSasUrl", "proxyBaseUrl"],
+      (result) => {
+        // Pass any observed errors down the promise chain.
+        if (chrome.runtime.lastError) {
+          return reject(chrome.runtime.lastError);
+        }
+        const enabled = result.enabled as boolean;
+        const azureSasUrl = result.azureSasUrl as string;
+        const proxyBaseUrl = result.proxyBaseUrl as string;
+        resolve([enabled, azureSasUrl, proxyBaseUrl]);
+      }
+    );
+  });
+}
+
+function getDownloads(): Promise<{ [key: string]: Download }> {
+  // Immediately return a promise and start asynchronous work
+  return new Promise((resolve, reject) => {
+    // Asynchronously fetch all data from storage.sync.
+    chrome.storage.local.get("downloads", (result) => {
       // Pass any observed errors down the promise chain.
       if (chrome.runtime.lastError) {
         return reject(chrome.runtime.lastError);
       }
-      const state = result.state as State;
+      const state = result.downloads as { [key: string]: Download };
       resolve(state);
     });
   });
@@ -31,8 +51,8 @@ async function captureDownload(
   downloadItem: chrome.downloads.DownloadItem,
   suggestion: Function
 ) {
-  const state = await getState();
-  if (!state.enabled) {
+  const [enabled, azureSasUrl, proxyBaseUrl] = await getConfig();
+  if (!enabled) {
     console.log("Skipping interception of download.");
     return;
   }
@@ -49,7 +69,7 @@ async function captureDownload(
   });
   chrome.downloads.cancel(downloadItem.id);
   console.log("chrome native download cancelled:", downloadItem);
-  const sas = state.azureSasUrl;
+  const sas = azureSasUrl;
   console.log("Azure sas:", sas);
 
   // Add download to pending
@@ -57,15 +77,12 @@ async function captureDownload(
     name: downloadItem.filename,
     status: "pending"
   };
-  const preDownloadsState = await getState();
+  const preDownloadsState = await getDownloads();
   await chrome.storage.local.set({
-    state: (() => {
-      const downloads = { ...preDownloadsState.downloads };
+    downloads: (() => {
+      const downloads = { ...preDownloadsState };
       downloads[pendingDownload.name] = pendingDownload;
-      return {
-        ...preDownloadsState,
-        downloads
-      };
+      return downloads;
     })()
   });
 
@@ -74,10 +91,10 @@ async function captureDownload(
   try {
     const now = new Date();
     download = await transload(
-      sourceToGtrProxySource(downloadItem.finalUrl, state.proxyBaseUrl),
+      sourceToGtrProxySource(downloadItem.finalUrl, proxyBaseUrl),
       sas,
       downloadItem.filename,
-      state.proxyBaseUrl
+      proxyBaseUrl
     );
     const then = new Date();
     const duration = then.getTime() - now.getTime();
@@ -97,15 +114,12 @@ async function captureDownload(
     }
   }
 
-  const updateDownloadsState = await getState();
+  const updateDownloadsState = await getDownloads();
   await chrome.storage.local.set({
-    state: (() => {
-      const downloads = { ...updateDownloadsState.downloads };
-      downloads[download.name] = download;
-      return {
-        ...updateDownloadsState,
-        downloads
-      };
+    downloads: (() => {
+      const downloads = { ...updateDownloadsState };
+      downloads[pendingDownload.name] = download;
+      return downloads;
     })()
   });
   chrome.notifications.clear(`transload-start-${downloadItem.filename}`);

@@ -3518,6 +3518,11 @@ universalify@^0.1.2:
   resolved "https://registry.yarnpkg.com/universalify/-/universalify-0.1.2.tgz#b646f69be3942dabcecc9d6639c80dc105efaa66"
   integrity sha512-rBJeI5CXAlmy1pV+617WB9J63U6XcazHHF2f2dbJix4XzpUF0RS3Zbj0FGIOCAva5P/d/GBOYaACQ1w+0azUkg==
 
+use-chrome-storage@^1.0.6:
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/use-chrome-storage/-/use-chrome-storage-1.0.6.tgz#cc4b2239ad9358da7becd7ef7675405eb1ac0deb"
+  integrity sha512-nOsPhYpqCTSAluXL+mCUsWq1M4g8648EromgGiWGXnoVp1LBkWJZcT8z10y8Axyp0IMYJlXkMd5yrHRxx+RmFg==
+
 uuid@^8.3.2:
   version "8.3.2"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-8.3.2.tgz#80d5b5ced271bb9af6c445f21a1a04c606cefbe2"
