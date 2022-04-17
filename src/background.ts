@@ -118,7 +118,7 @@ async function captureDownload(
   await chrome.storage.local.set({
     downloads: (() => {
       const downloads = { ...updateDownloadsState };
-      downloads[pendingDownload.name] = download;
+      downloads[download.name] = download;
       return downloads;
     })()
   });
