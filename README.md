@@ -14,9 +14,13 @@ Reference: https://www.youtube.com/watch?v=vW8W19W_X0I
    1. You can visit this page by entering `chrome://extensions` in the address bar.
 4. Click the "Load unpacked extension..." button and select the folder you just extracted
 5. Enable the extension if it isn't enabled.
-6. Find the Rocket icon in the extension menu and click it for details.
+6. Find the Rocket icon in the extension menu and click it for the UI.
 
 ## Usage
+
+Please see the main repository for usage instructions
+
+## Architecture
 
 This is the Chromium-based browser extension component of [Gargantuan Takeout Rocket (GTR)][gtr], a Google Takeout helper for people wishing to purely backup their Google Takeout Data to somewhere _else_ durable and cheap. The toolkit and this extension is an assistive tool and not an automated tool as Google Takeout has a lot of anti-automation measures. You must still click through Google Takeout UIs to transload your data.
 
