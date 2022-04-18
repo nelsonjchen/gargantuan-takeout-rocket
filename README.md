@@ -128,6 +128,8 @@ just search twitter for "google takeout".
 
 A future version of GTR may include S3 and S3-compatible APIs as a destination. There may be a possiblity to teach Cloudflare Workers to facilitate this in a highly parallel manner like was done for Azure. Unfortunately, S3 does not have a similar "download from a remote server" API. However, we might be able to teach Cloudflare Workers to use itself to transload.
 
+I'm also **extremely** curious about storing the "hot" data in [Cloudflare R2][r2]. Without ingress or egress feeds, one could transload and stage Takeout archives there and download it for a local backup and have it be compatible/resumeable with their download manager of choice.
+
 In the meantime:
 
 * https://gunargessner.com/takeout
@@ -151,3 +153,4 @@ I used Azure's "Standard_L8s_v2" for my instance and that topped out at about 30
 [proxy]: https://github.com/nelsonjchen/gtr-proxy
 [takeout]: https://takeout.google.com
 [twitter]: https://twitter.com/crazysim
+[r2]: https://blog.cloudflare.com/introducing-r2-object-storage/
