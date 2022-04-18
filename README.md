@@ -32,7 +32,7 @@ GTR is right for you if:
 * You want to quickly transfer out at 6GB/s+, in parallel, outward.
 * You have a slow internet connection.
 * You don't have the space to temporaily store the data.
-* You are ok with or want to spend less than 3 minutes every desired backup interval manually initiating the transloads with clicking.
+* You are OK with or want to spend less than 3 minutes every desired backup interval manually initiating the transloads with clicking.
 
 ## Initial Preparation
 
