@@ -118,17 +118,17 @@ On your planner application of choice, remind yourself every 3 months (or whatev
 * https://news.ycombinator.com/item?id=15989146
 * https://news.ycombinator.com/item?id=28621412
 
-oh there's just so many
+oh there's just so many. too many.
 
 ### Complaints about Takeout being hard to use
 
-just search twitter for "google takeout".
+just search twitter for "google takeout". you'll find users complaining about sizes and archive amounts quite a lot.
 
-### Other people backing up to cloud storage and their setups.
+### Other people backing up to cloud storage and their setups and possible futures.
 
 A future version of GTR may include S3 and S3-compatible APIs as a destination. There may be a possiblity to teach Cloudflare Workers to facilitate this in a highly parallel manner like was done for Azure. Unfortunately, S3 does not have a similar "download from a remote server" API. However, we might be able to teach Cloudflare Workers to use itself to transload.
 
-I'm also **extremely** curious about storing the "hot" data in [Cloudflare R2][r2]. Without ingress or egress feeds, one could transload and stage Takeout archives there and download it for a local backup and have it be compatible/resumeable with their download manager of choice.
+I'm also **extremely** curious about storing the "hot" data in [Cloudflare R2][r2]. Without ingress or egress fees, one could transload and stage Takeout archives there temporaily and download it for a local backup and have it be compatible/resumeable with their download manager of choice.
 
 In the meantime:
 
@@ -140,7 +140,7 @@ In the meantime:
 
 The general idea of these is to use a single EC2/VPS instance to handle the coordination and traffic. Congdon's solution clocked in at about 65MB/s. 
 
-I used Azure's "Standard_L8s_v2" for my instance and that topped out at about 300MB/s when writing to the temporary NVMe storage.
+I used Azure's "Standard_L8s_v2" for my instance and that topped out at about 300MB/s when writing to the temporary local NVMe storage before uploading from that to Azure Storage. 
 
 
 [vps_fxp]: https://sjwheel.net/cloud/computing/2019/08/01/aws_backup.html
