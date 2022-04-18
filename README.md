@@ -88,10 +88,9 @@ On your planner application of choice, remind yourself every 3 months (or whatev
 1. Initiate a [Google Takeout](https://takeout.google.com). It may take hours or day(s) to complete.
    * You may want to try this tool with something small and insubstantial on the first run to give it a try. Smaller takeout jobs take less time to be made available for download.
    * "Production" Takeout jobs are best done with 50GB archives to reduce the number of clicking required. You should use ZIP as the solid archives of TAR aren't useful on already compressed data.
-2. Once complete, visit the Azure Blob container you made in the preparation and "Create a SAS Signature" with all the permissions.
+2. Once complete, visit the Azure Blob container you made in the preparation and "Create a SAS Signature" with all the permissions (Read, Add, Write, Create, and Delete).
    * ![portal azure com_](https://user-images.githubusercontent.com/5363/163125758-7383aafa-ded8-4592-a753-5e8bb717c1df.png)
-3. `Generate SAS Token and URL` and copy the `Blob SAS URL`.  Make sure to give it Read, Add, Write, Create, and Delete permissions.
-   * <img width="293" alt="image" src="https://user-images.githubusercontent.com/5363/163747428-84e6a9ad-2f52-4e05-ae43-73e053a09b69.png">
+3. `Generate SAS Token and URL` and copy the `Blob SAS URL`.  
    * ![portal azure com_ (1)](https://user-images.githubusercontent.com/5363/163125969-1e151b8c-43e7-49e9-87e9-d3d788220d90.png)
    * Hint: there's a copy to clipboard button on the right edge of the field.
 4. Paste the Blob SAS URL into the extension popup at the correct field.
@@ -100,8 +99,9 @@ On your planner application of choice, remind yourself every 3 months (or whatev
    * <img width="506" alt="image" src="https://user-images.githubusercontent.com/5363/163747584-850dd276-47e9-4dff-b5cf-20b61b948c58.png">
 6. Visit Google Takeout and click download on each archive. Watch for failures. If there are no failures, you are only bound by your APM. Click away!
 7. Notifications will come and go as each archive is transloaded into Azure Blob Storage.
-8. Once complete, check Azure to make sure everything has been retrieved.
-9. Disable the extension in the popup as it isnt needed.
+8. Once complete, check Azure to make sure everything has been retrieved and is available in the container.
+   * Beware of downloading the archives to your local machine as Azure charges about $4.50 per 50GB download. Just check that they are there. If you wish to check the contents, you should spin up a virtual machine in Azure and download the data to that instance for inspection. That is beyond the scope of this guide.
+10. Disable the extension in the popup as it isnt needed.
    * <img width="509" alt="image" src="https://user-images.githubusercontent.com/5363/163747622-4abef856-ac3b-4304-a6c2-2fccad9a41f9.png">
 
 ---
