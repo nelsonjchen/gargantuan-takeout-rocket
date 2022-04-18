@@ -2,17 +2,15 @@
 
 *Liftoff from Google Takeout into Azure, repeatedly, **very** fast*
 
-🏗️: This project is still under construction. 
+Gargantuan Takeout Rocket (GTR) is a toolkit of guides and software to help you take out your data from [Google Takeout][takeout] and put it somewhere *else* safe easily, periodically, and fast to make it easy to do the right thing of backing up your Google account and related services such as your YouTube account periodically.
 
-Gargantuan Takeout Rocket (GTR) is a toolkit of guides and software to help you take out your data from [Google Takeout][takeout] and put it somewhere *else* safe easily, periodically, and fast to make it easy to do the right thing of backing up your Google account periodically.
-
-GTR is not a fully automated solution as that is impossible with Google Takeout's anti-automation measures, but it is an assistive solution. GTR takes a less than an hour to setup and less than 10 minutes every 3 months (or whatever interval you want) to use. The cost to backup 1TB on Azure every month is $1 dollar a month as long as your store the each archive for 6 months at a minimum. You don't need a fast internet connection on your client to use this tool as all data transfer from Google to the backup destination is handled remotely by servers in data centers. There are no bandwidth charges for the backup process.
+GTR is not a fully automated solution as that is impossible with Google Takeout's anti-automation measures, but GTR is an assistive solution. GTR takes a less than an hour to setup and less than 10 minutes every 3 months (or whatever interval you want) to use. The cost to backup 1TB on Azure every month is $1 dollar a month as long as your store each backup archive for 6 months at a minimum. You don't need a fast internet connection on your client to use this tool as all data transfer from Google to the backup destination is handled remotely by many servers in data centers. There are no bandwidth charges for the backup process. All resources used are serverless.
 
 The only backup destination currently available in GTR is Microsoft Azure Blob Storage due to Azure's unique [API which allows commanding Azure Blob Storage to download from a remote URL][pbfu]. A Cloudflare Worker proxy is used to work around a [URL escaping bug][azbesc] and [a parallelism limitation][azb11] in the Azure Blob Storage API. Speeds of up to 6GB/s or more from Google Takeout to Azure Blob Storage's Archive Tier can be seen with this setup.
 
 A [browser extension][ext] is provided to intercept downloads from Google Takeout and command Azure to download the file. Behind the scenes, the extension immediately stops and prevents the local download, discovers the direct URL to download the Google Takeout Archive, analyzes the size of the source file remotely to generate a download plan consisting of file chunks of 600MB, specially encodes the URL so Azure is able download from Google via the Cloudflare Worker proxy, and executes the download plan by shotgunning all the download commands in parallel to Azure through the Cloudflare Worker proxy to transload the file from Google as quickly as possible. 
 
-A public instance of the Cloudflare worker proxy is provided but users can run their own [Cloudflare worker proxy][proxy] if desired and target their own proxy in the extension instead of the public one for privacy reasons. For most users who are looking to run their own Cloudflare workers proxy instead of using the public Cloudflare workers proxy, the free tier of Cloudflare workers should suffice.
+A public instance of the Cloudflare worker proxy is provided for convenience but users can setup and run their own [Cloudflare worker proxy][proxy] if desired and target their own proxy in the extension instead of the public one for privacy reasons. For most users who are looking to run their own Cloudflare workers proxy instead of using the public Cloudflare workers proxy, the free tier of Cloudflare workers should suffice.
 
 The original author of GTR's Google account is about 1.25TB in size (80% Youtube Videos, 20% other, Google Photos ~200GB). Pre-GTR, the backup procedure would have taken at least 3 hours even with a [VPS Setup][vps_fxp] facilitating the transfer from Google Takeout as even large instances on the cloud with large disks, much memory, and many CPUs would eventually choke with too many files being downloaded in parallel. The highest speed seen was about 300MB/s. It was also exhaustively high-touch and toilsome, requiring many clicks, reauthorizations, and setup of the workspace. By delegating the task of downloading to Azure with assists from CloudFlare workers and the browser extension that makes up GTR, the original author is able to transfer the 1.25TB of 50GB Google Takeout files to Azure Storage in 3 minutes at anytime with little to no setup.
 
@@ -30,13 +28,13 @@ GTR is right for you if:
 * You want to quickly transfer out at 6GB/s+, in parallel, outward.
 * You have a slow internet connection.
 * You don't have the space to temporaily store the data.
-* You are ok or want to spend less than 3 minutes every backup interval manually initiating the transloads.
+* You are ok with or want to spend less than 3 minutes every desired backup interval manually initiating the transloads with clicking.
 
 ## Initial Preparation
 
-👷 Guide under construction.
-
 This guide is a continual work in progress. PRs are very much welcome!
+
+If you need some help or questions or whatever, feel free to hit me up over [Twitter][twitter] or make an issue.
 
 ### Setup Azure
 
@@ -51,48 +49,60 @@ This is something that you'll only have to do once.
 4. Setup Lifecycle Rules as seen in https://www.youtube.com/watch?v=-3k0hhngt7o
   * Archive Tier after 1 day
   * Delete after 180 days
-    * 
+    * Early deletion of archives incures a fee equal to as if you've stored the archive for the rest of 180 day minimum.
 
-You can adjust 
+You can adjust the numbers and redundancies as needed or desired.
 
 ### Setup or configure own Cloudflare Workers Proxy (Optional)
 
 See [proxy setup readme][proxy] for details. You may want to setup your own proxy for privacy reasons. The Cloudflare Worker is serverless and there are no fees or usage accrued while it is idle. 
 
+If you decided to use the public proxy, please see the [privacy policy](./PRIVACY_POLICY.md). 
+
 ### Install Extension
 
-Install [extension][ext]. At the moment, it is not published in the web store and it might never be. Look at the purpose of this repository and guess why from this diagram below:
+Install the [extension][ext_install] in a Chromium-derived browser such as Google Chrome, Edge, Opera, Brave, and etc. At the moment, the extension is not published in the web store and it might never be. Look at the purpose of this repository and guess why from this diagram below:
 
 ![Ban?](https://user-images.githubusercontent.com/5363/163745558-da7f0626-f895-46ea-9b7d-14e527a1c24b.png)
 
-I have no intention of risking my Google account to publish the extension.
+I have no intention of risking my Google account to publish the extension. I assure you it's not malware but I can't say a Google robot might think differently. I'm not eager to be testing the worst case scenario; I'm just interested in preparing for it.
 
-The extension has a rocket icon. 🚀
+The extension has a rocket icon. 🚀. If you don't see it, click on the puzzle icon and click the rocket icon.
 
-The extension UI can be seen by clicking on the rocket icon.
+<img width="116" alt="Screen Shot 2022-04-17 at 7 53 09 PM" src="https://user-images.githubusercontent.com/5363/163747035-b79b8781-28b3-4a54-b711-80ef88be15ef.png">
 
-If you've setup your own Cloudflare Workers proxy, set the `GTR Proxy Base URL` to yours.
+The extension UI can be seen by clicking on the rocket icon. This may or may not be the current UI but it should be something like this
+
+<img width="520" alt="image" src="https://user-images.githubusercontent.com/5363/163747077-3cf27e72-78f5-40da-8712-1bb2459617a3.png">
+
+If you've setup your own Cloudflare Workers proxy, set the `GTR Proxy Base URL` to yours. The default URL in the field is the public instance.
 
 ### Setup Calendar or To-do app
 
-On your planner, remind yourself every 3 months (or whatever interval you want) to do this.
+On your planner application of choice, remind yourself every 3 months (or whatever interval you want) to perform a backup using this. I have Todoist setup to remind me every 3 months. 
 
-## Every 3 Months (or whatever interval you want)
+## First Time and Every 3 Months (or whatever interval you want)
 
 ### Backing Up
 
 1. Initiate a [Google Takeout](https://takeout.google.com). It may take hours or day(s) to complete.
-2. Once complete, visit the Azure Blob container you made in preparation and "Create a SAS Signature" with all the permissions.
-  * ![portal azure com_](https://user-images.githubusercontent.com/5363/163125758-7383aafa-ded8-4592-a753-5e8bb717c1df.png)
-3. `Generate SAS Token and URL` and copy the `Blob SAS URL`. Hint: there's a copy to clipboard button on the right of the field. 
-  * ![portal azure com_ (1)](https://user-images.githubusercontent.com/5363/163125969-1e151b8c-43e7-49e9-87e9-d3d788220d90.png)
+   * You may want to try this tool with something small and insubstantial on the first run to give it a try. Smaller takeout jobs take less time to be made available for download.
+   * "Production" Takeout jobs are best done with 50GB archives to reduce the number of clicking required. You should use ZIP as the solid archives of TAR aren't useful on already compressed data.
+2. Once complete, visit the Azure Blob container you made in the preparation and "Create a SAS Signature" with all the permissions.
+   * ![portal azure com_](https://user-images.githubusercontent.com/5363/163125758-7383aafa-ded8-4592-a753-5e8bb717c1df.png)
+3. `Generate SAS Token and URL` and copy the `Blob SAS URL`.  Make sure to give it Read, Add, Write, Create, and Delete permissions.
+   * <img width="293" alt="image" src="https://user-images.githubusercontent.com/5363/163747428-84e6a9ad-2f52-4e05-ae43-73e053a09b69.png">
+   * ![portal azure com_ (1)](https://user-images.githubusercontent.com/5363/163125969-1e151b8c-43e7-49e9-87e9-d3d788220d90.png)
+   * Hint: there's a copy to clipboard button on the right edge of the field.
 4. Paste the Blob SAS URL into the extension popup at the correct field.
+   * <img width="511" alt="image" src="https://user-images.githubusercontent.com/5363/163747552-22b51c99-553f-4aec-970c-a69cce4b940e.png">
 5. Enable the extension to intercept downloads with the checkmark popup.
-6. Visit Google Takeout and click download on each archive. 
+   * <img width="506" alt="image" src="https://user-images.githubusercontent.com/5363/163747584-850dd276-47e9-4dff-b5cf-20b61b948c58.png">
+6. Visit Google Takeout and click download on each archive. Watch for failures. If there are no failures, you are only bound by your APM. Click away!
 7. Notifications will come and go as each archive is transloaded into Azure Blob Storage.
 8. Once complete, check Azure to make sure everything has been retrieved.
 9. Disable the extension in the popup as it isnt needed.
-
+   * <img width="509" alt="image" src="https://user-images.githubusercontent.com/5363/163747622-4abef856-ac3b-4304-a6c2-2fccad9a41f9.png">
 
 ---
 
@@ -126,5 +136,7 @@ The general idea of these is to use a single EC2/VPS instance to handle the coor
 [azbesc]: https://docs.microsoft.com/en-us/answers/questions/641723/i-can39t-get-azure-storage-to-support-putting-data.html
 [congdon]: https://benjamincongdon.me/blog/2021/05/03/Backing-up-my-Google-Takeout-data/]
 [ext]: https://github.com/nelsonjchen/gtr-ext
+[ext_install]: https://github.com/nelsonjchen/gtr-ext#installation
 [proxy]: https://github.com/nelsonjchen/gtr-proxy
 [takeout]: https://takeout.google.com
+[twitter]: https://twitter.com/crazysim
