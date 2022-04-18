@@ -1,6 +1,6 @@
 # 🚀 Gargantuan Takeout Rocket
 
-*Liftoff from Google Takeout into Azure, repeatedly, **very** fast*
+*Liftoff from Google Takeout into Azure, repeatedly, **very** fast, like 6GB/s+ fast*
 
 Gargantuan Takeout Rocket (GTR) is a toolkit of guides and software to help you take out your data from [Google Takeout][takeout] and put it somewhere *else* safe easily, periodically, and fast to make it easy to do the right thing of backing up your Google account and related services such as your YouTube account periodically.
 
