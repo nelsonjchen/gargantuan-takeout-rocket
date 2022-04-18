@@ -46,14 +46,14 @@ This is something that you'll only have to do once.
 
 1. You need a Microsoft Azure Account. Make one and put some payment information in.
 2. Setup a Storage Account. Here's a decent video on how to do so: https://www.youtube.com/watch?v=jeFb_scHuZQ
-  * Region: Look at cheapest for Archive, then preferred location at https://azure.microsoft.com/en-us/pricing/details/storage/blobs/. The par is $0.00099 per GB.
-  * Replication: LRS ([Store backups in only one physical location in a location](https://docs.microsoft.com/en-us/azure/storage/common/storage-redundancy#locally-redundant-storage))
+   * Region: Look at cheapest for Archive, then preferred location at https://azure.microsoft.com/en-us/pricing/details/storage/blobs/. The par is $0.00099 per GB.
+   * Replication: LRS ([Store backups in only one physical location in a location](https://docs.microsoft.com/en-us/azure/storage/common/storage-redundancy#locally-redundant-storage))
 3. Create a blob container as seen in https://www.youtube.com/watch?v=jeFb_scHuZQ
-  * Record the name of your blob container.
+   * Record the name of your blob container.
 4. Setup Lifecycle Rules as seen in https://www.youtube.com/watch?v=-3k0hhngt7o
-  * Archive Tier after 1 day
-  * Delete after 180 days
-    * Early deletion of archives incures a fee equal to as if you've stored the archive for the rest of 180 day minimum.
+   * Archive Tier after 1 day
+   * Delete after 180 days
+     * Early deletion of archives incures a fee equal to as if you've stored the archive for the rest of the 180 day minimum.
 
 You can adjust the numbers and redundancies as needed or desired.
 
