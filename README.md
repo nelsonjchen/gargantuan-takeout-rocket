@@ -17,6 +17,7 @@ The original author of GTR's Google account is about 1.25TB in size (80% Youtube
 GTR is right for you if:
 
 * You think you have a lot of data on Google Takeout and Google Takeout-compatible properties such as YouTube.
+* You fear Google banning your account for "reasons" with an emphasis on the quote part.
 * You generally intend to continue to use Google services and this is not a one-time export.
 * You want to have access to your data in case something bad happens to your Google account such as an errant automated ban.
 * You want to backup your account to somewhere that else isn't Google and are OK with Microsoft.
