@@ -112,13 +112,18 @@ On your planner application of choice, remind yourself every 3 months (or whatev
 ### "Google banned my account!"
 
 * https://news.ycombinator.com/item?id=24965432
+* https://news.ycombinator.com/item?id=15989146
+* https://news.ycombinator.com/item?id=28621412
+
+oh there's just so many
 
 ### Complaints about Takeout being hard to use
 
-just search twitter
+just search twitter for "google takeout".
+
 ### Other people backing up to cloud storage and their setups.
 
-A future version of GTR may include S3 and S3-compatible APIs as a destination. There may be a possiblity to teach Cloudflare Workers to facilitate this in a highly parallel manner.
+A future version of GTR may include S3 and S3-compatible APIs as a destination. There may be a possiblity to teach Cloudflare Workers to facilitate this in a highly parallel manner like was done for Azure. Unfortunately, S3 does not have a similar "download from a remote server" API. However, we might be able to teach Cloudflare Workers to use itself to transload.
 
 In the meantime:
 
@@ -128,7 +133,9 @@ In the meantime:
 
 * https://benjamincongdon.me/blog/2021/05/03/Backing-up-my-Google-Takeout-data/
 
-The general idea of these is to use a single EC2/VPS instance to handle the coordination and traffic. Congdon's solution clocked in at about 65MB/s.
+The general idea of these is to use a single EC2/VPS instance to handle the coordination and traffic. Congdon's solution clocked in at about 65MB/s. 
+
+I used Azure's "Standard_L8s_v2" for my instance and that topped out at about 300MB/s when writing to the temporary NVMe storage.
 
 
 [vps_fxp]: https://sjwheel.net/cloud/computing/2019/08/01/aws_backup.html
