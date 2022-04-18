@@ -57,7 +57,7 @@ You can adjust the numbers and redundancies as needed or desired.
 
 See [GTR proxy readme][proxy] for details on setting one up yourself. You may want to setup your own proxy for privacy reasons. The Cloudflare Worker is serverless and there are no fees or usage accrued while it is idle. There are also no charges for incoming and outgoing bandwidth and for most people, their usage of their own proxy should fall under Cloudflare's free tier.
 
-If you decided to use the public proxy, please see the [privacy policy on it](./PRIVACY_POLICY.md). 
+If you decided to use the public GTR proxy, please see the [privacy policy on it](./PRIVACY_POLICY.md). 
 
 ### Install Extension
 
