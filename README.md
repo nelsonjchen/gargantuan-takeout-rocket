@@ -118,7 +118,7 @@ On your planner application of choice, remind yourself every 3 months (or whatev
 * https://news.ycombinator.com/item?id=15989146
 * https://news.ycombinator.com/item?id=28621412
 
-oh there's just so many. too many.
+and there's many more. oh there's just so many. too many.
 
 ### Complaints about Takeout being hard to use
 
