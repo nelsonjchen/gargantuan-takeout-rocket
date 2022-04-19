@@ -18,7 +18,7 @@ Reference: https://www.youtube.com/watch?v=vW8W19W_X0I
 
 ## Usage
 
-Please see the main repository for usage instructions
+Please see the [main repository][gtr] for usage instructions
 
 ## Architecture
 
