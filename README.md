@@ -8,7 +8,7 @@ Please read the readme at the main repository of [Gargantuan Takeout Rocket (GTR
 
 Reference: https://www.youtube.com/watch?v=vW8W19W_X0I
 
-1. Download a release in `.zip` format from the Releases section in GitHub
+1. Download a "unpacked" release in `.zip` format from the [Releases](https://github.com/nelsonjchen/gtr-ext/releases) section in GitHub
 2. Extract the archive to a folder on your computer.
 3. Enable Developer Mode in Chrome's Extensions page.
    1. You can visit this page by entering `chrome://extensions` in the address bar.
