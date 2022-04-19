@@ -1,6 +1,6 @@
 # 🚀 Gargantuan Takeout Rocket
 
-*Liftoff from Google Takeout into Azure, repeatedly, **very** fast, like 6GB/s+ fast*
+*Liftoff from Google Takeout into Azure Storage, repeatedly, **very** fast, like 6GB/s+ or 3 minutes total fast*
 
 * Setup Time: < 1hr
 * Every x month(s): 3 minutes.
