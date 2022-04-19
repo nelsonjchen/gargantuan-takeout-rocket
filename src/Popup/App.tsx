@@ -21,7 +21,7 @@ export default function App() {
 
   return (
     <div>
-      <h1>🚀 Garguantuan Takeout Helper</h1>
+      <h1>🚀 Gargantuan Takeout Helper</h1>
       <p>
         Gargantuan Takeout Rocket (GTR) is a toolkit of instructions/guides and
         software to help you transload your data from Google Takeout or similar
