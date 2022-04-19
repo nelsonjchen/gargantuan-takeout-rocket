@@ -142,7 +142,11 @@ In the meantime:
 
 The general idea of these is to use a single EC2/VPS instance to handle the coordination and traffic. Congdon's solution clocked in at about 65MB/s. 
 
-I used Azure's "Standard_L8s_v2" for my instance and that topped out at about 300MB/s when writing to the temporary local NVMe storage before uploading from that to Azure Storage. The CPU was pegged pretty hard during my transfer so this kind of makes me think how much CPU time I'm using to do many GB/s of transfer. Probably a lot. And I'm not really paying for the CPU to do TLS. Great!
+I used Azure's "Standard_L8s_v2" for my instance and that topped out at about 300MB/s when writing to the temporary local NVMe storage before uploading from that to Azure Storage. The CPU was pegged pretty hard during my transfer so this kind of makes me think how much CPU time I'm using to do many GB/s of transfer. Probably a lot. And I'm not really paying for the CPU to do TLS as the cloud vendors are paying. Great!
+
+# The Name
+
+I got inspired watching SpaceX launch rockets with a pile of Merlin engines. Starship is definitely a BFR! The fact it launched with "off the shelf" rockets combined in parallel to launch such huge amounts was definitely inspirational somewhat to the architecture. Hence, GTR.
 
 
 [vps_fxp]: https://sjwheel.net/cloud/computing/2019/08/01/aws_backup.html
