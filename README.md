@@ -40,6 +40,8 @@ This guide is a continual work in progress. PRs are very much welcome!
 
 If you need some help or questions or whatever, feel free to hit me up over [Twitter][twitter] or make an issue.
 
+Let me know if the guide works for you as well!
+
 ### Setup Azure
 
 This is something that you'll only have to do once.
@@ -110,7 +112,7 @@ On your planner application of choice, remind yourself every 3 months (or whatev
 
 ---
 
-# Social Posts of Interest
+## Social Posts of Interest
 
 ### "Google banned my account!"
 
@@ -144,7 +146,26 @@ The general idea of these is to use a single EC2/VPS instance to handle the coor
 
 I used Azure's "Standard_L8s_v2" for my instance and that topped out at about 300MB/s when writing to the temporary local NVMe storage before uploading from that to Azure Storage. The CPU was pegged pretty hard during my transfer so this kind of makes me think how much CPU time I'm using to do many GB/s of transfer. Probably a lot. And I'm not really paying for the CPU to do TLS as the cloud vendors are paying. Great!
 
-# The Name
+## Other targets to try
+
+Haven't tried, not sure. Might be something to try. YMMV, stuff may break. 
+
+In general, the high parallelism and concurrency that GTR relies on is a product of Google Takeout ultimately serving takeout archives with signed URLs to Google Cloud Storage, their S3-like object storage offering. Google Cloud Storage is *very* robust, *very* available, and *very* scalable. If you try the interceptor with something else, the intercepted URL needs to have no limit on parallelism and concurrency and not use cookies to validate access.
+
+Services to try:
+
+* thefacebook.com
+  * Haven't tried. Doubt GTR's current audience cares. But they have a Takeout too. Fun fact, their "takeout" natively supports Backblaze B2 as a target! Very much "they warned me Satan would be attractive" indeed!
+  * Not sure if object storage based or has limits on concurrency and parallelism or if it uses cookies or not.
+* Atlassian Cloud JIRA/Confluence's Backup for Cloud
+  * https://newsletter.pragmaticengineer.com/p/scoop-atlassian?s=r 
+  * Not sure if object storage based. Probably wasn't earlier when it was "Atlassian OnDemand", but probably is now.  
+  * Pretty sure it does not use cookies to validate access.
+  * Haven't tried. 
+
+Let me know if you try something and it works. Don't bother trying it on traditional server hosted Linux ISO mirrors though. They tend to limit concurrency and aren't object storage based.
+
+## The Name
 
 I got inspired watching SpaceX launch rockets with a pile of Merlin engines. Starship is definitely a BFR! The fact it launched with "off the shelf" rockets combined in parallel to launch such huge amounts was definitely inspirational somewhat to the architecture. Hence, GTR.
 
