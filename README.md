@@ -159,6 +159,7 @@ Services to try:
   * Not sure if object storage based or has limits on concurrency and parallelism or if it uses cookies or not.
 * Atlassian Cloud JIRA/Confluence's Backup for Cloud
   * [Atlassian had a massive outage around April 2022 when they permanently deleted customer systems **and their backups**.](https://newsletter.pragmaticengineer.com/p/scoop-atlassian?s=r)
+  * If you paid attention to how Atlassian hosted their cloud offerings, you got the impression it was still very pet-like for every customer with customer support being able to login to each tenant's box even if it was camouflaged.
   * At a previous job, I had a reminder every month to backup our Atlassian Cloud JIRA and Confluence instance. The recent news about the major Atlassian outages vindicates my diligence. The procedure was not unlike Google Takeout with having to start a "Backup for Cloud" and then downloading an archive of all the data. It wasn't 1.25TB like my Google Takeout, but it was hoving around ~30GB for JIRA and ~30GB for Confluence. Of course, your organization's backup size may vary but in general the files are somewhat large. It would then be a task in itself to re-upload these files to durable storage. 
   * Not sure if object storage based. Probably wasn't earlier when it was "Atlassian OnDemand", but probably is now. It might have been hosted on S3.
   * Pretty sure it does not use cookies to validate access.
