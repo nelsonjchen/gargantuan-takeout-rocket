@@ -158,9 +158,11 @@ Services to try:
   * Haven't tried. Doubt GTR's current audience cares. But they have a Takeout too. Fun fact, their "takeout" natively supports Backblaze B2 as a target! Very much "they warned me Satan would be attractive" indeed!
   * Not sure if object storage based or has limits on concurrency and parallelism or if it uses cookies or not.
 * Atlassian Cloud JIRA/Confluence's Backup for Cloud
-  * https://newsletter.pragmaticengineer.com/p/scoop-atlassian?s=r 
-  * Not sure if object storage based. Probably wasn't earlier when it was "Atlassian OnDemand", but probably is now.  
+  * [Atlassian had a massive outage around April 2022 when they permanently deleted customer systems **and their backups**.](https://newsletter.pragmaticengineer.com/p/scoop-atlassian?s=r)
+  * At a previous job, I had a reminder every month to backup our Atlassian Cloud JIRA and Confluence instance. The recent news about the major Atlassian outages vindicates my diligence. The procedure was not unlike Google Takeout with having to start a "Backup for Cloud" and then downloading an archive of all the data. It wasn't 1.25TB like my Google Takeout, but it was hoving around ~30GB for JIRA and ~30GB for Confluence. Of course, your organization's backup size may vary but in general the files are somewhat large. It would then be a task in itself to re-upload these files to durable storage. 
+  * Not sure if object storage based. Probably wasn't earlier when it was "Atlassian OnDemand", but probably is now. It might have been hosted on S3.
   * Pretty sure it does not use cookies to validate access.
+  * Could be signed AWS S3 URLs.
   * Haven't tried. 
 
 Let me know if you try something and it works. Don't bother trying it on traditional server hosted Linux ISO mirrors though. They tend to limit concurrency and aren't object storage based.
