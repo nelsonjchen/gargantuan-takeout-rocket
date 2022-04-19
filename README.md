@@ -154,7 +154,7 @@ In general, the high parallelism and concurrency that GTR relies on is a product
 
 Services to try:
 
-* thefacebook.com
+* ~thefacebook.com~
   * Haven't tried. Doubt GTR's current audience cares. But they have a Takeout too. Fun fact, their "takeout" natively supports Backblaze B2 as a target! Very much "they warned me Satan would be attractive" indeed!
   * Not sure if object storage based or has limits on concurrency and parallelism.
   * Uses cookies. Would need a Cloudflare proxy to allow cookies to be transported over the URL.
