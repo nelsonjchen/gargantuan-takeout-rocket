@@ -156,7 +156,8 @@ Services to try:
 
 * thefacebook.com
   * Haven't tried. Doubt GTR's current audience cares. But they have a Takeout too. Fun fact, their "takeout" natively supports Backblaze B2 as a target! Very much "they warned me Satan would be attractive" indeed!
-  * Not sure if object storage based or has limits on concurrency and parallelism or if it uses cookies or not.
+  * Not sure if object storage based or has limits on concurrency and parallelism.
+  * Uses cookies. Would need a Cloudflare proxy to allow cookies to be transported over the URL.
 * Atlassian Cloud JIRA/Confluence's Backup for Cloud
   * [Atlassian had a massive outage around April 2022 when they permanently deleted customer systems **and their backups**.](https://newsletter.pragmaticengineer.com/p/scoop-atlassian?s=r)
   * If you paid attention to how Atlassian hosted their cloud offerings, you got the impression it was still very pet-like for every customer with customer support being able to login to each tenant's box even if it was camouflaged.
