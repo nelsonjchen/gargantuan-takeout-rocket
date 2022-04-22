@@ -37,8 +37,8 @@ export async function createJobPlan(source: string): Promise<JobPlan> {
   }
   console.log(`Got length bytes: ${length}`);
 
-  // Divide into 100MB chunks
-  const chunkSize = 300 * 1024 * 1024;
+  // Divide into 1000MB chunks
+  const chunkSize = 1000 * 1024 * 1024;
   const numChunks = Math.floor(length / chunkSize);
   console.log(`Will divide into ${numChunks} chunks`);
   let chunks = [];
