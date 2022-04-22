@@ -2,6 +2,8 @@
 
 *Liftoff from Google Takeout into Azure Storage, repeatedly, **very** fast, like 1GB/s+ or 10 minutes total per takeout fast*
 
+<img width="553" alt="Screen Shot 2022-04-22 at 12 26 14 PM" src="https://user-images.githubusercontent.com/5363/164781196-01e1f0d7-6aa3-4b89-a161-8c983663297c.png">
+
 * Setup Time: < 1hr
 * Every x month(s): 10 minutes.
 
