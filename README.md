@@ -114,6 +114,27 @@ On your planner application of choice, remind yourself every 2 months (or whatev
 
 ---
 
+## Restoration
+
+1. [Rehydrate the Archived Blob by copying it.](https://docs.microsoft.com/en-us/azure/storage/blobs/archive-rehydrate-overview#copy-an-archived-blob-to-an-online-tier)
+2. Download the blobs.
+
+Restoration and download is fairly expensive. This is the tradeoff for the speed and durability. It's worth it for me, for what it is worth.
+
+1. Copying from Archive to a non-Archive tier blob may take hours before you see a single byte as Azure does whatever it is doing to get the data out of their storage system. 
+2. The cost to download the data off of Azure is very expensive.
+
+Let's consider a 1TB restore:
+
+Costs: 
+
+* $0.02 per GB to re-hydrate and retrieve the data
+* $0.0875 per GB to transfer the data from Azure to another system outside of azure.
+
+For 1TB, this will cost about $100.88 (rounded up). Small price for salvation. 
+
+---
+
 ## Social Posts of Interest
 
 ### "Google banned my account!"
