@@ -87,7 +87,7 @@ If you've setup your own Cloudflare Workers proxy, set the `GTR Proxy Base URL` 
 
 ### Setup Calendar or To-do app
 
-On your planner application of choice, remind yourself every 3 months (or whatever interval you want) to perform a backup using this. I have Todoist setup to remind me every 3 months. 
+On your planner application of choice, remind yourself every 2 months (or whatever interval you want) to perform a backup using this. I have Todoist setup to remind me every 2 months. 
 
 ## First Time and Every 2 Months (or whatever interval you want)
 
