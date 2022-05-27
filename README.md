@@ -4,8 +4,8 @@ This is the Cloudflare Workers proxy component of [Gargantuan Takeout Rocket (GT
 
 This proxy is required as:
 
-- [Microsoft's Azure Storage is unable to download from download URLs used in Google Takeout directly due to an URL Escaping issue of Google's URLs][msqa].
-- To transfer fast, we tell Azure to fetch from Google with 600MB chunks simutaneously at nearly 89 connections at a time for 50GB files from the extension. [Unfortunately, Chromium-based browsers have a limit of 6 connections per HTTP 1.1 host][chrome_connection_limit]. [Azure only supports HTTP 1.1][azblob_http11] and only 6 chunks can be command to be copied simutaneously via the browser. As a contrast, [Azure's azcopy][azcopy], the command line copier application, can command copies of far more than 6 chunks simutaneously as it is not limited by browser limitations on connections.
+- [Microsoft's Azure Storage is unable to download from download URLs used in Google Takeout directly due to an URL Escaping issue in Google's URLs that Azure "helpfully" breaks.][msqa].
+- To transfer fast, we tell Azure to fetch from Google with 600MB chunks simutaneously at nearly 89 connections at a time for 50GB files from the extension. [Unfortunately, Chromium-based browsers have a limit of 6 connections per HTTP 1.1 host][chrome_connection_limit]. [Azure only supports HTTP 1.1][azblob_http11] and only 6 chunks can be commanded to be copied simutaneously via the browser. As a contrast, [Azure's azcopy][azcopy], the command line copier application, can command copies of far more than 6 chunks simutaneously as it is not limited by browser limitations on connections.
 
 Cloudflare Workers can be used to address these issues:
 
