@@ -94,6 +94,7 @@ This tool is implemented to run on Cloudflare Workers as:
 - [Cloudflare has the peering, compute, and scalability to handle the massive transfer from Google Takeout to Azure Storage. Many of its peering points are peered with Azure and Google with high capacity links.][cf_capacity]
 - Cloudflare Workers are serverless.
 - [Cloudflare Worker endpoints are HTTP/3 compatible and can comfortably connect to HTTP 1.1 endpoints.][cfhttp3]
+- Cloudflare Workers are globally deployed. If you transfer from Google in the EU to Azure in the EU, the worker proxy is also in the EU and your data stays in the EU for the whole time. Same for Australia, US, and so on. 
 
 I am not aware of any other provider with the same characteristics as Cloudflare.
 
