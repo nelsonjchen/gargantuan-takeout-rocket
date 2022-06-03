@@ -2,7 +2,7 @@
 
 Garguantuan Takeout Rocket (GTR) is produced by Nelson Chen in California as free and open source software.
 
-Privacy concerns are taken very seriously as this software suite handles Google Takeout or similar data of which the data is likely to be extremely personal and identifiable.
+Privacy concerns are taken very seriously as this software suite handles Google Takeout or similar data of which the data is likely to be extremely personal, identifiable, and sensitive.
 
 Please reach out to me if you have any concerns and I will do my best to address them.
 
