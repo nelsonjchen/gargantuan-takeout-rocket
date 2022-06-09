@@ -62,7 +62,7 @@ export class BlockBlobClient {
       method: "PUT",
       retries: 3,
       retryDelay: 1000,
-      retryOn: [409, 520],
+      retryOn: [409, 520, 524],
       headers: {
         "x-ms-version": "2020-10-02",
         "x-ms-source-range": `bytes=${offset}-${offset + count - 1}`,
