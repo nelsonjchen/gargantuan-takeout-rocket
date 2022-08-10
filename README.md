@@ -16,6 +16,8 @@ A public instance of this service is provided but you may want to run your own p
 
 # Usage
 
+In general, you are expected to use the [Gargantuan Takeout Rocket (GTR)][gtr] extension with this.
+
 ## Public Instance
 
 A public instance is hosted at https://gtr-proxy.677472.xyz that anybody may use with GTR. The front page of https://gtr-proxy.677472.xyz just goes to the GitHub repository for the proxy. The 677472.xyz (`67=g`, `74=t`, and `72=r` from ASCII) domain was chosen because it was $0.75 every year for numeric only `.xyz` domains and I wanted the bandwidth metrics for my personal site separated from this service. Visiting the domain will redirect to this GitHub repository.
@@ -24,7 +26,9 @@ Logs are not stored on this service but I reserve the right to stream the logs t
 
 ## Private Instance
 
-You may be interested in running your own private instance so it does not go through my public proxy.
+You may be interested in running your own private instance so your data does not go through my public proxy.
+
+Please try a Google Takeout with a small, non-sensitive, or already public data on your Google account to produce a non-sensitive Google Takeout test archive to test the public instance of the proxy to get familiar with the GTR toolkit first before setting up a private instance of this proxy for your actual sensitive and non-public takeout data.
 
 Use this easy-to-use button:
 
