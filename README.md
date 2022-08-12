@@ -105,7 +105,7 @@ On your planner application of choice, remind yourself every 2 months (or whatev
    * <img width="511" alt="image" src="https://user-images.githubusercontent.com/5363/163747552-22b51c99-553f-4aec-970c-a69cce4b940e.png">
 5. Enable the extension to intercept downloads with the checkmark popup.
    * <img width="506" alt="image" src="https://user-images.githubusercontent.com/5363/163747584-850dd276-47e9-4dff-b5cf-20b61b948c58.png">
-6. Visit Google Takeout and click download on each archive. Watch for failures. Slow down if there are failures.
+6. Visit Google Takeout and click download on each archive. Watch for failures. Slow down if there are failures. In general, limit yourself to three archives at a time. It took about 50 seconds for each 50GB archive for me.
 7. Notifications will come and go as each archive is transloaded into Azure Blob Storage.
 8. Once complete, check Azure to make sure everything has been retrieved and is available in the container.
    * Beware of downloading the archives to your local machine as Azure charges about $4.50 per 50GB download. Just check that they are there. If you wish to check the contents, you should spin up a virtual machine in Azure and download the data to that instance for inspection. That is beyond the scope of this guide.
