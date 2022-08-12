@@ -106,8 +106,10 @@ On your planner application of choice, remind yourself every 2 months (or whatev
 5. Enable the extension to intercept downloads with the checkmark popup.
    * <img width="506" alt="image" src="https://user-images.githubusercontent.com/5363/163747584-850dd276-47e9-4dff-b5cf-20b61b948c58.png">
 6. Visit Google Takeout and click download on each archive. Watch for failures. Slow down if there are failures. In general, limit yourself to three archives at a time. It took about 50 seconds for each 50GB archive for me.
-7. Notifications will come and go as each archive is transloaded into Azure Blob Storage.
-8. Once complete, check Azure to make sure everything has been retrieved and is available in the container.
+7. I was too lazy to implement a decent progress bar or indicator, so inspect the service worker's network tab for "progress" or indications of errors.
+  * <img width="802" alt="Screen Shot 2022-08-11 at 7 15 33 PM" src="https://user-images.githubusercontent.com/5363/184272694-ea4f2052-8389-4810-b35c-369c8581e326.png">
+8. Notifications will come and go as each archive is transloaded into Azure Blob Storage.
+9. Once complete, check Azure to make sure everything has been retrieved and is available in the container.
    * Beware of downloading the archives to your local machine as Azure charges about $4.50 per 50GB download. Just check that they are there. If you wish to check the contents, you should spin up a virtual machine in Azure and download the data to that instance for inspection. That is beyond the scope of this guide.
 10. Disable the extension in the popup as it isnt needed.
    * <img width="509" alt="image" src="https://user-images.githubusercontent.com/5363/163747622-4abef856-ac3b-4304-a6c2-2fccad9a41f9.png">
