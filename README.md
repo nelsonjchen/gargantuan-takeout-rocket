@@ -144,6 +144,7 @@ For 1TB, this will cost about $100.88 (rounded up). Small price for salvation.
 * https://news.ycombinator.com/item?id=24965432
 * https://news.ycombinator.com/item?id=15989146
 * https://news.ycombinator.com/item?id=28621412
+* https://news.ycombinator.com/item?id=32538805
 
 and there's many more. oh there's just so many. too many.
 
