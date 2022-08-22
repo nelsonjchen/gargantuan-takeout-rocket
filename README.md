@@ -111,7 +111,7 @@ On your planner application of choice, remind yourself every 2 months (or whatev
 8. Notifications will come and go as each archive is transloaded into Azure Blob Storage.
 9. Once complete, check Azure to make sure everything has been retrieved and is available in the container.
    * Beware of downloading the archives to your local machine as Azure charges about $4.50 per 50GB download. Just check that they are there. If you wish to check the contents, you should spin up a virtual machine in Azure and download the data to that instance for inspection. That is beyond the scope of this guide.
-10. Disable the extension in the popup as it isnt needed.
+10. Disable the extension in the popup as it isnt needed. You may also want to turn off the extension altogether for extra memory savings.
    * <img width="509" alt="image" src="https://user-images.githubusercontent.com/5363/163747622-4abef856-ac3b-4304-a6c2-2fccad9a41f9.png">
 
 ---
