@@ -142,9 +142,15 @@ For 1TB, this will cost about $100.88 (rounded up). Small price for salvation.
 ### "Google banned my account!"
 
 * https://news.ycombinator.com/item?id=24965432
+  * who knows why.................
 * https://news.ycombinator.com/item?id=15989146
+  * saved by blue checkmark. let me tell you about **my** blue checkmark? oh you don't have a blue checkmark?
 * https://news.ycombinator.com/item?id=28621412
+  * historical war footage == terrorist
 * https://news.ycombinator.com/item?id=32538805
+  * photos of your kids for the doctor == pedo
+* (https://discord.comma.ai) https://discord.com/channels/469524606043160576/954493346250887168/998693206411718718
+  * YT copyright strikes and all your family photos go away.
 
 and there's many more. oh there's just so many. too many.
 
