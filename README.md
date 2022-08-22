@@ -151,7 +151,7 @@ For 1TB, this will cost about $100.88 (rounded up). Small price for salvation.
   * photos of your kids for the doctor == pedo
 * (https://discord.comma.ai) https://discord.com/channels/469524606043160576/954493346250887168/998693206411718718
   * YT copyright strikes and all your family photos go away.
-* https://twitter.com/search?q=google%20takeout%20youtube&src=typed_query
+* https://twitter.com/search?q=google%20takeout%20youtube
   * A neverending stream of "I can't takeout my banned youtube account!". 
 
 and there's many more. oh there's just so many. too many.
