@@ -148,7 +148,7 @@ For 1TB, this will cost about $100.88 (rounded up). Small price for salvation.
 * https://news.ycombinator.com/item?id=28621412
   * historical war footage == terrorist
 * https://news.ycombinator.com/item?id=32538805
-  * photos of your kids for the doctor == pedo. **and then they double down on the ban after it hits the news**.
+  * photos of your kids for the doctor == pedo. **and then they double down on the ban after it hits the news and the police absolve and pledge to help the user!**.
 * (https://discord.comma.ai) https://discord.com/channels/469524606043160576/954493346250887168/998693206411718718
   * YT copyright strikes and all your family photos go away.
 * https://twitter.com/search?q=google%20takeout%20youtube
