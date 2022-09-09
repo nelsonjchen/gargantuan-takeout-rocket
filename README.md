@@ -119,7 +119,9 @@ On your planner application of choice, remind yourself every 2 months (or whatev
 
 ## Restoration
 
-1. [Rehydrate the Archived Blob by copying it.](https://docs.microsoft.com/en-us/azure/storage/blobs/archive-rehydrate-overview#copy-an-archived-blob-to-an-online-tier)
+Don't panic. 
+
+1. [Rehydrate the Archived Blobs by copying them.](https://docs.microsoft.com/en-us/azure/storage/blobs/archive-rehydrate-overview#copy-an-archived-blob-to-an-online-tier)
 2. Download the blobs.
 
 Restoration and download is fairly expensive. This is the tradeoff for the speed and durability. It's worth it for me, for what it is worth.
