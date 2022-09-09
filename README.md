@@ -28,7 +28,7 @@ GTR is right for you if:
 * You want to backup your account to somewhere that else isn't Google and are OK with Microsoft.
 * You want to back it up somewhere cheap ($1/TB/mo).
 * You have a to-do app or calendar app that can make recurring tasks, events, or alarms every 3 months or whatever interval you wish to perform backups at.
-* You are OK with backing their Google Data to somewhere archival-oriented with a high access cost and not interested in looking at the backups unless something really bad actually happens. 
+* You are OK with backing your Google Data to somewhere archival-oriented with a high access cost and not interested in looking at the backups unless something really bad actually happens. 
 * You are OK with storing backup archives for a minimum of 6 months or are OK with an early deletion fee that is as if you've stored the data for 6 months.
 * You don't want to setup up temporary cloud compute instances or machines and manually facilitate the transfer.
 * You want to quickly transfer out at 1GB/s+, in parallel, outward.
@@ -56,6 +56,7 @@ This is something that you'll only have to do once.
    * Record the name of your blob container.
 4. Setup Lifecycle Rules as seen in https://www.youtube.com/watch?v=-3k0hhngt7o
    * Archive Tier after 1 day
+     * Let the data be hot for 1 day. In case you make a mistake of some sort or you want to delete.
    * Delete after 180 days
      * Early deletion of archives incures a fee equal to as if you've stored the archive for the rest of the 180 day minimum.
 
