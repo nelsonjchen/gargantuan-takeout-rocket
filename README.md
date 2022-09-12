@@ -169,9 +169,9 @@ A future version of GTR may include S3 and S3-compatible APIs as a destination. 
 
 I'm also **extremely** curious about storing the "hot" data in [Cloudflare R2][r2]. Without ingress or egress fees, one could transload and stage Takeout archives there temporaily and download it for a local backup and have it be compatible/resumeable with their download manager of choice. R2 is missing stuff like lifecycle rules which are pretty important in preventing run-away costs from being used as a staging area.
 
-[Encryption is a concern. I don't have a solution thought out yet. With the high use of blocks, it is unknown if compatiblity can be retained. It a;sp complicates restoration and makes the Azure GUIs unable download.](https://github.com/nelsonjchen/gargantuan-takeout-rocket/issues/3)
+[Encryption is a concern. I don't have a solution thought out yet. With the high use of blocks, it is unknown if compatiblity can be retained. It can complicates restoration and makes the Azure GUIs unable download easily. An issue is open about that.](https://github.com/nelsonjchen/gargantuan-takeout-rocket/issues/3)
 
-With the recent news about Cloudflare, some users may also wish to use a non-Cloudflare alternative. I don't know of a good alternative with the same "price point", geographical reach, computing power, network outlay, scalability, and permissive use.
+With the recent news about Cloudflare, some users may also wish to use a non-Cloudflare alternative. I don't know of a good alternative with the same free "price point", geographical reach, computing power, network outlay, scalability, and permissive use. 
 
 In the meantime:
 
