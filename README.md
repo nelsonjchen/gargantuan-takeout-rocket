@@ -163,11 +163,15 @@ and there's many more. oh there's just so many. too many.
 
 just search twitter for "google takeout". you'll find users complaining about sizes and archive amounts quite a lot.
 
-### Other people backing up to cloud storage and their setups and possible futures.
+### Other people backing up to cloud storage and their setups and possible futures of this sort of setup.
 
-A future version of GTR may include S3 and S3-compatible APIs as a destination. There may be a possiblity to teach Cloudflare Workers to facilitate this in a highly parallel manner like was done for Azure. Unfortunately, S3 does not have a similar "download from a remote server" API. However, we might be able to teach Cloudflare Workers to use itself to transload.
+A future version of GTR may include S3 and S3-compatible APIs as a destination. There may be a possiblity to teach Cloudflare Workers to facilitate this in a highly parallel manner like was done for Azure. Unfortunately, S3 does not have a similar "download from a remote server" API. However, we might be able to teach Cloudflare Workers to use itself to transload. This might not be compatible with Cloudflare's ["unload workers from memory"][unload_worker] optimization though. Would this still work?
 
-I'm also **extremely** curious about storing the "hot" data in [Cloudflare R2][r2]. Without ingress or egress fees, one could transload and stage Takeout archives there temporaily and download it for a local backup and have it be compatible/resumeable with their download manager of choice.
+I'm also **extremely** curious about storing the "hot" data in [Cloudflare R2][r2]. Without ingress or egress fees, one could transload and stage Takeout archives there temporaily and download it for a local backup and have it be compatible/resumeable with their download manager of choice. R2 is missing stuff like lifecycle rules which are pretty important in preventing run-away costs from being used as a staging area.
+
+[Encryption is a concern. I don't have a solution thought out yet. With the high use of blocks, it is unknown if compatiblity can be retained. It a;sp complicates restoration and makes the Azure GUIs unable download.](https://github.com/nelsonjchen/gargantuan-takeout-rocket/issues/3)
+
+With the recent news about Cloudflare, some users may also wish to use a non-Cloudflare alternative. I don't know of a good alternative with the same "price point", geographical reach, computing power, network outlay, scalability, and permissive use.
 
 In the meantime:
 
@@ -179,13 +183,17 @@ In the meantime:
 
 * https://tyler.io/my-familys-photo-and-video-library-backup-strategy-in-2020/
 
-The general idea of these is to use a single EC2/VPS instance to handle the coordination and traffic. Congdon's solution clocked in at about 65MB/s. 
+The general idea of these is to use a single VPS instance to handle the coordination and traffic. Congdon's solution clocked in at about 65MB/s. 
 
-I used Azure's "Standard_L8s_v2" for my instance and that topped out at about 300MB/s when writing to the temporary local NVMe storage before uploading from that to Azure Storage. The CPU was pegged pretty hard during my transfer so this kind of makes me think how much CPU time I'm using to do many GB/s of transfer. Probably a lot. And I'm not really paying for the CPU to do TLS as the cloud vendors are paying. Great!
+I used Azure's "Standard_L8s_v2" for my instance and that topped out at about 300MB/s when writing to the temporary local NVMe storage before uploading from that to Azure Storage. The CPU was pegged pretty hard during my transfer so this kind of makes me think how much CPU time I'm using to do many GB/s of transfer. Probably a lot. And I'm not really paying for the CPU to do TLS as the cloud vendors are paying. Great! 
+
+VPS setups may want to use [aria2c along with an aria2c browser extension to streamline the transloading process without too much terminal work][aria2c_ext]. This was fast for me, but I wanted something much faster and VPS-less.
 
 ## Other targets to try
 
 Haven't tried, not sure. Might be something to try. YMMV, stuff may break. 
+
+Note that the GTR Proxy by default is limited to Google Takeout domains. You would need to fork the proxy and add domains to its whitelist.
 
 In general, the high parallelism and concurrency that GTR relies on is a product of Google Takeout ultimately serving takeout archives with signed URLs to Google Cloud Storage, their S3-like object storage offering. Google Cloud Storage is *very* robust, *very* available, and *very* scalable. If you try the interceptor with something else, the intercepted URL needs to have no limit on parallelism and concurrency and not use cookies to validate access.
 
@@ -222,3 +230,5 @@ I got inspired watching SpaceX launch rockets with a pile of Merlin engines. Sta
 [takeout]: https://takeout.google.com
 [twitter]: https://twitter.com/crazysim
 [r2]: https://blog.cloudflare.com/introducing-r2-object-storage/
+[unload_worker]:https://blog.cloudflare.com/workers-optimization-reduces-your-bill/
+[aria2c_ext]:https://alexhua.github.io/Aria2-for-chrome/
