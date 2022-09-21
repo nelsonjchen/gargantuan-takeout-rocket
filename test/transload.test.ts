@@ -13,7 +13,7 @@ describe("transload", () => {
     expect(jobPlan.chunks.length).toBeGreaterThan(0);
     expect(jobPlan.chunks[0].start).toBe(0);
     expect(jobPlan.chunks[0].size).toBe(500 * 1024 * 1024);
-    expect(jobPlan.chunks[0].size).toBe(500 * 1024 * 1024);;
+    expect(jobPlan.chunks[0].size).toBe(500 * 1024 * 1024);
     // expect(jobPlan.chunks[1].size).toBe(88843308);
     // Check last chunk in jobPlan
     expect(jobPlan.chunks[jobPlan.chunks.length - 1].start).toBeGreaterThan(0);
