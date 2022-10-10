@@ -1,3 +1,10 @@
+NOTE: There is currently a massive blocker of some kind on Azure's end that prevents this from working. It is unknown what the cause is. 
+
+I might take this opportunity to rearchitect this a bit. 
+
+https://github.com/nelsonjchen/gargantuan-takeout-rocket/issues/5
+
+---
 # 🚀 Gargantuan Takeout Rocket
 
 *Liftoff from Google Takeout into Azure Storage, repeatedly, **very** fast, like 1GB/s+ or 10 minutes total per takeout fast*
