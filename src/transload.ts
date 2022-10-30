@@ -23,7 +23,7 @@ export function sourceToGtrProxySource(
     proxyBase = built_in_proxy_base;
   }
   const url = btoa(source);
-  return `${proxyBase}/p/${url}`;
+  return `${proxyBase}/p/${url}/data.bin`;
 }
 
 export async function createJobPlan(source: string): Promise<JobPlan> {
