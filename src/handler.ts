@@ -12,6 +12,10 @@ export async function handleRequest(request: Request): Promise<Response> {
     return handleAzBlobRequest(request)
   }
 
+  if (url.pathname.startsWith('/t-azb/')) {
+    return handleAzBlobRequest(request)
+  }
+
   if (url.pathname.startsWith('/version/')) {
     return new Response(
       JSON.stringify(
@@ -113,6 +117,51 @@ export async function handleAzBlobRequest(request: Request): Promise<Response> {
 
     return response
   } catch {
+    return new Response('invalid URL', {
+      status: 500,
+    })
+  }
+}
+
+export async function handleTransloadAzBlobRequest(request: Request): Promise<Response> {
+  // Check for a 'x-gtr-copy-source' header
+  const copySource = request.headers.get('x-gtr-copy-source')
+  if (!copySource) {
+    return new Response('missing x-gtr-copy-source header', {
+      status: 400,
+    })
+  };
+  // Get a readable stream of the request body from the url of x-gtr-copy-source
+  const copySourceUrl = new URL(copySource)
+  const copySourceResponse = await fetch(copySourceUrl.toString(), {
+    method: 'GET',
+  })
+  // If the original request has some sort of error, return that error
+  if (!copySourceResponse.ok) {
+    return new Response(copySourceResponse.body, {
+      status: copySourceResponse.status,
+      headers: copySourceResponse.headers,
+    })
+  }
+  // Get a readable stream of the original 
+
+  
+  const url = new URL(request.url)
+  try {
+    const azUrl = proxyPathnameToAzBlobSASUrl(url)
+
+    const originalResponse = await fetch(azUrl.toString(), {
+      method: request.method,
+      headers: request.headers,
+    })
+
+    const response = new Response(originalResponse.body, {
+      status: originalResponse.status,
+      headers: originalResponse.headers,
+    })
+
+    return response
+  } catch e {
     return new Response('invalid URL', {
       status: 500,
     })
