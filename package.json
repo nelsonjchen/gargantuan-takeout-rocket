@@ -1,10 +1,11 @@
 {
   "name": "gtr-proxy",
-  "version": "1.5.0",
+  "version": "2.0.0",
   "description": "GTR Proxy",
   "main": "dist/worker.js",
   "scripts": {
     "build": "esbuild --bundle --platform=node --target=node12 --outfile=dist/worker.mjs src/index.ts",
+    "predev": "npm run build",
     "dev": "miniflare --live-reload --debug --modules dist/worker.mjs",
     "dev:remote": "wrangler dev",
     "types:check": "tsc && tsc -p test/tsconfig.json",
