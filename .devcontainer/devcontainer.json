@@ -13,7 +13,8 @@
 	"customizations": {
 		"vscode": {
 			"extensions": [
-				"humao.rest-client"
+				"humao.rest-client",
+				"Orta.vscode-jest"
 			]
 		}
 	}

@@ -1,4 +1,3 @@
-import { atob } from 'abab'
 import { proxyPathnameToAzBlobSASUrl } from './azb'
 
 export async function handleRequest(request: Request): Promise<Response> {

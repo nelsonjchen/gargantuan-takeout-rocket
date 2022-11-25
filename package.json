@@ -2,7 +2,7 @@
   "name": "gtr-proxy",
   "version": "2.0.0",
   "description": "GTR Proxy",
-  "main": "dist/worker.js",
+  "main": "dist/worker.mjs",
   "scripts": {
     "build": "esbuild --bundle --platform=node --target=node12 --outfile=dist/worker.mjs src/index.ts",
     "predev": "npm run build",
