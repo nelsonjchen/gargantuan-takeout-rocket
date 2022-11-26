@@ -16,36 +16,10 @@ describe('handle', () => {
     expect(validGoogleTakeoutUrl(real_takeout_url)).toBeTruthy()
   })
 
-  test('does not handle non-takeout URL', async () => {
-    const encoded_url = btoa('http://iscaliforniaonfire.com/')
-    const request_url = `https://example.com/p/${encoded_url}`
-    console.debug(request_url)
-    const result = await handleRequest(
-      new Request(request_url, { method: 'GET' }),
-    )
-
-    expect(result.status).toEqual(403)
-  })
-
   test('handle a real google takeout url that is expired', async () => {
-    const encoded_url = btoa(real_takeout_url.toString())
-    const request_url = `https://example.com/p/${encoded_url}`
-    console.debug(request_url)
-    const result = await handleRequest(
-      new Request(request_url, { method: 'GET' }),
-    )
+    const encoded_url = real_takeout_url;
+    const request_url = `https://example.com/t-azb/${encoded_url}`
 
-    expect(await result.text()).toEqual(
-      expect.stringContaining('Locked Domain'),
-    )
-    expect(result.status).toEqual(401)
-  })
-
-  test('handle a real google takeout url that is expired and has bs at the end', async () => {
-    const encoded_url = btoa(real_takeout_url.toString())
-    // Seen with calls by Azure
-    const request_url = `https://example.com/p/${encoded_url}?timeout=901`
-    console.debug(request_url)
     const result = await handleRequest(
       new Request(request_url, { method: 'GET' }),
     )
@@ -62,18 +36,6 @@ describe('handle', () => {
     )
     expect(result.status).toEqual(302)
   })
-
-  test('handles urls to somewhere else, like GitHub maybe', async () => {
-    const result = await handleRequest(
-      new Request(
-        `https://example.com/p-azb/urlcopytest/some-container/some_file.dat?sp=racwd&st=2022-04-03T02%3A09%3A13Z&se=2022-04-03T02%3A20%3A13Z&spr=https&sv=2020-08-04&sr=c&sig=u72iEGi5SLkPg8B7QVI5HXfHSnr3MOse%2FzWzhaYdbbU%3D`,
-        { method: 'GET' },
-      ),
-    )
-
-    // This should be a rejection, as if we visited the URL with a GET directly.
-    expect(result.status).toEqual(403)
-  })
 })
 
 describe('url-parser', () => {
@@ -84,7 +46,7 @@ describe('url-parser', () => {
     )
     expect(path).toEqual(
       new URL(
-        '/p-azb/urlcopytest/some-container/some_file.dat?sp=racwd&st=2022-04-03T02%3A09%3A13Z&se=2022-04-03T02%3A20%3A13Z&spr=https&sv=2020-08-04&sr=c&sig=u72iEGi5SLkPg8B7QVI5HXfHSnr3MOse%2FzWzhaYdbbU%3D',
+        '/t-azb/urlcopytest/some-container/some_file.dat?sp=racwd&st=2022-04-03T02%3A09%3A13Z&se=2022-04-03T02%3A20%3A13Z&spr=https&sv=2020-08-04&sr=c&sig=u72iEGi5SLkPg8B7QVI5HXfHSnr3MOse%2FzWzhaYdbbU%3D',
         'https://example.com',
       ),
     )
