@@ -1,12 +1,6 @@
 name = "gtr-proxy"
-type = "javascript"
-zone_id = ""
-account_id = ""
-route = ""
-workers_dev = true
-compatibility_date = "2022-02-27"
+main = "dist/worker.mjs"
+compatibility_date = "2022-07-12"
 
 [build]
 command = "npm install && npm run build"
-[build.upload]
-format = "service-worker"
