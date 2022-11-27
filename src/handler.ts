@@ -58,9 +58,11 @@ export async function handleTransloadAzBlobRequest(request: Request): Promise<Re
       status: 403,
     })
   }
+  console.log('fetching original file from', copySourceUrl.href)
   const copySourceResponse = await fetch(copySourceUrl.toString(), {
     method: 'GET',
   })
+  console.log('original file response status', copySourceResponse.status)
   // If the original request has some sort of error, return that error
   if (!copySourceResponse.ok) {
     return new Response(copySourceResponse.body, {
@@ -68,7 +70,7 @@ export async function handleTransloadAzBlobRequest(request: Request): Promise<Re
       headers: copySourceResponse.headers,
     })
   }
-  // Get a readable stream of the original 
+  // Get a readable stream of the original
   const body = copySourceResponse.body
   // Return an error if body isn't a ReadableStream
   if (!(body instanceof ReadableStream)) {
@@ -82,7 +84,7 @@ export async function handleTransloadAzBlobRequest(request: Request): Promise<Re
   const url = new URL(request.url)
   try {
     const azUrl = proxyPathnameToAzBlobSASUrl(url)
-
+    console.log('proxying to', azUrl)
     const originalResponse = await fetch(azUrl.toString(), {
       method: request.method,
       headers: strippedHeaders,
@@ -93,6 +95,7 @@ export async function handleTransloadAzBlobRequest(request: Request): Promise<Re
       status: originalResponse.status,
       headers: originalResponse.headers,
     })
+    console.log('proxy response status', response.status)
 
     return response
   } catch (e) {
