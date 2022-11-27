@@ -18,7 +18,7 @@ describe('handle', () => {
   test('handle the file test URL', async () => {
     const AZ_STORAGE_TEST_URL_SEGMENT = process.env.AZ_STORAGE_TEST_URL_SEGMENT
     if (!AZ_STORAGE_TEST_URL_SEGMENT) {
-      throw new Error('AZ_STORAGE_TEST_URL environment variable is not set')
+      throw new Error('AZ_STORAGE_TEST_URL_SEGMENT environment variable is not set')
     }
 
     const file_source_url = file_test_200mb_url
