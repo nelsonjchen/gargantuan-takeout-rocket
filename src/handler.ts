@@ -85,6 +85,8 @@ export async function handleTransloadAzBlobRequest(request: Request): Promise<Re
   try {
     const azUrl = proxyPathnameToAzBlobSASUrl(url)
     console.log('proxying to', azUrl)
+    // Log headers of strippedHeaders
+    console.log('strippedHeaders', JSON.stringify(Object.fromEntries(strippedHeaders.entries())))
     const originalResponse = await fetch(azUrl.toString(), {
       method: request.method,
       headers: strippedHeaders,
