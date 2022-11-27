@@ -1,5 +1,5 @@
 import { proxyPathnameToAzBlobSASUrl } from './azb'
-import {serializeError} from 'serialize-error';
+import { serializeError } from 'serialize-error';
 
 
 export async function handleRequest(request: Request): Promise<Response> {
@@ -46,7 +46,10 @@ export async function handleTransloadAzBlobRequest(request: Request): Promise<Re
       status: 400,
     })
   };
-  
+  // x-gtr-copy-source is not a valid header for upstream. Strip it.
+  const strippedHeaders = new Headers(request.headers)
+  strippedHeaders.delete('x-gtr-copy-source')
+
   // Get a readable stream of the request body from the url of x-gtr-copy-source
   const copySourceUrl = new URL(copySource)
   // Make sure hostname is a valid test server or google URL
@@ -54,7 +57,7 @@ export async function handleTransloadAzBlobRequest(request: Request): Promise<Re
     return new Response('invalid x-gtr-copy-source header: not takeout url or test server url', {
       status: 403,
     })
-  }  
+  }
   const copySourceResponse = await fetch(copySourceUrl.toString(), {
     method: 'GET',
   })
@@ -73,15 +76,16 @@ export async function handleTransloadAzBlobRequest(request: Request): Promise<Re
       status: 500,
     })
   }
-  
-  
+  strippedHeaders.append('Content-Length', copySourceResponse.headers.get('Content-Length') || '0')
+
+
   const url = new URL(request.url)
   try {
     const azUrl = proxyPathnameToAzBlobSASUrl(url)
 
     const originalResponse = await fetch(azUrl.toString(), {
       method: request.method,
-      headers: request.headers,
+      headers: strippedHeaders,
       body
     })
 
@@ -95,9 +99,9 @@ export async function handleTransloadAzBlobRequest(request: Request): Promise<Re
     if (e instanceof Error) {
       const error = serializeError(e)
       return new Response(JSON.stringify(error),
-      {
-        status: 500,
-      })
+        {
+          status: 500,
+        })
     }
     return new Response('unknown error', {
       status: 500,
