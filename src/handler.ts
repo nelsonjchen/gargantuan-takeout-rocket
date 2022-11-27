@@ -1,4 +1,6 @@
 import { proxyPathnameToAzBlobSASUrl } from './azb'
+import {serializeError} from 'serialize-error';
+
 
 export async function handleRequest(request: Request): Promise<Response> {
   const url = new URL(request.url)
@@ -91,7 +93,9 @@ export async function handleTransloadAzBlobRequest(request: Request): Promise<Re
     return response
   } catch (e) {
     if (e instanceof Error) {
-      return new Response(e.toString(), {
+      const error = serializeError(e)
+      return new Response(JSON.stringify(error),
+      {
         status: 500,
       })
     }

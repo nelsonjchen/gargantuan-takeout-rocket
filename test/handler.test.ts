@@ -46,17 +46,17 @@ describe('handle', () => {
     const request = new Request(request_url, {
       method: 'PUT',
       headers: {
-        'x-gtr-copy-source': file_source_url.toString(),
-      },
+        'x-ms-blob-type:': 'BlockBlob',
+        'x-gtr-copy-source': file_source_url.toString(),        
+      },      
     })
 
     const result = await handleRequest(
       request,
     )
+    const ok = await result.text();
+    expect(ok).toEqual('OK')
 
-    expect(await result.text()).toEqual(
-      expect.stringContaining('Locked Domain'),
-    )
     expect(result.status).toEqual(401)
   })  
 
