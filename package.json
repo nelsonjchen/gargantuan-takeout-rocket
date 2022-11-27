@@ -32,7 +32,7 @@
     "abab": "^2.0.6",
     "dotenv": "^16.0.3",
     "esbuild": "^0.15.13",
-    "eslint": "^8.27.0",
+    "eslint": "^8.28.0",
     "eslint-config-prettier": "^8.1.0",
     "eslint-config-typescript": "^3.0.0",
     "jest": "^29.2.2",
