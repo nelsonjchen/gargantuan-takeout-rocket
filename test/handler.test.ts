@@ -28,6 +28,37 @@ describe('handle', () => {
     )
     expect(result.status).toEqual(401)
   })
+  
+  test('handle the file test URL', async () => {
+    const AZ_STORAGE_TEST_URL_SEGMENT = process.env.AZ_STORAGE_TEST_URL_SEGMENT
+    if (!AZ_STORAGE_TEST_URL_SEGMENT) {
+      throw new Error('AZ_STORAGE_TEST_URL environment variable is not set')
+    }
+    const AZ_STORAGE_TEST_CONTAINER = process.env.AZ_STORAGE_TEST_CONTAINER
+    if (!AZ_STORAGE_TEST_CONTAINER) {
+      throw new Error('AZ_STORAGE_TEST_CONTAINER environment variable is not set')
+    }
+    
+    const file_source_url = file_test_200mb_url
+    
+    const request_url = `https://example.com/t-azb/${AZ_STORAGE_TEST_CONTAINER}/${AZ_STORAGE_TEST_URL_SEGMENT}`
+    
+    const request = new Request(request_url, {
+      method: 'PUT',
+      headers: {
+        'x-gtr-copy-source': file_source_url.toString(),
+      },
+    })
+
+    const result = await handleRequest(
+      request,
+    )
+
+    expect(await result.text()).toEqual(
+      expect.stringContaining('Locked Domain'),
+    )
+    expect(result.status).toEqual(401)
+  })  
 
   test('redirect all other urls to somewhere else, like GitHub maybe', async () => {
     const result = await handleRequest(
