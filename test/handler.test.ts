@@ -40,7 +40,7 @@ describe('handle', () => {
     expect(ok).toEqual('')
 
     expect(result.status).toEqual(201)
-  }, 20000)
+  }, 60000)
 
   test('redirect all other urls to somewhere else, like GitHub maybe', async () => {
     const result = await handleRequest(
