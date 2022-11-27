@@ -96,6 +96,8 @@ export async function handleTransloadAzBlobRequest(request: Request): Promise<Re
       headers: originalResponse.headers,
     })
     console.log('proxy response status', response.status)
+    console.log('proxy response headers', response.headers)
+    console.log('proxy response body', response.body)
 
     return response
   } catch (e) {
