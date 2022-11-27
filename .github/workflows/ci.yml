@@ -24,6 +24,8 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
+        env:
+          AZ_STORAGE_TEST_URL_SEGMENT: ${{ secrets.AZ_STORAGE_TEST_URL_SEGMENT }}
       - run: npm install
       - run: npm run build
       - run: npm test
