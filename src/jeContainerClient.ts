@@ -60,13 +60,12 @@ export class BlockBlobClient {
 
     const resp = await fetch(fetchBlobUrl.toString(), {
       method: "PUT",
-      retries: 10,
+      retries: 0,
       retryDelay: 1000,
       retryOn: [409, 520, 524],
       headers: {
-        "x-ms-version": "2020-10-02",
-        "x-ms-source-range": `bytes=${offset}-${offset + count - 1}`,
-        "x-ms-copy-source": sourceUrl
+        "x-ms-version": "2021-08-06",
+        "x-gtr-copy-source": sourceUrl
       }
     });
     if (resp.ok) {

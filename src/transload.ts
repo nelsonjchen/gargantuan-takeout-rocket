@@ -15,17 +15,6 @@ interface JobPlan {
   length: number;
 }
 
-export function sourceToGtrProxySource(
-  source: string,
-  proxyBase?: string
-): string {
-  if (!proxyBase) {
-    proxyBase = built_in_proxy_base;
-  }
-  const url = btoa(source);
-  return `${proxyBase}/p/${url}/data.bin`;
-}
-
 export async function createJobPlan(source: string): Promise<JobPlan> {
   // Fetch HEAD of source
   const resp = await fetch(source, {
@@ -38,7 +27,7 @@ export async function createJobPlan(source: string): Promise<JobPlan> {
   console.log(`Got length bytes: ${length}`);
 
   // Divide into 500MB chunks
-  const chunkSize = 500 * 1024 * 1024;
+  const chunkSize = 100 * 1024 * 1024;
   const numChunks = Math.floor(length / chunkSize);
   console.log(`Will divide into ${numChunks} chunks`);
   let chunks = [];
