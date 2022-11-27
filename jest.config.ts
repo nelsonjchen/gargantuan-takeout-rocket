@@ -9,6 +9,10 @@ const config: Config.InitialOptions = {
 
   collectCoverageFrom: ['src/**/*.{ts,js}'],
   verbose: true,
+  // Load dotenv
+  setupFiles: [
+    'dotenv/config',
+  ]
 }
 
 export default config

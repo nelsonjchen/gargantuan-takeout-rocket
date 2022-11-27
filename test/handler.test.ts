@@ -1,27 +1,26 @@
-import { handleRequest, validGoogleTakeoutUrl } from '../src/handler'
+import { handleRequest, validGoogleTakeoutUrl, validTestServerURL } from '../src/handler'
 import {
   azBlobSASUrlToProxyPathname,
   proxyPathnameToAzBlobSASUrl,
 } from '../src/azb'
 
-import { btoa } from 'abab'
-
 // URL is too long, just move it to another file.
-import { real_takeout_url, real_azb_url } from './real_url'
+import { real_takeout_url, real_azb_url, file_test_200mb_url } from './real_url'
 
 describe('handle', () => {
-  test('has a function that can determine if a URL is from takeout or not', async () => {
+  test('has a function that can determine if a URL is from takeout, test server, or not', async () => {
     const bad_url = new URL('http://iscaliforniaonfire.com/')
     expect(validGoogleTakeoutUrl(bad_url)).toBeFalsy()
     expect(validGoogleTakeoutUrl(real_takeout_url)).toBeTruthy()
+    expect(validTestServerURL(file_test_200mb_url)).toBeTruthy()
   })
 
-  test('handle a real google takeout url that is expired', async () => {
+  test.skip('handle a real google takeout url that is expired', async () => {
     const encoded_url = real_takeout_url;
     const request_url = `https://example.com/t-azb/${encoded_url}`
 
     const result = await handleRequest(
-      new Request(request_url, { method: 'GET' }),
+      new Request(request_url, { method: 'GET' }),      
     )
 
     expect(await result.text()).toEqual(

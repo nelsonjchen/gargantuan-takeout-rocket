@@ -44,8 +44,15 @@ export async function handleTransloadAzBlobRequest(request: Request): Promise<Re
       status: 400,
     })
   };
+  
   // Get a readable stream of the request body from the url of x-gtr-copy-source
   const copySourceUrl = new URL(copySource)
+  // Make sure hostname is a valid test server or google URL
+  if (!validGoogleTakeoutUrl(copySourceUrl) && !validTestServerURL(copySourceUrl)) {
+    return new Response('invalid x-gtr-copy-source header: not takeout url or test server url', {
+      status: 403,
+    })
+  }  
   const copySourceResponse = await fetch(copySourceUrl.toString(), {
     method: 'GET',
   })
@@ -97,6 +104,7 @@ export async function handleTransloadAzBlobRequest(request: Request): Promise<Re
 export function validTestServerURL(url: URL): boolean {
   // https://github.com/nelsonjchen/put-block-from-url-esc-issue-demo-server/
   return (
+    url.hostname.endsWith('gtr-test.677472.xyz') ||
     url.hostname.endsWith('3vngqvvpoq-uc.a.run.app') ||
     url.hostname.endsWith('releases.ubuntu.com') ||
     url.hostname == 'mirrors.advancedhosters.com'
