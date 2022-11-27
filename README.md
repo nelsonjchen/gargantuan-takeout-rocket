@@ -97,7 +97,7 @@ graph LR
   B --4. Push.-> C[Azure Storage]
   Browser -- 1. Control CF Worker / Azure Storage Signed SAS.-> B
 ```
-```
+
 
 [cf_capacity]: https://www.peeringdb.com/asn/13335
 [fetch_free]: https://blog.cloudflare.com/workers-optimization-reduces-your-bill/
