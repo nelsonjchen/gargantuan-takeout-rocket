@@ -1,7 +1,9 @@
 name: Deploy
 on:
+#  Only deploy on master or manual
   push:
-  pull_request:
+    branches:
+      - master
   repository_dispatch:
 jobs:
   deploy:

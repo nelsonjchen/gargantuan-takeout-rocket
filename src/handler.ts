@@ -1,22 +1,19 @@
-import { atob } from 'abab'
 import { proxyPathnameToAzBlobSASUrl } from './azb'
+import { serializeError } from 'serialize-error';
+
 
 export async function handleRequest(request: Request): Promise<Response> {
   const url = new URL(request.url)
 
-  if (url.pathname.startsWith('/p/')) {
-    return handleTakeoutRequest(request)
-  }
-
-  if (url.pathname.startsWith('/p-azb/')) {
-    return handleAzBlobRequest(request)
+  if (url.pathname.startsWith('/t-azb/')) {
+    return handleTransloadAzBlobRequest(request)
   }
 
   if (url.pathname.startsWith('/version/')) {
     return new Response(
       JSON.stringify(
         {
-          apiVersion: '1.0.0',
+          apiVersion: '2.0.0',
         },
         null,
         2,
@@ -40,70 +37,56 @@ export async function handleRequest(request: Request): Promise<Response> {
   })
 }
 
-export async function handleTakeoutRequest(
-  request: Request,
-): Promise<Response> {
-  const url = new URL(request.url)
 
-  // Decode URL from base64
-  const base64strMatches =
-    /\/p\/((?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?)/.exec(
-      url.pathname,
-    )
-  if (!base64strMatches) {
-    return new Response('could not find base64 url', {
-      status: 500,
+export async function handleTransloadAzBlobRequest(request: Request): Promise<Response> {
+  // Check for a 'x-gtr-copy-source' header
+  const copySource = request.headers.get('x-gtr-copy-source')
+  if (!copySource) {
+    return new Response('missing x-gtr-copy-source header', {
+      status: 400,
+    })
+  };
+  // x-gtr-copy-source is not a valid header for upstream. Strip it.
+  const strippedHeaders = new Headers(request.headers)
+  strippedHeaders.delete('x-gtr-copy-source')
+
+  // Get a readable stream of the request body from the url of x-gtr-copy-source
+  const copySourceUrl = new URL(copySource)
+  // Make sure hostname is a valid test server or google URL
+  if (!validGoogleTakeoutUrl(copySourceUrl) && !validTestServerURL(copySourceUrl)) {
+    return new Response('invalid x-gtr-copy-source header: not takeout url or test server url', {
+      status: 403,
     })
   }
-  const base64Url = base64strMatches[1]
-  const decoded_argument = atob(base64Url)
-  if (decoded_argument == null) {
-    return new Response('invalid base64', {
-      status: 500,
-    })
-  }
-
-  // Check if the URL is a valid URL
-  let decoded_url: URL
-  try {
-    decoded_url = new URL(decoded_argument)
-  } catch (_) {
-    return new Response('invalid URL', {
-      status: 500,
-    })
-  }
-
-  if (
-    !(validGoogleTakeoutUrl(decoded_url) || validTestServerURL(decoded_url))
-  ) {
-    return new Response(
-      'encoded url was not a google takeout or test server url',
-      {
-        status: 403,
-      },
-    )
-  }
-
-  const originalResponse = await fetch(decoded_url.toString(), {
-    method: request.method,
-    headers: request.headers,
+  const copySourceResponse = await fetch(copySourceUrl.toString(), {
+    method: 'GET',
   })
+  // If the original request has some sort of error, return that error
+  if (!copySourceResponse.ok) {
+    return new Response(copySourceResponse.body, {
+      status: copySourceResponse.status,
+      headers: copySourceResponse.headers,
+    })
+  }
+  // Get a readable stream of the original 
+  const body = copySourceResponse.body
+  // Return an error if body isn't a ReadableStream
+  if (!(body instanceof ReadableStream)) {
+    return new Response('body is not a ReadableStream', {
+      status: 500,
+    })
+  }
+  strippedHeaders.append('Content-Length', copySourceResponse.headers.get('Content-Length') || '0')
 
-  const response = new Response(originalResponse.body, {
-    status: originalResponse.status,
-    headers: originalResponse.headers,
-  })
 
-  return response
-}
-
-export async function handleAzBlobRequest(request: Request): Promise<Response> {
   const url = new URL(request.url)
   try {
     const azUrl = proxyPathnameToAzBlobSASUrl(url)
+
     const originalResponse = await fetch(azUrl.toString(), {
       method: request.method,
-      headers: request.headers,
+      headers: strippedHeaders,
+      body
     })
 
     const response = new Response(originalResponse.body, {
@@ -112,8 +95,15 @@ export async function handleAzBlobRequest(request: Request): Promise<Response> {
     })
 
     return response
-  } catch {
-    return new Response('invalid URL', {
+  } catch (e) {
+    if (e instanceof Error) {
+      const error = serializeError(e)
+      return new Response(JSON.stringify(error),
+        {
+          status: 500,
+        })
+    }
+    return new Response('unknown error', {
       status: 500,
     })
   }
@@ -122,6 +112,7 @@ export async function handleAzBlobRequest(request: Request): Promise<Response> {
 export function validTestServerURL(url: URL): boolean {
   // https://github.com/nelsonjchen/put-block-from-url-esc-issue-demo-server/
   return (
+    url.hostname.endsWith('gtr-test.677472.xyz') ||
     url.hostname.endsWith('3vngqvvpoq-uc.a.run.app') ||
     url.hostname.endsWith('releases.ubuntu.com') ||
     url.hostname == 'mirrors.advancedhosters.com'

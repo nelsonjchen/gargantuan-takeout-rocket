@@ -1,78 +1,52 @@
-import { handleRequest, validGoogleTakeoutUrl } from '../src/handler'
+import { handleRequest, validGoogleTakeoutUrl, validTestServerURL } from '../src/handler'
 import {
   azBlobSASUrlToProxyPathname,
   proxyPathnameToAzBlobSASUrl,
 } from '../src/azb'
 
-import { btoa } from 'abab'
-
 // URL is too long, just move it to another file.
-import { real_takeout_url, real_azb_url } from './real_url'
+import { real_takeout_url, real_azb_url, file_test_200mb_url } from './real_url'
 
 describe('handle', () => {
-  test('has a function that can determine if a URL is from takeout or not', async () => {
+  test('has a function that can determine if a URL is from takeout, test server, or not', async () => {
     const bad_url = new URL('http://iscaliforniaonfire.com/')
     expect(validGoogleTakeoutUrl(bad_url)).toBeFalsy()
     expect(validGoogleTakeoutUrl(real_takeout_url)).toBeTruthy()
+    expect(validTestServerURL(file_test_200mb_url)).toBeTruthy()
   })
 
-  test('does not handle non-takeout URL', async () => {
-    const encoded_url = btoa('http://iscaliforniaonfire.com/')
-    const request_url = `https://example.com/p/${encoded_url}`
-    console.debug(request_url)
+  test('handle the file test URL', async () => {
+    const AZ_STORAGE_TEST_URL_SEGMENT = process.env.AZ_STORAGE_TEST_URL_SEGMENT
+    if (!AZ_STORAGE_TEST_URL_SEGMENT) {
+      throw new Error('AZ_STORAGE_TEST_URL_SEGMENT environment variable is not set')
+    }
+
+    const file_source_url = file_test_200mb_url
+
+    const request_url = `https://example.com/t-azb/${AZ_STORAGE_TEST_URL_SEGMENT}`
+
+    const request = new Request(request_url, {
+      method: 'PUT',
+      headers: {
+        'x-ms-blob-type': 'BlockBlob',
+        'x-gtr-copy-source': file_source_url.toString(),
+      },
+    })
+
     const result = await handleRequest(
-      new Request(request_url, { method: 'GET' }),
+      request,
     )
+    const ok = await result.text();
+    expect(ok).toEqual('')
 
-    expect(result.status).toEqual(403)
-  })
-
-  test('handle a real google takeout url that is expired', async () => {
-    const encoded_url = btoa(real_takeout_url.toString())
-    const request_url = `https://example.com/p/${encoded_url}`
-    console.debug(request_url)
-    const result = await handleRequest(
-      new Request(request_url, { method: 'GET' }),
-    )
-
-    expect(await result.text()).toEqual(
-      expect.stringContaining('Locked Domain'),
-    )
-    expect(result.status).toEqual(401)
-  })
-
-  test('handle a real google takeout url that is expired and has bs at the end', async () => {
-    const encoded_url = btoa(real_takeout_url.toString())
-    // Seen with calls by Azure
-    const request_url = `https://example.com/p/${encoded_url}?timeout=901`
-    console.debug(request_url)
-    const result = await handleRequest(
-      new Request(request_url, { method: 'GET' }),
-    )
-
-    expect(await result.text()).toEqual(
-      expect.stringContaining('Locked Domain'),
-    )
-    expect(result.status).toEqual(401)
-  })
+    expect(result.status).toEqual(201)
+  }, 20000)
 
   test('redirect all other urls to somewhere else, like GitHub maybe', async () => {
     const result = await handleRequest(
       new Request(`https://example.com/`, { method: 'GET' }),
     )
     expect(result.status).toEqual(302)
-  })
-
-  test('handles urls to somewhere else, like GitHub maybe', async () => {
-    const result = await handleRequest(
-      new Request(
-        `https://example.com/p-azb/urlcopytest/some-container/some_file.dat?sp=racwd&st=2022-04-03T02%3A09%3A13Z&se=2022-04-03T02%3A20%3A13Z&spr=https&sv=2020-08-04&sr=c&sig=u72iEGi5SLkPg8B7QVI5HXfHSnr3MOse%2FzWzhaYdbbU%3D`,
-        { method: 'GET' },
-      ),
-    )
-
-    // This should be a rejection, as if we visited the URL with a GET directly.
-    expect(result.status).toEqual(403)
   })
 })
 
@@ -84,7 +58,7 @@ describe('url-parser', () => {
     )
     expect(path).toEqual(
       new URL(
-        '/p-azb/urlcopytest/some-container/some_file.dat?sp=racwd&st=2022-04-03T02%3A09%3A13Z&se=2022-04-03T02%3A20%3A13Z&spr=https&sv=2020-08-04&sr=c&sig=u72iEGi5SLkPg8B7QVI5HXfHSnr3MOse%2FzWzhaYdbbU%3D',
+        '/t-azb/urlcopytest/some-container/some_file.dat?sp=racwd&st=2022-04-03T02%3A09%3A13Z&se=2022-04-03T02%3A20%3A13Z&spr=https&sv=2020-08-04&sr=c&sig=u72iEGi5SLkPg8B7QVI5HXfHSnr3MOse%2FzWzhaYdbbU%3D',
         'https://example.com',
       ),
     )
