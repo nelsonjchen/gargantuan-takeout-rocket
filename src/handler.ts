@@ -59,9 +59,17 @@ export async function handleTransloadAzBlobRequest(request: Request): Promise<Re
     })
   }
   console.log('fetching original file from', copySourceUrl.href)
+  const copySourceHeaders = new Headers()
+  const sourceRange = request.headers.get('x-gtr-source-range')
+  if (sourceRange) {
+    copySourceHeaders.set('Range', sourceRange)
+  }
+
   const copySourceResponse = await fetch(copySourceUrl.toString(), {
     method: 'GET',
+    headers: copySourceHeaders,
   })
+
   console.log('original file response status', copySourceResponse.status)
   // If the original request has some sort of error, return that error
   if (!copySourceResponse.ok) {
