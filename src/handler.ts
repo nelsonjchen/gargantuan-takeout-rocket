@@ -39,6 +39,11 @@ export async function handleRequest(request: Request): Promise<Response> {
 
 
 export async function handleTransloadAzBlobRequest(request: Request): Promise<Response> {
+  // These headers go to Azure
+  const toAzureHeaders = new Headers(request.headers)
+  // These headers go to the source
+  const copySourceHeaders = new Headers()
+
   // Check for a 'x-gtr-copy-source' header
   const copySource = request.headers.get('x-gtr-copy-source')
   if (!copySource) {
@@ -46,9 +51,37 @@ export async function handleTransloadAzBlobRequest(request: Request): Promise<Re
       status: 400,
     })
   };
-  // x-gtr-copy-source is not a valid header for upstream. Strip it.
-  const strippedHeaders = new Headers(request.headers)
-  strippedHeaders.delete('x-gtr-copy-source')
+
+
+  // If a x-gtr-copy-source-range exists, process it
+  // x-gtr-source-range format is like "bytes=start-end"
+  const copySourceRange = request.headers.get('x-gtr-source-range')
+  if (copySourceRange) {
+    // toAzureHeaders.delete('x-gtr-copy-source-range')
+    // Set the length header to the length of the range
+    const rangeParts = copySourceRange.split('=')
+    if (rangeParts.length !== 2) {
+      return new Response('invalid x-gtr-source-range header', {
+        status: 400,
+      })
+    }
+    const range = rangeParts[1]
+    const rangeBounds = range.split('-')
+    if (rangeBounds.length !== 2) {
+      return new Response('invalid x-gtr-source-range header', {
+        status: 400,
+      })
+    }
+    const start = parseInt(rangeBounds[0])
+    const end = parseInt(rangeBounds[1])
+    if (isNaN(start) || isNaN(end)) {
+      return new Response('invalid x-gtr-source-range header', {
+        status: 400,
+      })
+    }
+    const length = end - start + 1
+    toAzureHeaders.set('Content-Length', length.toString())
+  }
 
   // Get a readable stream of the request body from the url of x-gtr-copy-source
   const copySourceUrl = new URL(copySource)
@@ -59,10 +92,10 @@ export async function handleTransloadAzBlobRequest(request: Request): Promise<Re
     })
   }
   console.log('fetching original file from', copySourceUrl.href)
-  const copySourceHeaders = new Headers()
   const sourceRange = request.headers.get('x-gtr-source-range')
   if (sourceRange) {
     copySourceHeaders.set('Range', sourceRange)
+    console.log('setting range header', sourceRange)
   }
 
   const copySourceResponse = await fetch(copySourceUrl.toString(), {
@@ -86,18 +119,24 @@ export async function handleTransloadAzBlobRequest(request: Request): Promise<Re
       status: 500,
     })
   }
-  strippedHeaders.append('Content-Length', copySourceResponse.headers.get('Content-Length') || '0')
 
+  // remove all upstream that start with cloudflare stuff
+  for (const [key, _] of toAzureHeaders.entries()) {
+    if (key.startsWith('cf-')) {
+      toAzureHeaders.delete(key)
+    }
+  }
 
   const url = new URL(request.url)
   try {
     const azUrl = proxyPathnameToAzBlobSASUrl(url)
     console.log('proxying to', azUrl)
-    // Log headers of strippedHeaders
-    console.log('strippedHeaders', JSON.stringify(Object.fromEntries(strippedHeaders.entries())))
-    const originalResponse = await fetch(azUrl.toString(), {
+
+    console.log('toAzureHeaders', JSON.stringify(Object.fromEntries(toAzureHeaders.entries())))
+    const originalResponse = await fetch(
+      azUrl.toString(), {
       method: request.method,
-      headers: strippedHeaders,
+      headers: toAzureHeaders,
       body
     })
 
