@@ -26,12 +26,12 @@ export async function createJobPlan(source: string): Promise<JobPlan> {
   }
   console.log(`Got length bytes: ${length}`);
 
-  // Divide into 500MB chunks
+  // Divide into chunks
   const chunkSize = 100 * 1024 * 1024;
   const numChunks = Math.floor(length / chunkSize);
   console.log(`Will divide into ${numChunks} chunks`);
   let chunks = [];
-  for (var i = 0; i <= length; i += chunkSize)
+  for (var i = 0; i < length; i += chunkSize)
     chunks.push({
       blockId: btoa(uuidv4())!,
       start: i,

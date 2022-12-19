@@ -65,8 +65,10 @@ export class BlockBlobClient {
       retryOn: [409, 520, 524],
       headers: {
         "x-ms-version": "2021-08-06",
-        "x-gtr-copy-source": sourceUrl
-      }
+        "x-gtr-copy-source": sourceUrl,
+        "x-gtr-copy-source-range": `bytes=${offset}-${offset + count}`
+      },
+      body: ""
     });
     if (resp.ok) {
       return resp;
