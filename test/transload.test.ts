@@ -18,12 +18,15 @@ describe("transload", () => {
       jobPlan.chunks[jobPlan.chunks.length - 1].start +
         jobPlan.chunks[jobPlan.chunks.length - 1].size
     ).toBe(jobPlan.length);
-
+    // Make sure none of the job plans have a size of 0
+    jobPlan.chunks.forEach((chunk) => {
+      expect(chunk.size).toBeGreaterThan(0);
+    });
     //
     expect(jobPlan.length).toBe(209715200);
   });
 
-  test.skip("can transload a test file from the test site directly to azure", async () => {
+  test("can transload a test file from the test site directly to azure", async () => {
     const AZURE_STORAGE_CONNECTION_STRING =
       process.env.AZURE_STORAGE_CONNECTION_STRING;
     if (!AZURE_STORAGE_CONNECTION_STRING) {
