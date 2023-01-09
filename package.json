@@ -11,7 +11,8 @@
     "types:check": "tsc && tsc -p test/tsconfig.json",
     "format": "prettier --write  '*.{json,js}' 'src/**/*.{js,ts}' 'test/**/*.{js,ts}'",
     "lint": "eslint --max-warnings=0 src && prettier --check '*.{json,js}' 'src/**/*.{js,ts}' 'test/**/*.{js,ts}'",
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest",
+    "pretest": "npm run build",
+    "test": "node --experimental-vm-modules --no-warnings node_modules/jest/bin/jest.js",
     "deploy": "wrangler publish"
   },
   "author": "author",
@@ -29,6 +30,7 @@
     "@types/node": "^18.11.9",
     "@typescript-eslint/eslint-plugin": "^5.45.0",
     "@typescript-eslint/parser": "^5.45.0",
+    "cross-env": "^7.0.3",
     "dotenv": "^16.0.3",
     "esbuild": "^0.15.16",
     "eslint": "^8.28.0",
