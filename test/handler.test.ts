@@ -1,31 +1,42 @@
-import { handleRequest, validGoogleTakeoutUrl, validTestServerURL } from '../src/handler'
+import {
+  handleRequest,
+  validGoogleTakeoutUrl,
+  validTestServerURL,
+} from '../src/handler'
 import {
   azBlobSASUrlToProxyPathname,
   proxyPathnameToAzBlobSASUrl,
 } from '../src/azb'
 
 // URL is too long, just move it to another file.
-import { real_takeout_url, real_azb_url, file_test_small_url } from './real_url'
+import {real_takeout_url, real_azb_url, file_test_small_url, file_test_large_url} from './real_url'
 
 describe('handle', () => {
-  test('has a function that can determine if a URL is from takeout, test server, or not', async () => {
+  test('has functions that can determine if a URL is from takeout, test server, or not', async () => {
     const bad_url = new URL('http://iscaliforniaonfire.com/')
     expect(validGoogleTakeoutUrl(bad_url)).toBeFalsy()
     expect(validGoogleTakeoutUrl(real_takeout_url)).toBeTruthy()
     expect(validTestServerURL(file_test_small_url)).toBeTruthy()
   })
 
-  test('handle the file test URL full', async () => {
+  test('can facilitate copy a large file block by block and committing it like from the extension', async () => {
     const AZ_STORAGE_TEST_URL_SEGMENT = process.env.AZ_STORAGE_TEST_URL_SEGMENT
     if (!AZ_STORAGE_TEST_URL_SEGMENT) {
-      throw new Error('AZ_STORAGE_TEST_URL_SEGMENT environment variable is not set')
+      throw new Error(
+        'AZ_STORAGE_TEST_URL_SEGMENT environment variable is not set',
+      )
     }
 
-    const file_source_url = file_test_small_url
+    const file_source_url = file_test_large_url
 
-    const requestUrl = new URL(`https://example.com/t-azb/${AZ_STORAGE_TEST_URL_SEGMENT}`)
+    const requestUrl = new URL(
+      `https://example.com/t-azb/${AZ_STORAGE_TEST_URL_SEGMENT}`,
+    )
     // Change filename of request URL
-    requestUrl.pathname = requestUrl.pathname.replace('some_file.dat', 'full.dat')
+    requestUrl.pathname = requestUrl.pathname.replace(
+      'some_file.dat',
+      'full.dat',
+    )
 
     const request = new Request(requestUrl, {
       method: 'PUT',
@@ -35,41 +46,14 @@ describe('handle', () => {
       },
     })
 
-    const result = await handleRequest(
-      request,
-    )
-    const ok = await result.text();
+    const result = await handleRequest(request)
+    const ok = await result.text()
     expect(ok).toEqual('')
 
     expect(result.status).toEqual(201)
   }, 60000)
 
-  test('handle the file test URL blocky', async () => {
-    const AZ_STORAGE_TEST_URL_SEGMENT = process.env.AZ_STORAGE_TEST_URL_SEGMENT
-    if (!AZ_STORAGE_TEST_URL_SEGMENT) {
-      throw new Error('AZ_STORAGE_TEST_URL_SEGMENT environment variable is not set')
-    }
 
-    const file_source_url = file_test_small_url
-
-    const request_url = `https://example.com/t-azb/${AZ_STORAGE_TEST_URL_SEGMENT}`
-
-    const request = new Request(request_url, {
-      method: 'PUT',
-      headers: {
-        'x-ms-blob-type': 'BlockBlob',
-        'x-gtr-copy-source': file_source_url.toString(),
-      },
-    })
-
-    const result = await handleRequest(
-      request,
-    )
-    const ok = await result.text();
-    expect(ok).toEqual('')
-
-    expect(result.status).toEqual(201)
-  }, 60000)
 
   test('redirect all other urls to somewhere else, like GitHub maybe', async () => {
     const result = await handleRequest(

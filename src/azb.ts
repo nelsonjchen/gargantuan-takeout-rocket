@@ -27,15 +27,15 @@ export function proxyPathnameToAzBlobSASUrl(proxy_path: URL): URL {
   const url_parts = proxy_path.pathname.split('/')
   const account_name = url_parts[2]
   if (!account_name) {
-    throw new Error('invalid proxy url')
+    throw new Error('invalid proxy url, no account name')
   }
   const container_name = url_parts[3]
   if (!container_name) {
-    throw new Error('invalid proxy url')
+    throw new Error('invalid proxy url, no container name')
   }
   const blob_name = url_parts.slice(4).join('/')
   if (!blob_name) {
-    throw new Error('invalid proxy url')
+    throw new Error('invalid proxy url, no blob name')
   }
   const query_params = proxy_path.searchParams.toString()
   return new URL(

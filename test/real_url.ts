@@ -3,3 +3,5 @@ export const real_takeout_url = new URL("https://00f74ba44b071b761059aef3fd79738
 export const real_azb_url = new URL("https://urlcopytest.blob.core.windows.net/some-container/some_file.dat?sp=racwd&st=2022-04-03T02%3A09%3A13Z&se=2022-04-03T02%3A20%3A13Z&spr=https&sv=2020-08-04&sr=c&sig=u72iEGi5SLkPg8B7QVI5HXfHSnr3MOse%2FzWzhaYdbbU%3D")
 
 export const file_test_small_url = new URL("https://gtr-test.677472.xyz/10MB.bin")
+
+export const file_test_large_url = new URL("https://gtr-test.677472.xyz/200MB.zip")
