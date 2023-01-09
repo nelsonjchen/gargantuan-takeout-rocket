@@ -40,9 +40,16 @@ export async function handleRequest(request: Request): Promise<Response> {
 
 export async function handleTransloadAzBlobRequest(request: Request): Promise<Response> {
   // These headers go to Azure
-  const toAzureHeaders = new Headers(request.headers)
+  const toAzureHeaders = new Headers()
   // These headers go to the source
   const copySourceHeaders = new Headers()
+
+  // Copy all headers from the request that astart with x-ms- to the Azure headers
+  for (const [key, value] of request.headers) {
+    if (key.startsWith('x-ms-')) {
+      toAzureHeaders.set(key, value)
+    }
+  }
 
   // Check for a 'x-gtr-copy-source' header
   const copySource = request.headers.get('x-gtr-copy-source')
@@ -50,7 +57,7 @@ export async function handleTransloadAzBlobRequest(request: Request): Promise<Re
     return new Response('missing x-gtr-copy-source header', {
       status: 400,
     })
-  };
+  }
 
 
   // If a x-gtr-copy-source-range exists, process it
@@ -112,13 +119,15 @@ export async function handleTransloadAzBlobRequest(request: Request): Promise<Re
     })
   }
   // Get a readable stream of the original
-  const body = copySourceResponse.body
+  const copySourceBody = copySourceResponse.body
   // Return an error if body isn't a ReadableStream
-  if (!(body instanceof ReadableStream)) {
-    return new Response('body is not a ReadableStream', {
+  if (!(copySourceBody instanceof ReadableStream)) {
+    return new Response('copySourceBody is not a ReadableStream', {
       status: 500,
     })
   }
+  // Set content length of toAzureHeaders to the content length of the source
+  toAzureHeaders.set('Content-Length', copySourceResponse.headers.get('Content-Length') || '0')
 
   // remove all upstream that start with cloudflare stuff
   for (const [key, _] of toAzureHeaders.entries()) {
@@ -137,7 +146,7 @@ export async function handleTransloadAzBlobRequest(request: Request): Promise<Re
       azUrl.toString(), {
       method: request.method,
       headers: toAzureHeaders,
-      body
+      body: copySourceBody
     })
 
     const body2 = await originalResponse.text()
