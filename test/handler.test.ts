@@ -19,7 +19,7 @@ describe('handle', () => {
     expect(validTestServerURL(file_test_small_url)).toBeTruthy()
   })
 
-  test('can facilitate copy a large file block by block and committing it like from the extension', async () => {
+  test('can facilitate copy of a large file in a single block', async () => {
     const AZ_STORAGE_TEST_URL_SEGMENT = process.env.AZ_STORAGE_TEST_URL_SEGMENT
     if (!AZ_STORAGE_TEST_URL_SEGMENT) {
       throw new Error(
@@ -34,8 +34,43 @@ describe('handle', () => {
     )
     // Change filename of request URL
     requestUrl.pathname = requestUrl.pathname.replace(
-      'some_file.dat',
-      'full.dat',
+      'test.dat',
+      'single.dat',
+    )
+
+    const request = new Request(requestUrl, {
+      method: 'PUT',
+      headers: {
+        'x-ms-blob-type': 'BlockBlob',
+        'x-gtr-copy-source': file_source_url.toString(),
+      },
+    })
+
+    const result = await handleRequest(request)
+    const ok = await result.text()
+    expect(ok).toEqual('')
+
+    expect(result.status).toEqual(201)
+  }, 60000)
+
+
+  test('can facilitate copy of a large file with multiple blocks', async () => {
+    const AZ_STORAGE_TEST_URL_SEGMENT = process.env.AZ_STORAGE_TEST_URL_SEGMENT
+    if (!AZ_STORAGE_TEST_URL_SEGMENT) {
+      throw new Error(
+        'AZ_STORAGE_TEST_URL_SEGMENT environment variable is not set',
+      )
+    }
+
+    const file_source_url = file_test_large_url
+
+    const requestUrl = new URL(
+      `https://example.com/t-azb/${AZ_STORAGE_TEST_URL_SEGMENT}`,
+    )
+    // Change filename of request URL
+    requestUrl.pathname = requestUrl.pathname.replace(
+      'test.dat',
+      'block.dat',
     )
 
     const request = new Request(requestUrl, {
