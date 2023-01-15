@@ -64,29 +64,99 @@ describe('handle', () => {
 
     const file_source_url = file_test_large_url
 
-    const requestUrl = new URL(
+    const base_request_url = new URL(
       `https://example.com/t-azb/${AZ_STORAGE_TEST_URL_SEGMENT}`,
     )
     // Change filename of request URL
-    requestUrl.pathname = requestUrl.pathname.replace(
+    base_request_url.pathname = base_request_url.pathname.replace(
       'test.dat',
       'block.dat',
     )
 
-    const request = new Request(requestUrl, {
+    // Transfer size is 100MB Chunk size
+    const transfer_size = 1024 * 1024 * 100
+
+    // First block
+
+    // Construct the first block request url
+    const first_block_request_url = new URL(base_request_url)
+    first_block_request_url.searchParams.append('comp', 'block')
+    // Generate a block id, must be base64 encoded
+    const first_block_id = Buffer.from('1').toString('base64')
+    first_block_request_url.searchParams.append('blockid', first_block_id)
+
+    const first_block_request = new Request(first_block_request_url, {
       method: 'PUT',
       headers: {
         'x-ms-blob-type': 'BlockBlob',
         'x-gtr-copy-source': file_source_url.toString(),
-      },
+        'x-gtr-copy-source-range': `bytes=0-${transfer_size - 1}`,
+      }
     })
 
-    const result = await handleRequest(request)
-    const ok = await result.text()
-    expect(ok).toEqual('')
+    const first_block_result = await handleRequest(first_block_request)
+    const first_block_ok = await first_block_result.text()
+    expect(first_block_ok).toEqual('')
+    expect(first_block_result.status).toEqual(201)
 
-    expect(result.status).toEqual(201)
-  }, 60000)
+    // Second block
+
+    // Construct the second block request url
+    const second_block_request_url = new URL(base_request_url)
+    second_block_request_url.searchParams.append('comp', 'block')
+    // Generate a block id, must be base64 encoded
+    const second_block_id = Buffer.from('2').toString('base64')
+    second_block_request_url.searchParams.append('blockid', second_block_id)
+
+    const second_block_request = new Request(second_block_request_url, {
+      method: 'PUT',
+      headers: {
+        'x-ms-blob-type': 'BlockBlob',
+        'x-gtr-copy-source': file_source_url.toString(),
+        'x-gtr-copy-source-range': `bytes=${transfer_size}-${transfer_size * 2 - 1}`,
+      }
+    })
+
+    const second_block_result = await handleRequest(second_block_request)
+    const second_block_ok = await second_block_result.text()
+    expect(second_block_ok).toEqual('')
+    expect(second_block_result.status).toEqual(201)
+
+    // Commit the blocks
+
+    // Construct the commit request url to directly contact Azure from the request url
+    // Get the container from the base request url
+
+    // Get container from AZ_STORAGE_TEST_URL_SEGMENT
+    const test_url_split = AZ_STORAGE_TEST_URL_SEGMENT.split('/')
+    const container = test_url_split[0]
+    // Get rest of URL from AZ_STORAGE_TEST_URL_SEGMENT
+    const rest_of_url = test_url_split.slice(1).join('/')
+
+    const commit_request_url = new URL(`https://${container}.blob.core.windows.net/${rest_of_url}`)
+    commit_request_url.searchParams.append('comp', 'blocklist')
+    // Change pathname of request URL
+    commit_request_url.pathname = commit_request_url.pathname.replace(
+      'test.dat',
+      'block.dat',
+    )
+
+    const commit_request = new Request(commit_request_url, {
+      method: 'PUT',
+      headers: {
+      },
+      body: `<?xml version="1.0" encoding="utf-8"?>
+        <BlockList><Latest>${first_block_id}</Latest><Latest>${second_block_id}</Latest></BlockList>
+      `
+    })
+
+    // Send request with fetch
+    const commit_result = await fetch(commit_request)
+    const commit_ok = await commit_result.text()
+    expect(commit_ok).toEqual('')
+    expect(commit_result.status).toEqual(201)
+
+  }, 120000)
 
 
 

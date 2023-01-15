@@ -61,28 +61,28 @@ export async function handleTransloadAzBlobRequest(request: Request): Promise<Re
 
 
   // If a x-gtr-copy-source-range exists, process it
-  // x-gtr-source-range format is like "bytes=start-end"
-  const copySourceRange = request.headers.get('x-gtr-source-range')
+  // x-gtr-copy-source-range format is like "bytes=start-end"
+  const copySourceRange = request.headers.get('x-gtr-copy-source-range')
   if (copySourceRange) {
     // toAzureHeaders.delete('x-gtr-copy-source-range')
     // Set the length header to the length of the range
     const rangeParts = copySourceRange.split('=')
     if (rangeParts.length !== 2) {
-      return new Response('invalid x-gtr-source-range header', {
+      return new Response('invalid x-gtr-copy-source-range header', {
         status: 400,
       })
     }
     const range = rangeParts[1]
     const rangeBounds = range.split('-')
     if (rangeBounds.length !== 2) {
-      return new Response('invalid x-gtr-source-range header', {
+      return new Response('invalid x-gtr-copy-source-range header', {
         status: 400,
       })
     }
     const start = parseInt(rangeBounds[0])
     const end = parseInt(rangeBounds[1])
     if (isNaN(start) || isNaN(end)) {
-      return new Response('invalid x-gtr-source-range header', {
+      return new Response('invalid x-gtr-copy-source-range header', {
         status: 400,
       })
     }
@@ -99,7 +99,7 @@ export async function handleTransloadAzBlobRequest(request: Request): Promise<Re
     })
   }
   console.log('fetching original file from', copySourceUrl.href)
-  const sourceRange = request.headers.get('x-gtr-source-range')
+  const sourceRange = request.headers.get('x-gtr-copy-source-range')
   if (sourceRange) {
     copySourceHeaders.set('Range', sourceRange)
     console.log('setting range header', sourceRange)
