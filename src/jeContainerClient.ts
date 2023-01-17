@@ -66,7 +66,7 @@ export class BlockBlobClient {
       headers: {
         "x-ms-version": "2021-08-06",
         "x-gtr-copy-source": sourceUrl,
-        "x-gtr-copy-source-range": `bytes=${offset}-${offset + count}`
+        "x-gtr-copy-source-range": `bytes=${offset}-${offset + count - 1}`
       },
       body: ""
     });
