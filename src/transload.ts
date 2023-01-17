@@ -26,10 +26,12 @@ export async function createJobPlan(
   const resp = await fetch(source, {
     method: "HEAD"
   });
-  const length = parseInt(resp.headers.get("content-length") || "0");
-  if (!length) {
+  const content_length_header = resp.headers.get("content-length");
+  if (!content_length_header) {
     throw new Error("No content-length header");
   }
+  const length = parseInt(content_length_header);
+
   console.log(`Got length bytes: ${length}`);
 
   // Divide into chunks
