@@ -4,11 +4,12 @@ const someFile = "https://gtr-test.677472.xyz/200MB.zip";
 
 describe("transload", () => {
   test("is able to produce a job plan from a source", async () => {
-    const jobPlan = await createJobPlan(someFile);
+    const mb = 100;
+    const jobPlan = await createJobPlan(someFile, mb);
     console.log(`Got job plan: `, jobPlan);
     expect(jobPlan.chunks.length).toBeGreaterThan(0);
     expect(jobPlan.chunks[0].start).toBe(0);
-    const mb = 100;
+
     expect(jobPlan.chunks[0].size).toBe(mb * 1024 * 1024);
     // expect(jobPlan.chunks[1].size).toBe(88843308);
     // Check last chunk in jobPlan

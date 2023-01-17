@@ -15,7 +15,13 @@ interface JobPlan {
   length: number;
 }
 
-export async function createJobPlan(source: string): Promise<JobPlan> {
+export async function createJobPlan(
+  source: string,
+  chunk_size_mb?: number
+): Promise<JobPlan> {
+  if (!chunk_size_mb) {
+    chunk_size_mb = 50;
+  }
   // Fetch HEAD of source
   const resp = await fetch(source, {
     method: "HEAD"
@@ -27,7 +33,7 @@ export async function createJobPlan(source: string): Promise<JobPlan> {
   console.log(`Got length bytes: ${length}`);
 
   // Divide into chunks
-  const chunkSize = 100 * 1024 * 1024;
+  const chunkSize = chunk_size_mb * 1024 * 1024;
   const numChunks = Math.floor(length / chunkSize);
   console.log(`Will divide into ${numChunks} chunks`);
   let chunks = [];
