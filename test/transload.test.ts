@@ -1,6 +1,9 @@
 import { transload, createJobPlan } from "../src/transload";
 
 const someFile = "https://gtr-test.677472.xyz/200MB.zip";
+// File exists on-demand. Does not always exist for obvious reasons.
+// This is hosted on R2, so it is unlimited bandwidth, but not storage.
+const superlargeFile = "https://gtr-test.677472.xyz/50GB.dat";
 
 describe("transload", () => {
   test("is able to produce a job plan from a source", async () => {
@@ -36,4 +39,18 @@ describe("transload", () => {
 
     await transload(someFile, AZURE_STORAGE_CONNECTION_STRING, "iso.dat");
   }, 30000);
+
+  test.skip("can transload a superlarge test file from the test site directly to azure", async () => {
+    const AZURE_STORAGE_CONNECTION_STRING =
+      process.env.AZURE_STORAGE_CONNECTION_STRING;
+    if (!AZURE_STORAGE_CONNECTION_STRING) {
+      throw new Error("No AZURE_STORAGE_CONNECTION_STRING");
+    }
+
+    await transload(
+      superlargeFile,
+      AZURE_STORAGE_CONNECTION_STRING,
+      "superlarge.dat"
+    );
+  }, 60000);
 });
