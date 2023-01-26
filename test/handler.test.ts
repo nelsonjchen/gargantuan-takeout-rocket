@@ -4,7 +4,7 @@ import {
   validTestServerURL,
 } from '../src/handler'
 import {
-  azBlobSASUrlToProxyPathname,
+  azBlobSASUrlToProxyPathname, azBlobSASUrlToTransloadProxyPathname,
   proxyPathnameToAzBlobSASUrl,
 } from '../src/azb'
 
@@ -158,7 +158,17 @@ describe('handle', () => {
 
   }, 120000)
 
+  test('handles urls to somewhere else, like GitHub maybe', async () => {
+    const result = await handleRequest(
+      new Request(
+        `https://example.com/p-azb/urlcopytest/some-container/some_file.dat?sp=racwd&st=2022-04-03T02%3A09%3A13Z&se=2022-04-03T02%3A20%3A13Z&spr=https&sv=2020-08-04&sr=c&sig=u72iEGi5SLkPg8B7QVI5HXfHSnr3MOse%2FzWzhaYdbbU%3D`,
+        { method: 'GET' },
+      ),
+    )
 
+    // This should be a rejection, as if we visited the URL with a GET directly.
+    expect(result.status).toEqual(403)
+  })
 
   test('redirect all other urls to somewhere else, like GitHub maybe', async () => {
     const result = await handleRequest(
@@ -169,6 +179,22 @@ describe('handle', () => {
 })
 
 describe('url-parser', () => {
+  test('can transload proxify the azure blob SAS URL', async () => {
+    const path = azBlobSASUrlToTransloadProxyPathname(
+      real_azb_url,
+      'https://example.com',
+    )
+    expect(path).toEqual(
+      new URL(
+        '/t-azb/urlcopytest/some-container/some_file.dat?sp=racwd&st=2022-04-03T02%3A09%3A13Z&se=2022-04-03T02%3A20%3A13Z&spr=https&sv=2020-08-04&sr=c&sig=u72iEGi5SLkPg8B7QVI5HXfHSnr3MOse%2FzWzhaYdbbU%3D',
+        'https://example.com',
+      ),
+    )
+    const url = proxyPathnameToAzBlobSASUrl(path)
+    expect(url).toEqual(real_azb_url)
+  })
+
+
   test('can proxify the azure blob SAS URL', async () => {
     const path = azBlobSASUrlToProxyPathname(
       real_azb_url,
@@ -176,7 +202,7 @@ describe('url-parser', () => {
     )
     expect(path).toEqual(
       new URL(
-        '/t-azb/urlcopytest/some-container/some_file.dat?sp=racwd&st=2022-04-03T02%3A09%3A13Z&se=2022-04-03T02%3A20%3A13Z&spr=https&sv=2020-08-04&sr=c&sig=u72iEGi5SLkPg8B7QVI5HXfHSnr3MOse%2FzWzhaYdbbU%3D',
+        '/p-azb/urlcopytest/some-container/some_file.dat?sp=racwd&st=2022-04-03T02%3A09%3A13Z&se=2022-04-03T02%3A20%3A13Z&spr=https&sv=2020-08-04&sr=c&sig=u72iEGi5SLkPg8B7QVI5HXfHSnr3MOse%2FzWzhaYdbbU%3D',
         'https://example.com',
       ),
     )
