@@ -15,6 +15,19 @@ interface JobPlan {
   length: number;
 }
 
+export function sourceToGtrProxySource(
+  source: string,
+  proxyBase?: string
+): string {
+  if (!proxyBase) {
+    proxyBase = built_in_proxy_base;
+  }
+  const url = btoa(source);
+  // dummy.bin is a placeholder filename
+  // .bin is by default ignored by Cloudflare for caching
+  return `${proxyBase}/p/${url}/dummy.bin`;
+}
+
 export async function createJobPlan(
   source: string,
   chunk_size_mb?: number
