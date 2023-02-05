@@ -6,15 +6,15 @@ export async function handleRequest(request: Request): Promise<Response> {
   const url = new URL(request.url)
 
   if (url.pathname.startsWith('/p/')) {
-    return handleTakeoutRequest(request)
+    return handleProxyToGoogleTakeoutRequest(request)
   }
 
   if (url.pathname.startsWith('/p-azb/')) {
-    return handleAzBlobRequest(request)
+    return handleProxyToAzStorageRequest(request)
   }
 
   if (url.pathname.startsWith('/t-azb/')) {
-    return handleTransloadAzBlobRequest(request)
+    return handleFullTransloadFromGoogleTakeoutToAzBlobRequest(request)
   }
 
   if (url.pathname.startsWith('/version/')) {
@@ -45,7 +45,7 @@ export async function handleRequest(request: Request): Promise<Response> {
   })
 }
 
-export async function handleTakeoutRequest(
+export async function handleProxyToGoogleTakeoutRequest(
   request: Request,
 ): Promise<Response> {
   const url = new URL(request.url)
@@ -102,7 +102,7 @@ export async function handleTakeoutRequest(
   return response
 }
 
-export async function handleAzBlobRequest(request: Request): Promise<Response> {
+export async function handleProxyToAzStorageRequest(request: Request): Promise<Response> {
   const url = new URL(request.url)
   try {
     const azUrl = proxyPathnameToAzBlobSASUrl(url)
@@ -125,7 +125,7 @@ export async function handleAzBlobRequest(request: Request): Promise<Response> {
   }
 }
 
-export async function handleTransloadAzBlobRequest(request: Request): Promise<Response> {
+export async function handleFullTransloadFromGoogleTakeoutToAzBlobRequest(request: Request): Promise<Response> {
   // These headers go to Azure
   const toAzureHeaders = new Headers()
   // These headers go to the source

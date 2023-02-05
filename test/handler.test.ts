@@ -11,15 +11,28 @@ import {
 // URL is too long, just move it to another file.
 import {real_takeout_url, real_azb_url, file_test_small_url, file_test_large_url} from './real_url'
 
-describe('handle', () => {
+describe('handler utilities', () => {
   test('has functions that can determine if a URL is from takeout, test server, or not', async () => {
     const bad_url = new URL('http://iscaliforniaonfire.com/')
     expect(validGoogleTakeoutUrl(bad_url)).toBeFalsy()
     expect(validGoogleTakeoutUrl(real_takeout_url)).toBeTruthy()
     expect(validTestServerURL(file_test_small_url)).toBeTruthy()
   })
+})
 
-  test('can facilitate copy of a large file in a single block', async () => {
+describe('handler', () => {
+  test('redirect visiting the "front page" to GitHub', async () => {
+    const result = await handleRequest(
+      new Request(`https://example.com/`, {method: 'GET'}),
+    )
+    expect(result.status).toEqual(302)
+    expect(result.headers.get('Location')).toContain('github.com')
+  })
+})
+
+describe('transload handler', () => {
+
+  test('can facilitate transload of a large file in a single block', async () => {
     const AZ_STORAGE_TEST_URL_SEGMENT = process.env.AZ_STORAGE_TEST_URL_SEGMENT
     if (!AZ_STORAGE_TEST_URL_SEGMENT) {
       throw new Error(
@@ -54,7 +67,7 @@ describe('handle', () => {
   }, 60000)
 
 
-  test('can facilitate copy of a large file with multiple blocks', async () => {
+  test('can facilitate transload of a large file with multiple blocks', async () => {
     const AZ_STORAGE_TEST_URL_SEGMENT = process.env.AZ_STORAGE_TEST_URL_SEGMENT
     if (!AZ_STORAGE_TEST_URL_SEGMENT) {
       throw new Error(
@@ -143,8 +156,7 @@ describe('handle', () => {
 
     const commit_request = new Request(commit_request_url, {
       method: 'PUT',
-      headers: {
-      },
+      headers: {},
       body: `<?xml version="1.0" encoding="utf-8"?>
         <BlockList><Latest>${first_block_id}</Latest><Latest>${second_block_id}</Latest></BlockList>
       `
@@ -157,25 +169,22 @@ describe('handle', () => {
     expect(commit_result.status).toEqual(201)
 
   }, 120000)
+})
 
-  test('handles urls to somewhere else, like GitHub maybe', async () => {
+describe('azure proxy handler', () => {
+
+  test('handles proxying to azure', async () => {
     const result = await handleRequest(
       new Request(
         `https://example.com/p-azb/urlcopytest/some-container/some_file.dat?sp=racwd&st=2022-04-03T02%3A09%3A13Z&se=2022-04-03T02%3A20%3A13Z&spr=https&sv=2020-08-04&sr=c&sig=u72iEGi5SLkPg8B7QVI5HXfHSnr3MOse%2FzWzhaYdbbU%3D`,
-        { method: 'GET' },
+        {method: 'GET'},
       ),
     )
 
-    // This should be a rejection, as if we visited the URL with a GET directly.
+    // This should be a rejection, as if we visited the URL with a GET directly to Azure. The signature has long since expired.
     expect(result.status).toEqual(403)
   })
 
-  test('redirect all other urls to somewhere else, like GitHub maybe', async () => {
-    const result = await handleRequest(
-      new Request(`https://example.com/`, { method: 'GET' }),
-    )
-    expect(result.status).toEqual(302)
-  })
 })
 
 describe('url-parser', () => {
