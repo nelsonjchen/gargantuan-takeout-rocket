@@ -48,7 +48,7 @@ describe('transload handler', () => {
     // Change filename of request URL
     requestUrl.pathname = requestUrl.pathname.replace(
       'test.dat',
-      'single.dat',
+      't-azb-small.dat',
     )
 
     const request = new Request(requestUrl, {
@@ -83,7 +83,7 @@ describe('transload handler', () => {
     // Change filename of request URL
     base_request_url.pathname = base_request_url.pathname.replace(
       'test.dat',
-      'block.dat',
+      't-azb-large.dat',
     )
 
     // Transfer size is 100MB Chunk size
@@ -151,7 +151,7 @@ describe('transload handler', () => {
     // Change pathname of request URL
     commit_request_url.pathname = commit_request_url.pathname.replace(
       'test.dat',
-      'block.dat',
+      't-azb-large.dat',
     )
 
     const commit_request = new Request(commit_request_url, {
