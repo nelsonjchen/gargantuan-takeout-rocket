@@ -88,7 +88,8 @@ export async function handleProxyToGoogleTakeoutRequest(
     status: originalResponse.status,
     headers: originalResponse.headers,
   })
-  console.log(`response: ${JSON.stringify(response)}`)
+
+  console.log(response)
 
   return response
 }
@@ -254,12 +255,11 @@ export async function handleFullTransloadFromGoogleTakeoutToAzBlobRequest(reques
 }
 
 export function validTestServerURL(url: URL): boolean {
-  // https://github.com/nelsonjchen/put-block-from-url-esc-issue-demo-server/
   return (
+    // Cloudflare Bucket test server with unlimited download bandwidth
     url.hostname.endsWith('gtr-test.677472.xyz') ||
-    url.hostname.endsWith('3vngqvvpoq-uc.a.run.app') ||
-    url.hostname.endsWith('releases.ubuntu.com') ||
-    url.hostname == 'mirrors.advancedhosters.com'
+    // https://github.com/nelsonjchen/put-block-from-url-esc-issue-demo-server/
+    url.hostname.endsWith('3vngqvvpoq-uc.a.run.app')
   )
 }
 
