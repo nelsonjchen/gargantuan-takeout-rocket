@@ -23,8 +23,8 @@ export function sourceToGtrProxySource(
     proxyBase = built_in_proxy_base;
   }
   const url = btoa(source);
-  // dummy.bin is a placeholder filename
-  // .bin is by default ignored by Cloudflare for caching
+  // dummy.bin is a placeholder filename that the proxy will strip off.
+  // Useful for azcopy which requires a filename at the end.
   return `${proxyBase}/p/${url}/dummy.bin`;
 }
 
@@ -65,23 +65,28 @@ export async function createJobPlan(
 }
 
 export async function transload(
-  source: string,
+  sourceUrl: string,
   destination: string,
   name: string,
   proxyBase?: string
 ): Promise<Download> {
-  console.log(`Transloading ${source} to ${destination}`);
+  console.log(`Transloading ${sourceUrl} to ${destination}`);
 
   const containerClient = new ContainerClient(destination);
   if (!proxyBase) {
     proxyBase = built_in_proxy_base;
   }
   const blobClient = containerClient.getBlockBlobClient(name, proxyBase);
-  const jobPlan = await createJobPlan(source);
+  const jobPlan = await createJobPlan(sourceUrl);
   console.log(`Got job plan: `, jobPlan);
   console.log(`Staging Blocks`);
   const responses = jobPlan.chunks.map(async (chunk) =>
-    blobClient.stageBlockFromURL(chunk.blockId, source, chunk.start, chunk.size)
+    blobClient.stageBlockFromURL(
+      chunk.blockId,
+      sourceUrl,
+      chunk.start,
+      chunk.size
+    )
   );
   const results = await Promise.all(responses);
   console.log(`Staged blocks: `, results);
@@ -93,6 +98,6 @@ export async function transload(
 
   console.log(`Committed Block List`);
 
-  console.log(`Transloaded ${source} to ${destination}`);
+  console.log(`Transloaded ${sourceUrl} to ${destination}`);
   return { name, status: "complete", size: jobPlan.length };
 }
