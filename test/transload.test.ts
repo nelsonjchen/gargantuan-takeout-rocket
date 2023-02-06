@@ -68,6 +68,7 @@ describe("transload", () => {
     );
   }, 30000);
 
+  // This test is disabled because hosting the 50GB test file is too expensive.
   test.skip("can transload a superlarge test file from the test site directly to azure", async () => {
     const AZURE_STORAGE_CONNECTION_STRING =
       process.env.AZURE_STORAGE_CONNECTION_STRING;
@@ -80,7 +81,7 @@ describe("transload", () => {
     await transload(
       targetUrl,
       AZURE_STORAGE_CONNECTION_STRING,
-      "gtr-ext-test-large-file.dat",
+      "gtr-ext-test-superlarge-file.dat",
       proxyBaseUrl,
       1000
     );
