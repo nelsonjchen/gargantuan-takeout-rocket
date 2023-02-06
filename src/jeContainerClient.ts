@@ -60,7 +60,7 @@ export class BlockBlobClient {
       headers: {
         "x-ms-version": "2021-08-06",
         "x-ms-copy-source": sourceUrl,
-        "x-ms-copy-source-range": `bytes=${offset}-${offset + count - 1}`
+        "x-ms-source-range": `bytes=${offset}-${offset + count - 1}`
       },
       body: ""
     });
