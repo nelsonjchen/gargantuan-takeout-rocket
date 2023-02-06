@@ -187,6 +187,35 @@ describe('azure proxy handler', () => {
 
 })
 
+describe('takeout proxy handler', () => {
+ test('handles proxying to takeout test server on non-existent link', async () => {
+   const result = await handleRequest(
+     new Request(
+       `https://example.com/p/put-block-from-url-esc-issue-demo-server-3vngqvvpoq-uc.a.run.app/red/blue.txt`,
+       {method: 'GET'},
+     ),
+   )
+
+   // This should be a rejection, as if we visited the URL with a GET directly to Azure. The signature has long since expired.
+   expect(result.status).toEqual(404)
+   expect(await result.text()).toEqual('This path actually doesn\'t exist.')
+ })
+
+  test('handles proxying to takeout test server on existent link with escaping', async () => {
+    const result = await handleRequest(
+      new Request(
+        `https://example.com/p/put-block-from-url-esc-issue-demo-server-3vngqvvpoq-uc.a.run.app/red%2Fblue.txt`,
+        {method: 'GET'},
+      ),
+    )
+
+    // This should be a rejection, as if we visited the URL with a GET directly to Azure. The signature has long since expired.
+    expect(result.status).toEqual(200)
+    expect(await result.text()).toEqual('This path exists!')
+  })
+
+})
+
 describe('url-parser', () => {
   test('can transload proxify the azure blob SAS URL', async () => {
     const path = azBlobSASUrlToTransloadProxyPathname(

@@ -48,30 +48,12 @@ export async function handleRequest(request: Request): Promise<Response> {
 export async function handleProxyToGoogleTakeoutRequest(
   request: Request,
 ): Promise<Response> {
-  const url = new URL(request.url)
-
-  // Decode URL from base64
-  const base64strMatches =
-    /\/p\/((?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?)/.exec(
-      url.pathname,
-    )
-  if (!base64strMatches) {
-    return new Response('could not find base64 url', {
-      status: 500,
-    })
-  }
-  const base64Url = base64strMatches[1]
-  const decoded_argument = atob(base64Url)
-  if (decoded_argument == null) {
-    return new Response('invalid base64', {
-      status: 500,
-    })
-  }
-
-  // Check if the URL is a valid URL
-  let decoded_url: URL
+  // Extracted URL is after the /p/ in the path with https:// prepended to it
+  let extracted_url: URL
   try {
-    decoded_url = new URL(decoded_argument)
+    extracted_url = new URL(
+      `https://${request.url.substring(request.url.indexOf('/p/') + 3)}`,
+    )
   } catch (_) {
     return new Response('invalid URL', {
       status: 500,
@@ -79,7 +61,7 @@ export async function handleProxyToGoogleTakeoutRequest(
   }
 
   if (
-    !(validGoogleTakeoutUrl(decoded_url) || validTestServerURL(decoded_url))
+    !(validGoogleTakeoutUrl(extracted_url) || validTestServerURL(extracted_url))
   ) {
     return new Response(
       'encoded url was not a google takeout or test server url',
@@ -89,7 +71,7 @@ export async function handleProxyToGoogleTakeoutRequest(
     )
   }
 
-  const originalResponse = await fetch(decoded_url.toString(), {
+  const originalResponse = await fetch(extracted_url.toString(), {
     method: request.method,
     headers: request.headers,
   })
@@ -98,6 +80,7 @@ export async function handleProxyToGoogleTakeoutRequest(
     status: originalResponse.status,
     headers: originalResponse.headers,
   })
+  console.log(`response: ${JSON.stringify(response)}`)
 
   return response
 }
