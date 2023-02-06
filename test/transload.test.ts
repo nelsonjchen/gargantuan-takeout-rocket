@@ -1,14 +1,18 @@
-import { transload, createJobPlan } from "../src/transload";
+import {
+  transload,
+  createJobPlan,
+  sourceToGtrProxySource
+} from "../src/transload";
 
-const someFile = "https://gtr-test.677472.xyz/200MB.zip";
+const someFileUrl = "https://gtr-test.677472.xyz/200MB.zip";
 // File exists on-demand. Does not always exist for obvious reasons.
 // This is hosted on R2, so it is unlimited bandwidth, but not storage.
-const superlargeFile = "https://gtr-test.677472.xyz/50GB.dat";
+const superlargeFileUrl = "https://gtr-test.677472.xyz/50GB.dat";
 
 describe("transload", () => {
   test("is able to produce a job plan from a source", async () => {
     const mb = 100;
-    const jobPlan = await createJobPlan(someFile, mb);
+    const jobPlan = await createJobPlan(someFileUrl, mb);
     console.log(`Got job plan: `, jobPlan);
     expect(jobPlan.chunks.length).toBeGreaterThan(0);
     expect(jobPlan.chunks[0].start).toBe(0);
@@ -30,14 +34,34 @@ describe("transload", () => {
     expect(jobPlan.length).toBe(209715200);
   });
 
-  test("can transload a test file from the test site directly to azure", async () => {
+  test("can tell azure to transload a file", async () => {
     const AZURE_STORAGE_CONNECTION_STRING =
       process.env.AZURE_STORAGE_CONNECTION_STRING;
     if (!AZURE_STORAGE_CONNECTION_STRING) {
       throw new Error("No AZURE_STORAGE_CONNECTION_STRING");
     }
 
-    await transload(someFile, AZURE_STORAGE_CONNECTION_STRING, "iso.dat");
+    await transload(
+      someFileUrl,
+      AZURE_STORAGE_CONNECTION_STRING,
+      "gtr-ext-test-medium-file.dat"
+    );
+  }, 30000);
+
+  test("can tell azure to transload a file from the proxy", async () => {
+    const AZURE_STORAGE_CONNECTION_STRING =
+      process.env.AZURE_STORAGE_CONNECTION_STRING;
+    if (!AZURE_STORAGE_CONNECTION_STRING) {
+      throw new Error("No AZURE_STORAGE_CONNECTION_STRING");
+    }
+
+    const proxifiedSomeFileUrl = sourceToGtrProxySource(someFileUrl);
+
+    await transload(
+      proxifiedSomeFileUrl,
+      AZURE_STORAGE_CONNECTION_STRING,
+      "gtr-ext-test-medium-file-proxy.dat"
+    );
   }, 30000);
 
   test.skip("can transload a superlarge test file from the test site directly to azure", async () => {
@@ -47,10 +71,12 @@ describe("transload", () => {
       throw new Error("No AZURE_STORAGE_CONNECTION_STRING");
     }
 
+    const targetUrl = sourceToGtrProxySource(superlargeFileUrl);
+
     await transload(
-      superlargeFile,
+      superlargeFileUrl,
       AZURE_STORAGE_CONNECTION_STRING,
-      "superlarge.dat"
+      "gtr-ext-test-large-file.dat"
     );
   }, 60000);
 });

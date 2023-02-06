@@ -17,8 +17,9 @@ export function azBlobSASUrlToProxyPathname(azb_url: URL, base: string): URL {
   const query_params = azb_url.searchParams.toString();
 
   const proxified_path = new URL(
-    `/t-azb/${account_name}/${container_name}/${blob_name}?${query_params}`,
+    `/p-azb/${account_name}/${container_name}/${blob_name}?${query_params}`,
     base
   );
+
   return proxified_path;
 }

@@ -22,10 +22,10 @@ export function sourceToGtrProxySource(
   if (!proxyBase) {
     proxyBase = built_in_proxy_base;
   }
-  const url = btoa(source);
-  // dummy.bin is a placeholder filename that the proxy will strip off.
-  // Useful for azcopy which requires a filename at the end.
-  return `${proxyBase}/p/${url}/dummy.bin`;
+  // Replace all %2F with %252F and remove scheme
+  const url = source.replace(/%2F/g, "%252F").replace(/https?:\/\//, "");
+
+  return `${proxyBase}/p/${url}`;
 }
 
 export async function createJobPlan(
