@@ -1,5 +1,5 @@
-import { proxyPathnameToAzBlobSASUrl } from './azb'
-import { serializeError } from 'serialize-error';
+import {proxyPathnameToAzBlobSASUrl} from './azb'
+import {serializeError} from 'serialize-error';
 
 
 export async function handleRequest(request: Request): Promise<Response> {
@@ -49,11 +49,12 @@ export async function handleProxyToGoogleTakeoutRequest(
   request: Request,
 ): Promise<Response> {
   // Extracted URL is after the /p/ in the path with https:// prepended to it
+  const original_url_segment = `https://${request.url.substring(request.url.indexOf('/p/') + 3)}`
+
   let extracted_url: URL
   try {
-    extracted_url = new URL(
-      `https://${request.url.substring(request.url.indexOf('/p/') + 3)}`,
-    )
+    // Replace %25 with % to get the original URL
+    extracted_url = new URL(original_url_segment.replace(/%25/g, '%'))
   } catch (_) {
     return new Response('invalid URL', {
       status: 500,
@@ -214,10 +215,10 @@ export async function handleFullTransloadFromGoogleTakeoutToAzBlobRequest(reques
     console.log('toAzureHeaders', JSON.stringify(Object.fromEntries(toAzureHeaders.entries())))
     const originalResponse = await fetch(
       azUrl.toString(), {
-      method: request.method,
-      headers: toAzureHeaders,
-      body: copySourceBody
-    })
+        method: request.method,
+        headers: toAzureHeaders,
+        body: copySourceBody
+      })
 
     const body2 = await originalResponse.text()
 
