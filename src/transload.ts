@@ -29,14 +29,14 @@ export function sourceToGtrProxySource(
 }
 
 export async function createJobPlan(
-  source: string,
+  source_url: string,
   chunk_size_mb?: number
 ): Promise<JobPlan> {
   if (!chunk_size_mb) {
     chunk_size_mb = 50;
   }
   // Fetch HEAD of source
-  const resp = await fetch(source, {
+  const resp = await fetch(source_url, {
     method: "HEAD"
   });
   const content_length_header = resp.headers.get("content-length");
