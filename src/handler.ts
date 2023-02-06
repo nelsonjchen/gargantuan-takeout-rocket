@@ -51,10 +51,17 @@ export async function handleProxyToGoogleTakeoutRequest(
   // Extracted URL is after the /p/ in the path with https:// prepended to it
   const original_url_segment = `https://${request.url.substring(request.url.indexOf('/p/') + 3)}`
 
+  // Strip off "/dummy.bin" from the end of the URL if it is there.
+  // This allows testing with azcopy which requires a nice filename at the end.
+  const original_url_segment_stripped = original_url_segment.replace(/\/dummy.bin$/, '')
+
+  // Replace %25 with % to get the original URL
+  const original_url_segment_stripped_processed = original_url_segment_stripped.replace(/%25/g, '%')
+
   let extracted_url: URL
   try {
     // Replace %25 with % to get the original URL
-    extracted_url = new URL(original_url_segment.replace(/%25/g, '%'))
+    extracted_url = new URL(original_url_segment_stripped_processed)
   } catch (_) {
     return new Response('invalid URL', {
       status: 500,

@@ -223,6 +223,18 @@ describe('takeout proxy handler', () => {
     expect(result.status).toEqual(200)
     expect(await result.text()).toEqual('This path exists!')
   })
+
+  test('handles proxying to takeout test server on existent link with extra escaping and dummy appended', async () => {
+    const result = await handleRequest(
+      new Request(
+        `https://example.com/p/put-block-from-url-esc-issue-demo-server-3vngqvvpoq-uc.a.run.app/red%252Fblue.txt/dummy.bin`,
+        {method: 'GET'},
+      ),
+    )
+
+    expect(result.status).toEqual(200)
+    expect(await result.text()).toEqual('This path exists!')
+  })
 })
 
 describe('url-parser', () => {
