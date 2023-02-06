@@ -80,7 +80,9 @@ describe("transload", () => {
     await transload(
       targetUrl,
       AZURE_STORAGE_CONNECTION_STRING,
-      "gtr-ext-test-large-file.dat"
+      "gtr-ext-test-large-file.dat",
+      proxyBaseUrl,
+      1000
     );
   }, 60000);
 });
