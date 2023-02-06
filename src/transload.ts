@@ -52,7 +52,7 @@ export async function createJobPlan(
   const numChunks = Math.floor(length / chunkSize);
   console.log(`Will divide into ${numChunks} chunks`);
   let chunks = [];
-  for (var i = 0; i < length; i += chunkSize)
+  for (let i = 0; i < length; i += chunkSize)
     chunks.push({
       blockId: btoa(uuidv4())!,
       start: i,
