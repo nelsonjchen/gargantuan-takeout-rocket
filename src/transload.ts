@@ -68,7 +68,8 @@ export async function transload(
   sourceUrl: string,
   destination: string,
   name: string,
-  proxyBase?: string
+  proxyBase?: string,
+  chunk_size_mb?: number
 ): Promise<Download> {
   console.log(`Transloading ${sourceUrl} to ${destination}`);
 
@@ -77,7 +78,7 @@ export async function transload(
     proxyBase = built_in_proxy_base;
   }
   const blobClient = containerClient.getBlockBlobClient(name, proxyBase);
-  const jobPlan = await createJobPlan(sourceUrl);
+  const jobPlan = await createJobPlan(sourceUrl, chunk_size_mb);
   console.log(`Got job plan: `, jobPlan);
   console.log(`Staging Blocks`);
   const responses = jobPlan.chunks.map(async (chunk) =>
