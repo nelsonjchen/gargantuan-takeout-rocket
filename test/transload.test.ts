@@ -4,6 +4,8 @@ import {
   sourceToGtrProxySource
 } from "../src/transload";
 
+const proxyBaseUrl = "https://gtr-proxy.677472.xyz";
+
 const someFileUrl = "https://gtr-test.677472.xyz/200MB.zip";
 // File exists on-demand. Does not always exist for obvious reasons.
 // This is hosted on R2, so it is unlimited bandwidth, but not storage.
@@ -44,11 +46,13 @@ describe("transload", () => {
     await transload(
       someFileUrl,
       AZURE_STORAGE_CONNECTION_STRING,
-      "gtr-ext-test-medium-file.dat"
+      "gtr-ext-test-medium-file.dat",
+      proxyBaseUrl,
+      50
     );
   }, 30000);
 
-  test("can tell azure to transload a file from the proxy", async () => {
+  test("can tell azure to transload a file that is from the proxy", async () => {
     const AZURE_STORAGE_CONNECTION_STRING =
       process.env.AZURE_STORAGE_CONNECTION_STRING;
     if (!AZURE_STORAGE_CONNECTION_STRING) {
@@ -74,7 +78,7 @@ describe("transload", () => {
     const targetUrl = sourceToGtrProxySource(superlargeFileUrl);
 
     await transload(
-      superlargeFileUrl,
+      targetUrl,
       AZURE_STORAGE_CONNECTION_STRING,
       "gtr-ext-test-large-file.dat"
     );
