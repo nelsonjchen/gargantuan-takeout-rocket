@@ -9,10 +9,10 @@ This proxy is required as:
 
 Cloudflare Workers can be used to address these issues:
 
-- By offloading downloading of the offending URLs to Cloudflare and transloading the data/dtraffic to Azure, Azure's mangling of Google's URLs for its "server-to-server" download capabilities is circumvented. Cloudflare charges nothing for ingress and egress as well, there is little to no worker CPU usage, and the bandwidth to do this proxying is pretty much free.
-- Cloudflare Workers are accessed over HTTP/3 or HTTP/2 which multiplex requests over a single connection and aren't bound by the 6 connections limit in the browser. This can be used to convert Azure's HTTP 1.1 endpoint to HTTP/3 or HTTP/2 and the extension in the browser can command more chunks to be downloaded simutaneously through the proxy. Speeds of up to around 8.7GB/s can be achieved with this proxy from the browser versus 180MB/s with a direct connection to Azure's endpoint. For reliability reasons, this is limited to 1.0GB/s, but that's still fairly high speed.
+- By offloading downloading of the offending URLs to Cloudflare and transloading the data/traffic to Azure, Azure's mangling of Google's URLs for its "server-to-server" download capabilities is circumvented. Cloudflare charges nothing for ingress and egress as well, there is little to no worker CPU usage, and the bandwidth to do this proxying is pretty much free.
+- Cloudflare Workers are accessed over HTTP/3 or HTTP/2 which multiplex requests over a single connection and aren't bound by the 6 connections limit in the browser. This can be used to convert Azure's HTTP 1.1 endpoint to HTTP/3 or HTTP/2 and the extension in the browser can command more chunks to be downloaded simultaneously through the proxy. Speeds of up to around 8.7GB/s can be achieved with this proxy from the browser versus 180MB/s with a direct connection to Azure's endpoint. For reliability reasons, this is limited to 1.0GB/s, but that's still fairly high speed.
 
-A public instance of this service is provided but you may want to run your own private instance of this proxy for privacy reasons. If so, here is the source.
+A public instance of this service is provided, but you may want to run your own private instance of this proxy for privacy reasons. If so, here is the source.
 
 # Usage
 
