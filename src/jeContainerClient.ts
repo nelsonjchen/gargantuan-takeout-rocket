@@ -12,9 +12,7 @@ import { azBlobSASUrlToProxyPathname } from "./azb";
 const fetch = fetchBuilder(globalThis.fetch);
 
 export class ContainerClient {
-  constructor(public readonly containerUrl: string) {
-    containerUrl = containerUrl;
-  }
+  constructor(public readonly containerUrl: string) {}
 
   getBlockBlobClient(blobName: string, gtrProxyBase?: string): BlockBlobClient {
     return new BlockBlobClient(this, blobName, gtrProxyBase);
@@ -26,11 +24,7 @@ export class BlockBlobClient {
     public readonly containerClient: ContainerClient,
     public readonly blobName: string,
     public readonly gtrProxyBase?: string
-  ) {
-    containerClient = containerClient;
-    blobName = blobName;
-    gtrProxyBase = gtrProxyBase;
-  }
+  ) {}
 
   async stageBlockFromURL(
     blockId: string,
@@ -60,14 +54,15 @@ export class BlockBlobClient {
 
     const resp = await fetch(fetchBlobUrl.toString(), {
       method: "PUT",
-      retries: 10,
+      retries: 0,
       retryDelay: 1000,
       retryOn: [409, 520, 524],
       headers: {
-        "x-ms-version": "2020-10-02",
-        "x-ms-source-range": `bytes=${offset}-${offset + count - 1}`,
-        "x-ms-copy-source": sourceUrl
-      }
+        "x-ms-version": "2021-08-06",
+        "x-ms-copy-source": sourceUrl,
+        "x-ms-source-range": `bytes=${offset}-${offset + count - 1}`
+      },
+      body: ""
     });
     if (resp.ok) {
       return resp;

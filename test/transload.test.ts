@@ -4,16 +4,22 @@ import {
   sourceToGtrProxySource
 } from "../src/transload";
 
-const someFile =
-  "https://mirrors.advancedhosters.com/freebsd/releases/ISO-IMAGES/11.2/FreeBSD-11.2-BETA1-sparc64-dvd1.iso";
+const proxyBaseUrl = "https://gtr-proxy.677472.xyz";
+
+const someFileUrl = "https://gtr-test.677472.xyz/200MB.zip";
+// File exists on-demand. Does not always exist for obvious reasons.
+// This is hosted on R2, so it is unlimited bandwidth, but not storage.
+const superlargeFileUrl = "https://gtr-test.677472.xyz/50GB.dat";
 
 describe("transload", () => {
   test("is able to produce a job plan from a source", async () => {
-    const jobPlan = await createJobPlan(someFile);
+    const mb = 100;
+    const jobPlan = await createJobPlan(someFileUrl, mb);
+    console.log(`Got job plan: `, jobPlan);
     expect(jobPlan.chunks.length).toBeGreaterThan(0);
     expect(jobPlan.chunks[0].start).toBe(0);
-    expect(jobPlan.chunks[0].size).toBe(500 * 1024 * 1024);
-    expect(jobPlan.chunks[0].size).toBe(500 * 1024 * 1024);
+
+    expect(jobPlan.chunks[0].size).toBe(mb * 1024 * 1024);
     // expect(jobPlan.chunks[1].size).toBe(88843308);
     // Check last chunk in jobPlan
     expect(jobPlan.chunks[jobPlan.chunks.length - 1].start).toBeGreaterThan(0);
@@ -22,23 +28,62 @@ describe("transload", () => {
       jobPlan.chunks[jobPlan.chunks.length - 1].start +
         jobPlan.chunks[jobPlan.chunks.length - 1].size
     ).toBe(jobPlan.length);
-
+    // Make sure none of the job plans have a size of 0
+    jobPlan.chunks.forEach((chunk) => {
+      expect(chunk.size).toBeGreaterThan(0);
+    });
     //
-    expect(jobPlan.length).toBe(2757754880);
+    expect(jobPlan.length).toBe(209715200);
   });
 
-  test("can transload a test file from a linux iso mirror directly to azure", async () => {
-    await transload(someFile, process.env.AZ_BLOB_SAS_URL!, "iso.dat");
-  }, 30000);
+  test("can tell azure to transload a file", async () => {
+    const AZURE_STORAGE_CONNECTION_STRING =
+      process.env.AZURE_STORAGE_CONNECTION_STRING;
+    if (!AZURE_STORAGE_CONNECTION_STRING) {
+      throw new Error("No AZURE_STORAGE_CONNECTION_STRING");
+    }
 
-  test("can construct a valid base64 url using the gtr proxy", () => {
-    expect(sourceToGtrProxySource(someFile)).toBe(
-      "https://gtr-proxy.677472.xyz/p/aHR0cHM6Ly9taXJyb3JzLmFkdmFuY2VkaG9zdGVycy5jb20vZnJlZWJzZC9yZWxlYXNlcy9JU08tSU1BR0VTLzkuMy9GcmVlQlNELTkuMy1SRUxFQVNFLWFtZDY0LWRpc2MxLmlzby54eg=="
+    await transload(
+      someFileUrl,
+      AZURE_STORAGE_CONNECTION_STRING,
+      "gtr-ext-test-medium-file.dat",
+      proxyBaseUrl,
+      50
     );
-  });
-
-  test("can download a valid base64 url using the gtr proxy", async () => {
-    const gtr_proxy_url = sourceToGtrProxySource(someFile);
-    await transload(gtr_proxy_url, process.env.AZ_BLOB_SAS_URL!, "iso2.dat");
   }, 30000);
+
+  test("can tell azure to transload a file that is from the proxy", async () => {
+    const AZURE_STORAGE_CONNECTION_STRING =
+      process.env.AZURE_STORAGE_CONNECTION_STRING;
+    if (!AZURE_STORAGE_CONNECTION_STRING) {
+      throw new Error("No AZURE_STORAGE_CONNECTION_STRING");
+    }
+
+    const proxifiedSomeFileUrl = sourceToGtrProxySource(someFileUrl);
+
+    await transload(
+      proxifiedSomeFileUrl,
+      AZURE_STORAGE_CONNECTION_STRING,
+      "gtr-ext-test-medium-file-proxy.dat"
+    );
+  }, 30000);
+
+  // This test is disabled because hosting the 50GB test file is too expensive.
+  test.skip("can transload a superlarge test file from the test site directly to azure", async () => {
+    const AZURE_STORAGE_CONNECTION_STRING =
+      process.env.AZURE_STORAGE_CONNECTION_STRING;
+    if (!AZURE_STORAGE_CONNECTION_STRING) {
+      throw new Error("No AZURE_STORAGE_CONNECTION_STRING");
+    }
+
+    const targetUrl = sourceToGtrProxySource(superlargeFileUrl);
+
+    await transload(
+      targetUrl,
+      AZURE_STORAGE_CONNECTION_STRING,
+      "gtr-ext-test-superlarge-file.dat",
+      proxyBaseUrl,
+      1000
+    );
+  }, 60000);
 });
