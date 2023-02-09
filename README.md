@@ -1,6 +1,4 @@
-NOTE: There is currently a massive blocker of some kind on Azure's end that prevents this from working. It is unknown what the cause is. 
-
-I might take this opportunity to rearchitect this a bit. 
+NOTE: There is currently a massive blocker of some kind on Google's end that prevents this from working. This is currently being fixed.
 
 https://github.com/nelsonjchen/gargantuan-takeout-rocket/issues/5
 
