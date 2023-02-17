@@ -54,7 +54,7 @@ export class BlockBlobClient {
 
     const resp = await fetch(fetchBlobUrl.toString(), {
       method: "PUT",
-      retries: 0,
+      retries: 10,
       retryDelay: 1000,
       retryOn: [409, 520, 524],
       headers: {
