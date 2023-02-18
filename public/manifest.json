@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Gargantuan Takeout Rocket Helper Extension",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "author": "Nelson Chen",
   "description": "Helper Extension for evacuating Google Takeout and similar files to Azure.",
   "permissions": ["notifications", "downloads", "storage"],
