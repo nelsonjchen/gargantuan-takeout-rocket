@@ -27,7 +27,7 @@ GTR is right for you if:
 * You want to have access to your data in case something bad happens to your Google account such as an errant automated ban.
 * You want to backup your account to somewhere that else isn't Google and are OK with Microsoft.
 * You want to back it up somewhere cheap ($1/TB/mo).
-* You have a to-do app or calendar app that can make recurring tasks, events, or alarms every 3 months or whatever interval you wish to perform backups at.
+* You have a to-do app or calendar app that can make recurring tasks, events, or alarms every 2 months or whatever interval you wish to perform backups at.
 * You are OK with backing your Google Data to somewhere archival-oriented with a high access cost and not interested in looking at the backups unless something really bad actually happens. 
 * You are OK with storing backup archives for a minimum of 6 months or are OK with an early deletion fee that is as if you've stored the data for 6 months.
 * You don't want to setup up temporary cloud compute instances or machines and manually facilitate the transfer.
@@ -89,6 +89,8 @@ If you've setup your own Cloudflare Workers proxy, set the `GTR Proxy Base URL` 
 ### Setup Calendar or To-do app
 
 On your planner application of choice, remind yourself every 2 months (or whatever interval you want) to perform a backup using this. I have Todoist setup to remind me every 2 months. 
+
+You may also want to configure Google Takeout to run automatically every two months to backup your whole account.
 
 ## First Time and Every 2 Months (or whatever interval you want)
 
