@@ -123,8 +123,9 @@ You may also want to configure Google Takeout to run automatically every two mon
 
 Don't panic. 
 
-1. [Rehydrate the Archived Blobs by copying them.](https://docs.microsoft.com/en-us/azure/storage/blobs/archive-rehydrate-overview#copy-an-archived-blob-to-an-online-tier)
-2. Download the blobs.
+1. Disable Lifecycle rules in Azure. You don't want anything changing during a critical process.
+2. [Rehydrate the Archived Blobs by copying them.](https://docs.microsoft.com/en-us/azure/storage/blobs/archive-rehydrate-overview#copy-an-archived-blob-to-an-online-tier)
+3. Download the blobs.
 
 Restoration and download is fairly expensive. This is the tradeoff for the speed and durability. It's worth it for me, for what it is worth.
 
