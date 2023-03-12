@@ -75,7 +75,8 @@ export async function handleProxyToGoogleTakeoutRequest(
     )
   }
 
-  const originalResponse = await fetch(extracted_url.toString(), {
+  // Don't pass the original URL. The URL object will malform the `%2B` to `+`.
+  const originalResponse = await fetch(original_url_segment_stripped_processed, {
     method: request.method,
     headers: request.headers,
   })

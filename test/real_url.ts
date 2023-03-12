@@ -7,3 +7,6 @@ export const file_test_small_url = new URL("https://gtr-test.677472.xyz/10MB.bin
 export const file_test_large_url = new URL("https://gtr-test.677472.xyz/200MB.zip")
 
 export const small_test_string_encoded_url = new URL("https://put-block-from-url-esc-issue-demo-server-3vngqvvpoq-uc.a.run.app/red%252Fblue.txt/dummy.bin")
+
+export const small_test_string_plus_encoded_url = new URL("https://put-block-from-url-esc-issue-demo-server-3vngqvvpoq-uc.a.run.app/me%2Byou.txt/dummy.bin")
+
