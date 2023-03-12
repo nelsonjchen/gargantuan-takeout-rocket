@@ -1,8 +1,6 @@
-# NOTICE: It's broken right now again
+# NOTICE: It's broken right now again, maybe, awaiting test
 
 https://github.com/nelsonjchen/gargantuan-takeout-rocket/issues/8
-
-Not sure as to exact cause. This is currently broken. Might be Azure "fixing" an issue. Might be a new issue, might be old. Looking into it on weekends.
 
 ---
 # 🚀 Gargantuan Takeout Rocket
