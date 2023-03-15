@@ -1,8 +1,3 @@
-# NOTICE: It's broken right now again, maybe, awaiting test
-
-https://github.com/nelsonjchen/gargantuan-takeout-rocket/issues/8
-
----
 # 🚀 Gargantuan Takeout Rocket
 
 *Liftoff from Google Takeout into Azure Storage, repeatedly, **very** fast, like 1GB/s+ or 10 minutes total per takeout fast*
