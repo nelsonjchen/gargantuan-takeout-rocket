@@ -139,7 +139,7 @@ Costs:
 * $0.02 per GB to re-hydrate and retrieve the data
 * $0.0875 per GB to transfer the data from Azure to another system outside of azure.
 
-For 1TB, this will cost about $100.88 (rounded up). Small price for salvation. 
+For 1TB, this will cost about $108. Small price for salvation. 
 
 ---
 
