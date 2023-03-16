@@ -80,13 +80,14 @@ For anti-abuse reasons, the service is limited to test servers and Google Takeou
 This tool is implemented to run on Cloudflare Workers as:
 
 - [Cloudflare does not charge for incoming or outgoing data. No egress or ingress charges.][egress_free]
-- [Cloudflare does not charge for CPU/Memory used while the request has finished processing, the response headers are sent, and the worker is just shoveling bytes between two sockets.][fetch_free]
+- [Cloudflare does not charge for CPU/Memory used while the request has finished processing, the response headers are sent, and the worker is just shoveling bytes between two sockets.][fetch_free] Other providers may charge for allocated CPU usage while all that's being done is shoving bytes. Most connections in GTR tend to last about 50 seconds. You are "charged" 1 ms per connection but other providers may charge 50 seconds.
 - [Cloudflare has the peering, compute, and scalability to handle the massive transfer from Google Takeout to Azure Storage. Many of its peering points are peered with Azure and Google with high capacity links.][cf_capacity]
 - Cloudflare Workers are serverless.
 - Cloudflare's free tier is generous.
+- The worker can be deployed with a button.
 - Cloudflare allows fetching and streaming of data from other URLs programmatically.
-- [Cloudflare Worker endpoints are HTTP/3 compatible and can comfortably connect to HTTP 1.1 endpoints.][cfhttp3]
-- Cloudflare Workers are globally deployed. If you transfer from Google in the EU to Azure in the EU, the worker proxy is also in the EU and your data stays in the EU for the whole time. Same for Australia, US, and so on.
+- [Cloudflare Worker endpoints are HTTP/3 compatible and workers can comfortably connect to HTTP 1.1 endpoints.][cfhttp3]
+- Cloudflare Workers are globally deployed. If you transfer from Google in the EU to Azure in the EU, the worker proxy is also in the EU and your data stays in the EU for the whole time. Same for Australia, US, and so on. Other providers force users to choose and they better choose correctly or otherwise they get a large bandwidth bill or users are unknowingly transferring data across undesired borders.
 
 I am not aware of any other provider with the same characteristics as Cloudflare.
 
