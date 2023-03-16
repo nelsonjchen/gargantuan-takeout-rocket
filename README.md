@@ -22,6 +22,8 @@ In general, you are expected to use the [Gargantuan Takeout Rocket (GTR)][gtr] e
 
 A public instance is hosted at https://gtr-proxy.677472.xyz that anybody may use with GTR. The front page of https://gtr-proxy.677472.xyz just goes to the GitHub repository for the proxy. The 677472.xyz (`67=g`, `74=t`, and `72=r` from ASCII) domain was chosen because it was $0.75 every year for numeric only `.xyz` domains and I wanted the bandwidth metrics for my personal site separated from this service. Visiting the domain will redirect to this GitHub repository.
 
+You are welcome to use the public instance. You should mind the [privacy policy](https://github.com/nelsonjchen/gargantuan-takeout-rocket/blob/main/PRIVACY_POLICY.md) though.
+
 Logs are not stored on this service but I reserve the right to stream the logs temporarily to observe and curb abuse if necessary.
 
 ## Private Instance
