@@ -1,6 +1,6 @@
 # Gargantuan Takeout Rocket Proxy
 
-This is the Cloudflare Workers proxy component of [Gargantuan Takeout Rocket (GTR)][gtr], a toolkit to quickly backup Google Takeout archives to Azure Storage at extremely high speeds.
+This is the Cloudflare Workers proxy component of [Gargantuan Takeout Rocket (GTR)][gtr], a toolkit to quickly backup Google Takeout archives to Azure Storage at extremely high speeds and low cost.
 
 This proxy is required as:
 
