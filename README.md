@@ -64,9 +64,9 @@ You can adjust the numbers and redundancies as needed or desired.
 
 ### Setup or configure own Cloudflare Workers GTR Proxy (Optional)
 
-See [GTR proxy readme][proxy] for details on setting one up yourself. You may want to setup your own proxy for privacy reasons. The Cloudflare Worker is serverless and there are no fees or usage accrued while it is idle. There are also no charges for incoming and outgoing bandwidth and for most people, their usage of their own proxy should fall under Cloudflare's free tier.
+See [GTR Proxy readme][proxy] for details on setting one up yourself. You may want to setup your own GTR Proxy for privacy reasons. The Cloudflare Worker implementation is serverless and there are no fees or usage accrued while it is idle. There are also no charges for incoming and outgoing bandwidth and for most people, their usage of their own GTR Proxy should fall under Cloudflare's free tier.
 
-If you decided to use the public GTR proxy, please see the [privacy policy on it](./PRIVACY_POLICY.md). 
+If you decided to use the public GTR Proxy, please see the [privacy policy on it](./PRIVACY_POLICY.md). 
 
 ### Install Extension
 
@@ -161,6 +161,13 @@ For 1TB, this will cost about $108. Small price for salvation.
   * A neverending stream of "I can't takeout my banned youtube account!". 
 
 and there's many more. oh there's just so many. too many.
+
+### News Posts
+
+Sometimes a hit, sometimes not. Just depends on how the community is feeling.
+
+* https://news.ycombinator.com/item?id=34877254
+  * Pretty alright response.
 
 ### Complaints about Takeout being hard to use
 
