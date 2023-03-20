@@ -5,12 +5,12 @@ This is the Cloudflare Workers proxy component of [Gargantuan Takeout Rocket (GT
 This proxy is required as:
 
 - [Microsoft's Azure Storage is unable to download from download URLs used in Google Takeout directly due to an URL Escaping issue in Google's URLs that Azure "helpfully" breaks.][msqa] 3xx redirects are not accepted either.
-- To transfer fast, we tell Cloudflare Workers to fetch from Google with 1000MB chunks simultaneously at nearly 50 connections at a time for 50GB files from the extension and put the data onto Azure as chunks. [Unfortunately, Azure's endpoints only support 6 connections at a time due to only having up to HTTP/1.1 support](https://learn.microsoft.com/en-us/rest/api/storageservices/http-version-support).
+- To transfer fast, we tell Cloudflare Workers to fetch from Google with 1000MB chunks simultaneously at nearly 50 connections at a time for 50GB files from the extension and put the data onto Azure as chunks. [Unfortunately, talking to Azure's endpoints only support 6 connections and thus only 6 requests at a time from a web browser due to Azure Storage only HTTP/1.1 support](https://learn.microsoft.com/en-us/rest/api/storageservices/http-version-support).
 
 Cloudflare Workers can be used to address these issues:
 
 - By offloading downloading of the offending URLs to Cloudflare, encoding the Takeout URL's escaped characters specially to be decoded via the real URLs in Cloudflare, Azure's mangling of Google's URLs for its "server-to-server" download capabilities is circumvented. Cloudflare charges nothing for ingress and egress as well, there is little to no worker CPU usage, and the bandwidth to do this proxying is pretty much free.
-- Cloudflare Workers are accessed over HTTP/3 or HTTP/2 which multiplex requests over a single connection and aren't bound by the 6 connections limit in the browser. This can be used to convert Azure's HTTP 1.1 endpoint to HTTP/3 or HTTP/2 and the extension in the browser can command more chunks to be downloaded simultaneously through the proxy. Speeds of up to around 8.7GB/s can be achieved with this proxy from the browser versus 180MB/s with a direct connection to Azure's endpoint. For reliability reasons, this is limited to 1.0GB/s, but that's still fairly high speed.
+- Cloudflare Workers are accessed over HTTP/3 or HTTP/2 which web browsers multiplex requests over a single connection and aren't bound by the 6 connections limit in the browser. This can be used to convert Azure's HTTP 1.1 endpoint to HTTP/3 or HTTP/2 and the GTR extension in the browser can command more chunks to be downloaded by Azure simultaneously through the proxy. Speeds of up to around 8.7GB/s can be achieved with this proxy from the browser versus 180MB/s with a direct connection to Azure's endpoint. For reliability reasons, this is limited to 1.0GB/s, but that's still fairly high speed.
 
 A public instance of this service is provided, but you may want to run your own private instance of this proxy for privacy reasons. If so, here is the source.
 
@@ -22,7 +22,7 @@ In general, you are expected to use the [Gargantuan Takeout Rocket (GTR)][gtr] e
 
 A public instance is hosted at https://gtr-proxy.677472.xyz that anybody may use with GTR. The front page of https://gtr-proxy.677472.xyz just goes to the GitHub repository for the proxy. The 677472.xyz (`67=g`, `74=t`, and `72=r` from ASCII) domain was chosen because it was $0.75 every year for numeric only `.xyz` domains and I wanted the bandwidth metrics for my personal site separated from this service. Visiting the domain will redirect to this GitHub repository.
 
-You are welcome to use the public instance. You should mind the [privacy policy](https://github.com/nelsonjchen/gargantuan-takeout-rocket/blob/main/PRIVACY_POLICY.md) though.
+You are welcome to use the public instance for any load. You should mind the [privacy policy](https://github.com/nelsonjchen/gargantuan-takeout-rocket/blob/main/PRIVACY_POLICY.md) though.
 
 Logs are not stored on this service but I reserve the right to stream the logs temporarily to observe and curb abuse if necessary.
 
