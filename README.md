@@ -5,7 +5,7 @@ This is the Cloudflare Workers proxy component of [Gargantuan Takeout Rocket (GT
 This proxy is required as:
 
 - [Microsoft's Azure Storage is unable to download from download URLs used in Google Takeout directly due to an URL Escaping issue in Google's URLs that Azure "helpfully" breaks.][msqa] 3xx redirects are not accepted either.
-- To transfer fast, we tell Cloudflare Workers to fetch from Google with 1000MB chunks simultaneously at nearly 50 connections at a time for 50GB files from the extension and put the data onto Azure as chunks. [Unfortunately, talking to Azure's endpoints only support 6 connections and thus only 6 requests at a time from a web browser due to Azure Storage only HTTP/1.1 support](https://learn.microsoft.com/en-us/rest/api/storageservices/http-version-support).
+- To transfer fast, we tell Cloudflare Workers to fetch from Google with 1000MB chunks simultaneously at nearly 50 connections at a time for 50GB files from the extension and put the data onto Azure as chunks. [Unfortunately, talking to Azure's endpoints only support 6 connections and thus only 6 requests at a time from a web browser due to Azure Storage's endpoints only supporting HTTP/1.1](https://learn.microsoft.com/en-us/rest/api/storageservices/http-version-support).
 
 Cloudflare Workers can be used to address these issues:
 
