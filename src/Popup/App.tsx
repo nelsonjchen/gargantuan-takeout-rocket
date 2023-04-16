@@ -78,16 +78,42 @@ export default function App() {
           style={{ width: "90%", zoom: 1.2 }}
         />
       </form>
-      <h2>Downloads</h2>
+      <h2>Transloads</h2>
+      <p>
+        This is a list of downloads that have been intercepted by the extension.
+        The extension will intercept downloads that are from Google Takeout and
+        initiate a transload of them to Azure.
+      </p>
+      <p>
+        Archives are sorted by the last 3 characters of the filename except the
+        extension.
+      </p>
       <button onClick={() => setDownloads({})}>Clear</button>
       <ul>
-        {Object.entries(downloads).map(([key, value]) => (
-          <li key={value.name}>
-            {[value.name, value.status, value.reason]
-              .filter((x) => x !== undefined)
-              .join(" - ")}
-          </li>
-        ))}
+        {Object.entries(downloads)
+          // Sort by the last 3 characters of the filename except the extension (which may not always be 3 characters), which is the archive number if possible.
+          .sort((a, b) => {
+            const aName = a[1].name;
+            const bName = b[1].name;
+            const aNameNoExt = aName.substring(0, aName.lastIndexOf("."));
+            const bNameNoExt = bName.substring(0, bName.lastIndexOf("."));
+            const aNameNoExtLast3 = aNameNoExt.substring(
+              aNameNoExt.length - 3,
+              aNameNoExt.length
+            );
+            const bNameNoExtLast3 = bNameNoExt.substring(
+              bNameNoExt.length - 3,
+              bNameNoExt.length
+            );
+            return aNameNoExtLast3.localeCompare(bNameNoExtLast3);
+          })
+          .map(([key, value]) => (
+            <li key={value.name}>
+              {[value.name, value.status, value.reason]
+                .filter((x) => x !== undefined)
+                .join(" - ")}
+            </li>
+          ))}
       </ul>
     </div>
   );
