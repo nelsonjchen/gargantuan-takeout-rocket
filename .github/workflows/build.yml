@@ -12,19 +12,16 @@ jobs:
 
       - uses: actions/setup-node@v1
         with:
-          node-version: "16"
-
-      - name: Install yarn
-        run: npm i -g yarn
+          node-version: "18"
 
       - name: Install dependencies
-        run: yarn
+        run: npm install
 
       - name: Build extension scripts
-        run: yarn build
+        run: npm run build
 
       - name: Package Release Zip
-        run: yarn pkg
+        run: npm run pkg
 
       - uses: actions/upload-artifact@v3
         with:
