@@ -13,7 +13,7 @@ GTR is not a fully automated solution as that is impossible with Google Takeout'
 
 The only backup destination currently available in GTR is Microsoft Azure Blob Storage due to Azure's unique [API which allows commanding Azure Blob Storage to download from a remote URL][pbfu]. A Cloudflare Workers proxy is used to work around a [URL escaping bug][azbesc] and [a parallelism limitation][azb11] in the Azure Blob Storage API. Speeds of up to 1GB/s or more from Google Takeout to Azure Blob Storage's Archive Tier can be seen with this setup.
 
-A [browser extension][ext] is provided to intercept downloads from Google Takeout and command Azure to download the file. Behind the scenes, the extension immediately stops and prevents the local download, discovers the temporary (valid 15 minutes) direct URL to download the Google Takeout Archive, analyzes the size of the source file remotely to generate a download plan consisting of file chunks of 1000MB, specially encodes the URL so Azure is able to download from Google via the Cloudflare Workers proxy, executes the download plan by shotgunning all the download commands in parallel to Azure through the Cloudflare Worker proxy to transload the file from Google as quickly as possible, and commits all the 1000MB chunks into one seamless file on Azure. The download for each file completes in 30 to 60 seconds, well before the direct URL expires in 15 minutes and with rather high limits on how many parallel downloads of this archive or other archives in the same takeout can be happening at once.  
+A [browser extension][ext] is provided to intercept downloads from Google Takeout and command Azure to download the file. Behind the scenes, the extension immediately stops and prevents the local download, discovers the temporary (valid 15 minutes) direct URL to download the Google Takeout Archive, analyzes the size of the source file remotely to generate a download plan consisting of file chunks of 1000MB, specially encodes the URL so Azure is able to download from Google via the Cloudflare Workers proxy, executes the download plan by shotgunning all the download commands in parallel to Azure through the Cloudflare Worker proxy to transload the file from Google as quickly as possible, and commits all the 1000MB chunks into one seamless file on Azure. The download for each file completes in 30 to 60 seconds, well before the direct URL expires in 15 minutes and with rather high limits on how many parallel downloads of this archive or other archives in the same takeout can be happening at once.
 
 A public instance of the Cloudflare Workers proxy is provided for convenience but users can setup and run their own [Cloudflare Workers proxy][proxy] if desired and target their own proxy in the extension instead of the public one for privacy reasons. For most users who are looking to run their own Cloudflare Workers proxy instead of using the public Cloudflare Workers proxy, the free tier of Cloudflare Workers should suffice.
 
@@ -28,7 +28,7 @@ GTR is right for you if:
 * You want to backup your account to somewhere that else isn't Google and are OK with Microsoft.
 * You want to back it up somewhere cheap ($1/TB/mo).
 * You have a to-do app or calendar app that can make recurring tasks, events, or alarms every 2 months or whatever interval you wish to perform backups at.
-* You are OK with backing your Google Data to somewhere archival-oriented with a high access cost and not interested in looking at the backups unless something really bad actually happens. 
+* You are OK with backing your Google Data to somewhere archival-oriented with a high access cost and not interested in looking at the backups unless something really bad actually happens.
 * You are OK with storing backup archives for a minimum of 6 months or are OK with an early deletion fee that is as if you've stored the data for 6 months.
 * You don't want to setup up temporary cloud compute instances or machines and manually facilitate the transfer.
 * You want to quickly transfer out at 1GB/s+, in parallel, outward.
@@ -66,7 +66,7 @@ You can adjust the numbers and redundancies as needed or desired.
 
 See [GTR Proxy readme][proxy] for details on setting one up yourself. You may want to setup your own GTR Proxy for privacy reasons. The Cloudflare Worker implementation is serverless and there are no fees or usage accrued while it is idle. There are also no charges for incoming and outgoing bandwidth and for most people, their usage of their own GTR Proxy should fall under Cloudflare's free tier.
 
-If you decided to use the public GTR Proxy, please see the [privacy policy on it](./PRIVACY_POLICY.md). 
+If you decided to use the public GTR Proxy, please see the [privacy policy on it](./PRIVACY_POLICY.md).
 
 ### Install Extension
 
@@ -88,7 +88,7 @@ If you've setup your own Cloudflare Workers proxy, set the `GTR Proxy Base URL` 
 
 ### Setup Calendar or To-do app
 
-On your planner application of choice, remind yourself every 2 months (or whatever interval you want) to perform a backup using this. I have Todoist setup to remind me every 2 months. 
+On your planner application of choice, remind yourself every 2 months (or whatever interval you want) to perform a backup using this. I have Todoist setup to remind me every 2 months.
 
 You may also want to configure Google Takeout to run automatically every two months to backup your whole account.
 
@@ -101,16 +101,16 @@ You may also want to configure Google Takeout to run automatically every two mon
    * "Production" Takeout jobs are best done with 50GB archives to reduce the number of clicking required. You should use ZIP as the solid archives of TAR aren't useful on already compressed data.
 2. Once complete, visit the Azure Blob container you made in the preparation and "Create a SAS Signature" with all the permissions (Read, Add, Write, Create, and Delete).
    * ![portal azure com_](https://user-images.githubusercontent.com/5363/163125758-7383aafa-ded8-4592-a753-5e8bb717c1df.png)
-3. `Generate SAS Token and URL` and copy the `Blob SAS URL`.  
+3. `Generate SAS Token and URL` and copy the `Blob SAS URL`.
    * ![portal azure com_ (1)](https://user-images.githubusercontent.com/5363/163125969-1e151b8c-43e7-49e9-87e9-d3d788220d90.png)
    * Hint: there's a copy to clipboard button on the right edge of the field.
 4. Paste the Blob SAS URL into the extension popup at the correct field.
    * <img width="511" alt="image" src="https://user-images.githubusercontent.com/5363/163747552-22b51c99-553f-4aec-970c-a69cce4b940e.png">
 5. Enable the extension to intercept downloads with the checkmark popup.
    * <img width="506" alt="image" src="https://user-images.githubusercontent.com/5363/163747584-850dd276-47e9-4dff-b5cf-20b61b948c58.png">
-6. Visit Google Takeout and click download on each archive. Watch for failures. Slow down if there are failures. In general, limit yourself to about three 50GB archives or ~150GB up in the air at a time. It took about 50 seconds for each 50GB archive for me.
-7. I was too lazy to implement a decent progress bar or indicator, so inspect the service worker's network tab for "progress" or indications of errors.
+6. I was too lazy to implement a decent progress bar or indicator, so inspect the service worker's network tab for "progress" or indications of errors. This helps keep the extension more stable for some reason.
   * <img width="802" alt="Screen Shot 2022-08-11 at 7 15 33 PM" src="https://user-images.githubusercontent.com/5363/184272694-ea4f2052-8389-4810-b35c-369c8581e326.png">
+7. Visit Google Takeout and *middle*-click download on an archive for transloading. This will open a useless tab in the background but it'll save you a page reload. Watch for failures. Slow down if there are failures. In general, limit yourself to about three 50GB archives or ~150GB up in the air at a time. It took about 50 seconds for each 50GB archive for me.
 8. Notifications will come and go as each archive is transloaded into Azure Blob Storage.
 9. Once complete, check Azure to make sure everything has been retrieved and is available in the container.
    * Beware of downloading the archives to your local machine as Azure charges about $4.50 per 50GB download. Just check that they are there. If you wish to check the contents, you should spin up a virtual machine in Azure and download the data to that instance for inspection. That is beyond the scope of this guide.
@@ -121,7 +121,7 @@ You may also want to configure Google Takeout to run automatically every two mon
 
 ## Restoration
 
-Don't panic. 
+Don't panic.
 
 1. Disable Lifecycle rules in Azure. You don't want anything changing during a critical process.
 2. [Rehydrate the Archived Blobs by copying them.](https://docs.microsoft.com/en-us/azure/storage/blobs/archive-rehydrate-overview#copy-an-archived-blob-to-an-online-tier)
@@ -129,17 +129,17 @@ Don't panic.
 
 Restoration and download is fairly expensive. This is the tradeoff for the speed and durability. It's worth it for me, for what it is worth.
 
-1. Copying from Archive to a non-Archive tier blob may take hours before you see a single byte as Azure does whatever it is doing to get the data out of their storage system. 
+1. Copying from Archive to a non-Archive tier blob may take hours before you see a single byte as Azure does whatever it is doing to get the data out of their storage system.
 2. The cost to download the data off of Azure is very expensive.
 
 Let's consider a 1TB restore:
 
-Costs: 
+Costs:
 
 * $0.02 per GB to re-hydrate and retrieve the data
 * $0.0875 per GB to transfer the data from Azure to another system outside of azure.
 
-For 1TB, this will cost about $108. Small price for salvation. 
+For 1TB, this will cost about $108. Small price for salvation.
 
 ---
 
@@ -154,11 +154,11 @@ For 1TB, this will cost about $108. Small price for salvation.
 * https://news.ycombinator.com/item?id=28621412
   * historical war footage == terrorist
 * https://news.ycombinator.com/item?id=32538805
-  * photos of your kids for the doctor == pedo. **and then they double down on the ban after it hits the news and the police absolve and pledge to help the user!** 
+  * photos of your kids for the doctor == pedo. **and then they double down on the ban after it hits the news and the police absolve and pledge to help the user!**
 * (https://discord.comma.ai) https://discord.com/channels/469524606043160576/954493346250887168/998693206411718718
   * YT copyright strikes from your account being hacked and all your family videos go away. Like the one of your mom who has since passed. Cheers!
 * https://twitter.com/search?q=google%20takeout%20youtube
-  * A neverending stream of "I can't takeout my banned youtube account!". 
+  * A neverending stream of "I can't takeout my banned youtube account!".
 
 and there's many more. oh there's just so many. too many.
 
@@ -181,7 +181,7 @@ I'm also **extremely** curious about storing the "hot" data in [Cloudflare R2][r
 
 [Encryption is a concern. I don't have a solution thought out yet. With the high use of blocks, it is unknown if compatiblity can be retained. It can complicates restoration and makes the Azure GUIs unable download easily. An issue is open about that.](https://github.com/nelsonjchen/gargantuan-takeout-rocket/issues/3)
 
-With the recent news about Cloudflare, some users may also wish to use a non-Cloudflare alternative. I don't know of a good alternative with the same free "price point", geographical reach, computing power, network outlay, scalability, and permissive use. 
+With the recent news about Cloudflare, some users may also wish to use a non-Cloudflare alternative. I don't know of a good alternative with the same free "price point", geographical reach, computing power, network outlay, scalability, and permissive use.
 
 In the meantime:
 
@@ -193,15 +193,15 @@ In the meantime:
 
 * https://tyler.io/my-familys-photo-and-video-library-backup-strategy-in-2020/
 
-The general idea of these is to use a single VPS instance to handle the coordination and traffic. Congdon's solution clocked in at about 65MB/s. 
+The general idea of these is to use a single VPS instance to handle the coordination and traffic. Congdon's solution clocked in at about 65MB/s.
 
-I used Azure's "Standard_L8s_v2" for my instance and that topped out at about 300MB/s when writing to the temporary local NVMe storage before uploading from that to Azure Storage. The CPU was pegged pretty hard during my transfer so this kind of makes me think how much CPU time I'm using to do many GB/s of transfer. Probably a lot. And I'm not really paying for the CPU to do TLS as the cloud vendors are paying. Great! 
+I used Azure's "Standard_L8s_v2" for my instance and that topped out at about 300MB/s when writing to the temporary local NVMe storage before uploading from that to Azure Storage. The CPU was pegged pretty hard during my transfer so this kind of makes me think how much CPU time I'm using to do many GB/s of transfer. Probably a lot. And I'm not really paying for the CPU to do TLS as the cloud vendors are paying. Great!
 
 VPS setups may want to use [aria2c along with an aria2c browser extension to streamline the transloading process without too much terminal work][aria2c_ext]. This was fast for me, but I wanted something much faster and VPS-less.
 
 ## Other targets to try
 
-Haven't tried, not sure. Might be something to try. YMMV, stuff may break. 
+Haven't tried, not sure. Might be something to try. YMMV, stuff may break.
 
 Note that the GTR Proxy by default is limited to Google Takeout domains. You would need to fork the proxy and add domains to its whitelist.
 
@@ -216,11 +216,11 @@ Services to try:
 * Atlassian Cloud JIRA/Confluence's Backup for Cloud
   * [Atlassian had a massive outage around April 2022 when they permanently deleted customer systems **and their backups**.](https://newsletter.pragmaticengineer.com/p/scoop-atlassian?s=r)
   * If you paid attention to how Atlassian hosted their cloud offerings, you got the impression it was still very pet-like for every customer with customer support being able to login to each tenant's box even if it was camouflaged.
-  * At a previous job, I had a reminder every month to backup our Atlassian Cloud JIRA and Confluence instance. The recent news about the major Atlassian outages vindicates my diligence. The procedure was not unlike Google Takeout with having to start a "Backup for Cloud" and then downloading an archive of all the data. It wasn't 1.25TB like my Google Takeout, but it was hoving around ~30GB for JIRA and ~30GB for Confluence. Of course, your organization's backup size may vary but in general the files are somewhat large. It would then be a task in itself to re-upload these files to durable storage. 
+  * At a previous job, I had a reminder every month to backup our Atlassian Cloud JIRA and Confluence instance. The recent news about the major Atlassian outages vindicates my diligence. The procedure was not unlike Google Takeout with having to start a "Backup for Cloud" and then downloading an archive of all the data. It wasn't 1.25TB like my Google Takeout, but it was hoving around ~30GB for JIRA and ~30GB for Confluence. Of course, your organization's backup size may vary but in general the files are somewhat large. It would then be a task in itself to re-upload these files to durable storage.
   * Not sure if object storage based. Probably wasn't earlier when it was "Atlassian OnDemand", but probably is now. It might have been hosted on S3.
   * Pretty sure it does not use cookies to validate access.
   * Could be signed AWS S3 URLs.
-  * Haven't tried. 
+  * Haven't tried.
 
 Let me know if you try something and it works. Don't bother trying it on traditional server hosted Linux ISO mirrors though. They tend to limit concurrency and aren't object storage based.
 
