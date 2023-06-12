@@ -1,5 +1,5 @@
-import {proxyPathnameToAzBlobSASUrl} from './azb'
-import {serializeError} from 'serialize-error';
+import { proxyPathnameToAzBlobSASUrl } from './azb'
+import { serializeError } from 'serialize-error';
 
 
 export async function handleRequest(request: Request): Promise<Response> {
@@ -125,8 +125,16 @@ export function validTestServerURL(url: URL): boolean {
 
 export function validGoogleTakeoutUrl(url: URL): boolean {
   return (
-    url.hostname.endsWith('apidata.googleusercontent.com') &&
-    (url.pathname.startsWith('/download/storage/v1/b/dataliberation/o/') ||
-      url.pathname.startsWith('/download/storage/v1/b/takeout'))
+    (
+      url.hostname.endsWith('apidata.googleusercontent.com') &&
+      (
+        url.pathname.startsWith('/download/storage/v1/b/dataliberation/o/') ||
+        url.pathname.startsWith('/download/storage/v1/b/takeout')
+      )
+    ) ||
+    (
+      url.hostname.endsWith('storage.googleapis.com') &&
+      url.pathname.startsWith('/takeout-')
+    )
   )
 }
