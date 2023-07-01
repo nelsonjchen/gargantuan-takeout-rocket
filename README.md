@@ -115,7 +115,7 @@ You may also want to configure Google Takeout to run automatically every two mon
    * Edge:
   
      ![image](https://user-images.githubusercontent.com/5363/232265264-2bef2d5e-7057-48df-b5fc-4883345b0f49.png)
-7. Visit Google Takeout and *middle*-click download on an archive for transloading. This will open a useless tab in the background but it'll save you a page reload. Watch for failures. Slow down if there are failures. In general, limit yourself to about three 50GB archives or ~150GB up in the air at a time. It took about 50 seconds for each 50GB archive for me.
+7. Visit Google Takeout and *middle*-click (on a Mac, Cmd-Click) download on an archive for transloading. This will open a useless tab in the background and start a download from the background and it'll save you a page reload on the main page. Monitor the extension's UI. Watch for failures. Slow down if there are failures. In general, limit yourself to about three 50GB archives or ~150GB up in the air at a time. It took about 50 seconds for each 50GB archive for me.
 8. Notifications will come and go as each archive is transloaded into Azure Blob Storage.
 9. Once complete, check Azure to make sure everything has been retrieved and is available in the container.
    * Beware of downloading the archives to your local machine as Azure charges about $4.50 per 50GB download. Just check that they are there. If you wish to check the contents, you should spin up a virtual machine in Azure and download the data to that instance for inspection. That is beyond the scope of this guide.
