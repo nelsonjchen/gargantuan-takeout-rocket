@@ -9,6 +9,10 @@ Just wanted to provide a journal of my backup escapades with GTR since:
 
 Top will be the latest.
 
+## August 2023
+
+Not sure why I am doing this again. Didn't realize I did this in July. Anyway, ran into some issues at 2AM where it seems the backups seemed to fail more to transfer than day. Added and edited some robustness to gtr-ext. It now seems to transload much, much more reliably :). 
+
 ## July 2023
 
 Had issues with Google Takeout not putting out or failing. Eventually once succeeded.
