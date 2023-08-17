@@ -56,7 +56,7 @@ export class BlockBlobClient {
       method: "PUT",
       retries: 10,
       retryDelay: 1000,
-      retryOn: [409, 520, 524],
+      retryOn: [409, 520, 524, 500, 503],
       headers: {
         "x-ms-version": "2021-08-06",
         "x-ms-copy-source": sourceUrl,
@@ -91,6 +91,9 @@ ${blocks.map((blockId) => `<Latest>${blockId}</Latest>`).join("\n")}
     const resp = await fetch(blobUrl.toString(), {
       method: "PUT",
       body: data,
+      retries: 10,
+      retryDelay: 1000,
+      retryOn: [409, 520, 524, 500, 503],
       headers: {
         "x-ms-version": "2020-10-02"
       }
