@@ -9,9 +9,17 @@ Just wanted to provide a journal of my backup escapades with GTR since:
 
 Top will be the latest.
 
+## October 2023
+
+* Largest takeout so far at 1.7TB. 32 "archives" or files.
+* Had to retry Google Takeout initialization process a few times. Unchecked a few services that constantly failed the overall takeout.
+* Google chose to store my backup in a bucket named "takeout-eu"? Speeds noticibly dropped to about 800MB/s.
+* Takeout bucket possibly hosted in EU region felt slower. Could definitely really only have about ~150GB/min up in the air rather than a soft limit.
+* First time having a collision where it downloads and tries to commit over an already archived file. Happens because file happens to be large and has a non-unique filename due to being a large video file from YouTube. Coincidental collision. Not too worried but hopefully the next takeout won't conflict and it will be a one-off known issue. Could cause a brief period of no backup for said file.
+
 ## August 2023
 
-Not sure why I am doing this again. Didn't realize I did this in July. Anyway, ran into some issues at 2AM where it seems the backups seemed to fail more to transfer than day. Added and edited some robustness to gtr-ext. It now seems to transload much, much more reliably :). 
+Not sure why I am doing this again. Didn't realize I did this in July. Anyway, ran into some issues at 2AM where it seems the backups seemed to fail more to transfer than day. Added and edited some robustness to gtr-ext. It now seems to transload much, much more reliably :).
 
 ## July 2023
 
