@@ -167,6 +167,16 @@ For 1TB, this will cost about $108. Small price for salvation.
 
 and there's many more. oh there's just so many. too many.
 
+### MEGA TRANSFER
+
+* https://www.techdirt.com/2023/12/12/google-promises-unlimited-cloud-storage-then-cancels-plan-then-tells-journalist-his-lifes-work-will-be-deleted-without-enough-time-to-transfer-the-data/
+  * Damn that's a lot of TB
+
+### Mysterious Data loss
+
+* https://news.ycombinator.com/item?id=38562726
+  * Google calls Drive data loss "fixed," locks forum threads saying otherwise
+
 ### News Posts
 
 Sometimes a hit, sometimes not. Just depends on how the community is feeling.
