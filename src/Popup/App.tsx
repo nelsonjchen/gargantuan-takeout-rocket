@@ -105,7 +105,7 @@ export default function App() {
               bNameNoExt.length - 3,
               bNameNoExt.length
             );
-            return aNameNoExtLast3.localeCompare(bNameNoExtLast3);
+            return bNameNoExtLast3.localeCompare(aNameNoExtLast3);
           })
           .map(([key, value]) => (
             <li key={value.name}>
