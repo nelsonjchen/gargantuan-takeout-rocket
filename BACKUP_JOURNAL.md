@@ -9,6 +9,13 @@ Just wanted to provide a journal of my backup escapades with GTR since:
 
 Top will be the latest.
 
+## December 2023
+
+* Still 1.7TB. 33 Archives
+* Takeout bucket is also suffxied with EU and probably in EU this time. The slow speeds are a pain. Is it possible they are sending all data to the EU, even US-only persons data?
+* Made a small QOL change to the extension to list highest number'd files at the top.
+* No failures, but the slower speeds made me go slower and take about thrice as long. Still, GTR has been a **godsend**. I can't imagine trying to rip 1.7TB out of a hardcore authenticated web browser backend to safety any other way.
+
 ## October 2023
 
 * Largest takeout so far at 1.7TB. 32 "archives" or files.
