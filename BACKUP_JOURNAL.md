@@ -16,8 +16,9 @@ Top will be the latest.
 * Google Takeout kept completely failing
 * Had to split up services.
 * Made it to two takeouts.
-* Still about ~1.6TB? Something around there.
-* Bucket for some of them are in "datalibration" bucket. Back to US?
+* Still about ~1.6TB? Something around there must have been deleted in my own cleanup.
+* Bucket for some of them are in "datalibration" bucket. Everything back to US?
+* Otherwise, the transfer was pretty uneventful and it worked rather well.
 
 ## December 2023
 
