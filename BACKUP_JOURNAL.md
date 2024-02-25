@@ -17,6 +17,7 @@ Top will be the latest.
 * Had to split up services.
 * Made it to two takeouts.
 * Still about ~1.6TB? Something around there.
+* Bucket for some of them are in "datalibration" bucket. Back to US?
 
 ## December 2023
 
