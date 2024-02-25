@@ -9,6 +9,13 @@ Just wanted to provide a journal of my backup escapades with GTR since:
 
 Top will be the latest.
 
+## February 2024
+
+<img width="625" alt="image" src="https://github.com/nelsonjchen/gargantuan-takeout-rocket/assets/5363/3f776bfd-f45c-4ea7-a0f1-58e4fb5f9c9f">
+
+* Google Takeout kept completely failing
+* Had to split up services.
+
 ## December 2023
 
 * Still 1.7TB. 33 Archives
