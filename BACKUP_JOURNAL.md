@@ -15,6 +15,8 @@ Top will be the latest.
 
 * Google Takeout kept completely failing
 * Had to split up services.
+* Made it to two takeouts.
+* Still about ~1.6TB? Something around there.
 
 ## December 2023
 
