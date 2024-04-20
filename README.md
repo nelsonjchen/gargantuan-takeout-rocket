@@ -108,12 +108,12 @@ You may also want to configure Google Takeout to run automatically every two mon
    * <img width="511" alt="image" src="https://user-images.githubusercontent.com/5363/163747552-22b51c99-553f-4aec-970c-a69cce4b940e.png">
 5. Enable the extension to intercept downloads with the checkmark popup.
    * <img width="506" alt="image" src="https://user-images.githubusercontent.com/5363/163747584-850dd276-47e9-4dff-b5cf-20b61b948c58.png">
-6. I was too lazy to implement a decent progress bar or indicator, so inspect the service worker's network tab for "progress" or indications of errors. This helps keep the extension more stable for some reason.
+6. I was too lazy to implement a decent progress bar or indicator, so you **must** inspect the service worker's network tab for "progress" or indications of errors. This also keeps the extension service worker from exiting.
    * Chrome:
-  
+
      <img width="802" alt="Screen Shot 2022-08-11 at 7 15 33 PM" src="https://user-images.githubusercontent.com/5363/184272694-ea4f2052-8389-4810-b35c-369c8581e326.png">
    * Edge:
-  
+
      ![image](https://user-images.githubusercontent.com/5363/232265264-2bef2d5e-7057-48df-b5fc-4883345b0f49.png)
 7. Visit Google Takeout and *middle*-click (on a Mac, Cmd-Click) download on an archive for transloading. This will open a useless tab in the background and start a download from the background and it'll save you a page reload on the main page. Monitor the extension's UI. Watch for failures. Slow down if there are failures. In general, limit yourself to about three 50GB archives or ~150GB up in the air at a time. It took about 50 seconds for each 50GB archive for me.
 8. Notifications will come and go as each archive is transloaded into Azure Blob Storage.

@@ -9,6 +9,12 @@ Just wanted to provide a journal of my backup escapades with GTR since:
 
 Top will be the latest.
 
+## April 2024
+
+* Scheduled takeout worked fine. No complete failure or errors
+* Google stored data into `takeout-eu` bucket. So slower transfer for me back to US.
+* Changed README to make inspecting the service worker mandatory.
+
 ## February 2024
 
 <img width="625" alt="image" src="https://github.com/nelsonjchen/gargantuan-takeout-rocket/assets/5363/3f776bfd-f45c-4ea7-a0f1-58e4fb5f9c9f">
