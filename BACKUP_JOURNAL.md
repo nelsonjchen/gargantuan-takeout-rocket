@@ -9,6 +9,12 @@ Just wanted to provide a journal of my backup escapades with GTR since:
 
 Top will be the latest.
 
+## June 2024
+
+* Scheduled takeout worked fine. No complete failure or errors
+* Google stored data into `takeout-eu` bucket. So slower transfer for me back to US again. Did 3 or 4 simutaneous transfers. Still seems to work!
+* Broke the 2TB range. I got an 360 camera and its 360 videos are huge too. Here's to 3TB soon, haha! 
+
 ## April 2024
 
 * Scheduled takeout worked fine. No complete failure or errors
