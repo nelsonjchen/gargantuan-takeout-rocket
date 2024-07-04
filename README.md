@@ -176,6 +176,11 @@ and there's many more. oh there's just so many. too many.
 
 * https://news.ycombinator.com/item?id=38562726
   * Google calls Drive data loss "fixed," locks forum threads saying otherwise
+ 
+### LMAO
+
+* https://news.ycombinator.com/item?id=40871938
+  * .DS_Store can get DMCAs 
 
 ### News Posts
 
