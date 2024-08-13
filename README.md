@@ -40,7 +40,7 @@ GTR is right for you if:
 
 This guide is a continual work in progress. PRs are very much welcome!
 
-If you need some help or questions or whatever, feel free to hit me up over [Twitter][twitter] or make an issue.
+If you need some help or questions or whatever, feel free to make an issue. I wish it could be simpler or I had the skills to make it simpler.
 
 Let me know if the guide works for you as well!
 
