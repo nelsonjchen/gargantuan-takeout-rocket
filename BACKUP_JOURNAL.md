@@ -9,6 +9,12 @@ Just wanted to provide a journal of my backup escapades with GTR since:
 
 Top will be the latest.
 
+## August 2024
+
+* Scheduled takeout worked fine. No complete failure or errors
+* Google stored data into `takeout-eu` bucket.
+* Broke the 3TB range. Seemd to have hit ceiling with Azure Ingress limits at times. Just backed off. This stuff now takes me 30 minutes.
+
 ## June 2024
 
 * Scheduled takeout worked fine. No complete failure or errors
