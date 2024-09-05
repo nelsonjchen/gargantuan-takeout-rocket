@@ -164,6 +164,7 @@ For 1TB, this will cost about $108. Small price for salvation.
   * YT copyright strikes from your account being hacked and all your family videos go away. Like the one of your mom who has since passed. Cheers!
 * https://twitter.com/search?q=google%20takeout%20youtube
   * A neverending stream of "I can't takeout my banned youtube account!".
+* [Never upload old photos of yourself in your birthday suit](https://www.reddit.com/r/googlephotos/comments/1f8mhds/my_google_account_banned_because_of_false_cp/)
 
 and there's many more. oh there's just so many. too many.
 
