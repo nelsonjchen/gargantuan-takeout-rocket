@@ -248,8 +248,7 @@ Let me know if you try something and it works. Don't bother trying it on traditi
 
 ## The Name
 
-I got inspired watching SpaceX launch rockets with a pile of Merlin engines. Starship is definitely a BFR! The fact it launched with "off the shelf" rockets combined in parallel to launch such huge amounts was definitely inspirational somewhat to the architecture. Hence, GTR.
-
+I got inspired watching SpaceX launch rockets with a pile of Merlin engines. Starship is definitely a BFR which was its original name! The fact it launched with "off the shelf" rockets combined in parallel to launch such huge amounts was definitely inspirational somewhat to the architecture. Hence, GTR. And it also matches the name of Nissan's flagship sports car. 
 
 [vps_fxp]: https://sjwheel.net/cloud/computing/2019/08/01/aws_backup.html
 [pbfu]: https://docs.microsoft.com/en-us/rest/api/storageservices/put-block-from-url
