@@ -9,6 +9,13 @@ Just wanted to provide a journal of my backup escapades with GTR since:
 
 Top will be the latest.
 
+## October 2024
+
+* Scheduled takeout worked fine. No complete failure or errors.
+* Google stored data into `datalibration` bucket. So faster transfer for me back in the US.
+* Broke the 4TB range at 4.2 TB. I have even more 360 videos and 4K videos now. Admittedly, these are not the "raw" files but the output files for YouTube compatibility.
+* Added 530 as a code to resume upon.
+
 ## August 2024
 
 * Scheduled takeout worked fine. No complete failure or errors
@@ -19,7 +26,7 @@ Top will be the latest.
 
 * Scheduled takeout worked fine. No complete failure or errors
 * Google stored data into `takeout-eu` bucket. So slower transfer for me back to US again. Did 3 or 4 simutaneous transfers. Still seems to work!
-* Broke the 2TB range. I got an 360 camera and its 360 videos are huge too. Here's to 3TB soon, haha! 
+* Broke the 2TB range. I got an 360 camera and its 360 videos are huge too. Here's to 3TB soon, haha!
 
 ## April 2024
 
