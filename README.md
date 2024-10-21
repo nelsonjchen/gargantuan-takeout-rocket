@@ -86,6 +86,10 @@ The extension UI can be seen by clicking on the rocket icon. This may or may not
 
 If you've setup your own Cloudflare Workers proxy, set the `GTR Proxy Base URL` to yours. The default URL in the field is the public instance.
 
+### Ensure you've disabled "Ask where to save each file before downloading" in your browser
+
+If you don't do this, you'll get annoying popups for each file you download. Of course you can revert this setting after you're done with the backup.
+
 ### Setup Calendar or To-do app
 
 On your planner application of choice, remind yourself every 2 months (or whatever interval you want) to perform a backup using this. I have Todoist setup to remind me every 2 months.
@@ -178,11 +182,11 @@ and there's many more. oh there's just so many. too many.
 
 * https://news.ycombinator.com/item?id=38562726
   * Google calls Drive data loss "fixed," locks forum threads saying otherwise
- 
+
 ### LMAO
 
 * https://news.ycombinator.com/item?id=40871938
-  * .DS_Store can get DMCAs 
+  * .DS_Store can get DMCAs
 
 ### News Posts
 
@@ -248,7 +252,7 @@ Let me know if you try something and it works. Don't bother trying it on traditi
 
 ## The Name
 
-I got inspired watching SpaceX launch rockets with a pile of Merlin engines. Starship is definitely a BFR which was its original name! The fact it launched with "off the shelf" rockets combined in parallel to launch such huge amounts was definitely inspirational somewhat to the architecture. Hence, GTR. And it also matches the name of Nissan's flagship sports car. 
+I got inspired watching SpaceX launch rockets with a pile of Merlin engines. Starship is definitely a BFR which was its original name! The fact it launched with "off the shelf" rockets combined in parallel to launch such huge amounts was definitely inspirational somewhat to the architecture. Hence, GTR. And it also matches the name of Nissan's flagship sports car.
 
 [vps_fxp]: https://sjwheel.net/cloud/computing/2019/08/01/aws_backup.html
 [pbfu]: https://docs.microsoft.com/en-us/rest/api/storageservices/put-block-from-url
