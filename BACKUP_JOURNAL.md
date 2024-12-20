@@ -9,6 +9,10 @@ Just wanted to provide a journal of my backup escapades with GTR since:
 
 Top will be the latest.
 
+## December 2024
+
+* Scheduled Takeout failed once. WIP
+
 ## October 2024
 
 * Scheduled takeout worked fine. No complete failure or errors.
