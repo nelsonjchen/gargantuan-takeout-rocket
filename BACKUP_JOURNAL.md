@@ -12,6 +12,8 @@ Top will be the latest.
 ## December 2024
 
 * Scheduled Takeout failed once. WIP
+* 2nd Takeout worked.
+* Unfortunately, Google has changed their Takeout URL scheme completely. https://github.com/nelsonjchen/gargantuan-takeout-rocket/issues/11
 
 ## October 2024
 
