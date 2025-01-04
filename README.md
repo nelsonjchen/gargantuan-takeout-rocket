@@ -1,4 +1,4 @@
-Currently Broken: https://github.com/nelsonjchen/gargantuan-takeout-rocket/issues/11
+# Currently Broken: https://github.com/nelsonjchen/gargantuan-takeout-rocket/issues/11 Need rewrite.
 
 # 🚀 Gargantuan Takeout Rocket
 
