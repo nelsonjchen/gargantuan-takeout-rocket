@@ -50,19 +50,37 @@ The proxy should be usable within the free tier limits of Cloudflare Workers at 
 
 A real Google Takeout URL would look like this:
 
-https://00f74ba44b071b761059aef3fd79738daea1be7829-apidata.googleusercontent.com/download/storage/v1/b/dataliberation/o/20211113T212502Z%2F-4311693717716012545%2F498d83a5-1ab3-4a79-815f-e5cfda855e7a%2F1%2F869777c3-49ff-4d4e-a932-230a6b0b2a78?jk=AFshE3XT7l4gO3olRD23ASyAuaK-Lbi1Z4oc4eMBje8eLdA1mHPk-VeNNMCDno2sDlRKTKD2Nqau1HdkE9nX5f462yylgcSu5kmIknW0lU-1Xx3Mb8OnO5L-DMq3W8xslAI6vlKnqrKaTztfOKSQOfn-5XWf4OuiuDCTdstSSCcsNDMu8b4NX6cnuRhGRdVonqtH3lf9TV7fIBJMchxy3l-i3W_tiGHO7NP9B2Rnvo2uJP7-pgbfxH_ki0DLerQhKK4hRx6KeHWfXL2XT80lLVYwfS2dk5XVAplFIIV7Lp9H7x3HERQzR7_1JshhluQyoG6Vqv7gRYyav8S7PrwkKXStCho5fc85ErZ0dQqJXmvNqCtdWCB8-KzIA5-UgjlLcDzk_mVYMUfcr-_i-R-5tA_Rnb0MmavB94aIj9EfEh0g0B6yCRnAHAIuob6EYFTeCVTs7XXBlqlMKF-P0A5L2d47f0pSQrosQUNshoZKKieSl71vD3kiFDZ4OIg5K-yPlkniodFuyRr-hf5LeBIZhMFNozA2nfGOU3cW3i_sJZgNJNf68UK_l1beTDJ5ZKEZ5ot0jgaQ7w_KlLEonaGJM4Lw7oVby-GbqmlFYe2SI9wwxcXURdW88AW4zipqCMOz_N7cBYC0zm1t4TRSW2-_uvsQWLQRA_9g8avGn8RIKr8i-ISa7sfMaUQEkY4eOtsV7l3JHNeKjmJtxSOJPwg487Cv0htwGt_3Kd6IbyFOb1l0l9wKtkIxkQqliTvAK7VXZUGr1Cdsbbhq1qy3AF1aMVPA1vghV2TOOr5rOzVkRUmTLQzU5WfsYOoNcKjJ7mPvuOirFkKvSHzBQDvZ8_B2RgwT7zMZ7LsjAhG1zS3eDTijUMi9QEM_FYkugRpZ36eg9SZWrEbHCp36y0kL7QK8gZHVP6ePvOqujXG1BCryrxp5UQ9AhZS3szhe54MDf1877LTEmCH5_utBvQqF31dlinmEWiL4YTwiSEwwUToJ38H7gmI-CWErYJsJylmuOSfUoJFpELSRi4Qw4fF-figbaB3w_BNhXvEBdUsMeSNkBkU5u4nwAfG8IJ6TxkyZZKgK4uIhG1R7mr7QaRJ_bizIRVUl&isca=1+
+https://takeout-download.usercontent.google.com/download/takeout-20241222T093656Z-002.zip?j=3647d71e-7af8-4aa7-9dc1-1f682197329a&i=1&user=798667665537&authuser=0
+
+The cookie for google.com to download from there may look like this:
+
+```
+SOCS=37wce-vIcZBl7dO_5nFTjJMngTwis4VAjovonE2iPwlC4fzGIZHNhq2woiVo8qioivd1KfbO7deIXVv1;
+SID=gSk36hDHFEgRdagLfTeDZ16Z-kNAktOcPkQ5BfhPO3YRy1mwnF28qdmItkwbum/Ey5fMlVU2FQVNn-ZgV5yZKYQdbaZNKoYrreVpuQGqwuB.zcZagmIi5HamJJ__40EH2gag3RoeO6HngypKQZ.w5NsV/YuUBu_V;
+__Secure-1PSID=ktYPxfJZNRUHG76Nd8ur4ZFVZ/kW03X1Bq/XJx.fDMRsJYIQ0LyPLLdHR.BES0pNVsz2e/_bpg.yDkPeuo31S/TDEDC/u-zx4M3bmp8zWyim.3aYEofWOaTJ4sVvXZMMtp5_qovKkve/OoCd/axJ91O6kYwel-/1;
+__Secure-3PSID=IRDrpcDPhZ0bvrZvMUHoGS9dYyo/GJDAohmN7s-BP.yFU.F574B04wfU0_eGNyLsbnOPe_zjGPyDgjlDH3y5/UzL7octAQVOoLYzdmOdI8FzqNpWMTEsMygA_.Y0R-XWMi9Vf3HpaPD7SMPbdo_lVl/CEVaKZ3Ct;
+HSID=_HuLLhqnCMisz2JSLnaqg2l/;
+SSID=e1WFh5rHSV2zLlUkP1bssTPd;
+APISID=fgk08DbZZA-UZ4VHHak.Czu9.53Oi0S0kbcT4jDWemaNF0pvtFbY3sV3f/jRNSjm4L4ZYwcLcbSy1rhb;
+SAPISID=3kgc0BdGF60S/ZZG41Ht_.iSiMcrLqksFK7UeMzyin0JaIKV3WeyH4j2mDap7iAvFwXIC4zCU0cqkL7x;
+__Secure-1PAPISID=iVgYeursBnNeS0Y9h5fYGp7oAyzLKCGRDKekJREgaH.ed1144GIboxdJ03UMJJX4QhBHgIXYVw00BfJI;
+__Secure-3PAPISID=i6L9Id6QPFeVZ5HWPVSy_h3gGUrQPS-0Iy_Ctq2h0eyOUBekgVb-I2AK0d._MHefjgFL0B3Ucb/9d/eN;
+AEC=/iHS/oYenlhLo/a6h7m83EL8/hPx7phpChS7DNvr;
+NID=Z2gjndWHS3xV719VvNRQRFBJYONwICXzyZuxCzxcL4Iqtlh9Uandl6miu73o6D9e1R1/dWBJ-1U44w0sMheUjcxzzBwAQpGmfK-VVHu5IA8dbHKspsmS2zE/Ho5/nj-XG6gZRz.SeUiXOdmn-6iEJ2D.yc6bJvPMMKZap7OfTaFoDBI2GFs4YBBAb/-RzMf_vv5Xee54Je2zM_zRr-FSbz6q.lujzilHrki_9/rP4w_aQHCDIwCa173XSgdA9HrHKWNF2ZNCn22R0sNNaU60snJMfOOt__vYltDegeEAgva-w/CkAmYt7_QRSxmAfGSMxeAY_F3et1HK63QxB.ZVPsYbMj-XSLijTJD0jZoKSe2k0VQCKsXmR.8/IS_/TTRvBuieHsQ6p2Hdc1Nw.k6Pz6Q_72BaiS9ytNBUY.pbMv3MVuDzMNJp7MxYzzop-fj.IhboDU33w-1rw2JtXc/KAfO3f2VpJzPOFGAr7Ny2QrxspDw62it23Qsw2-/lCUPWXMcrZJEv;
+__Secure-1PSIDTS=aDCAK7xxrvFazkMBeMLtwAw6.NNZePownq6jcXAjSz75rZrKNQkJS0CIE5S6kRZSEf52vRnz_qCdmQnU;
+__Secure-3PSIDTS=eIIXDjrVv-Ebf0cG_GnG9miP/adeik9YxXRuvAOM_C/iKfdoUiSWuVRshxF3jwrwPj9u2PgyJzxQT1I4;
+SIDCC=BaaFrOcsAVaeOuGHeD/m5CQripHVuJ-rCpvqJVOprKQsMZwF75kGLxednAUie7zk_osEFp/ibFISO3lP;
+__Secure-1PSIDCC=5LBUKDUZGgLpIzhVF19MjCUBAybsFl43v_0I.R216HOKEOd1ktv9Trm5JwhC-OSs69nxYGvrqoK53Cf_;
+__Secure-3PSIDCC=2i1fwb-_c22HuZ6j_AbhE1mP-7KxqsKsTG.1mVmo-EkY/WIh3Dex/JbwLnZd-4y0c-Ns-HNAmfP7CfAk;
+```
 
 1. Get your original SAS URL from Azure and append a blob name to it in the path. For our example, we'll use this:
    https://urlcopytest.blob.core.windows.net/some-container/data.dat?sp=r&st=2022-04-02T18:23:20Z&se=2022-04-03T06:24:20Z&spr=https&sv=2020-08-04&sr=c&sig=KNz4a1xHnmfi7afzrnkBFtls52YIZ0xtzn1Y7udqXBw%3D
 2. The account name is `urlcopytest`. Construct a new proxyfied URL as such:
    https://gtr-proxy.677472.xyz/p-azb/urlcopytest/some-container/data.dat?sp=r&st=2022-04-02T18:23:20Z&se=2022-04-03T06:24:20Z&spr=https&sv=2020-08-04&sr=c&sig=KNz4a1xHnmfi7afzrnkBFtls52YIZ0xtzn1Y7udqXBw%3D
-3. Construct a proxified Google Takeout URL.
-   1. Replace all "%2F" with "%252F".
-      * https://00f74ba44b071b761059aef3fd79738daea1be7829-apidata.googleusercontent.com/download/storage/v1/b/dataliberation/o/20211113T212502Z%252F-4311693717716012545%252F498d83a5-1ab3-4a79-815f-e5cfda855e7a%252F1%252F869777c3-49ff-4d4e-a932-230a6b0b2a78?jk=AFshE3XT7l4gO3olRD23ASyAuaK-Lbi1Z4oc4eMBje8eLdA1mHPk-VeNNMCDno2sDlRKTKD2Nqau1HdkE9nX5f462yylgcSu5kmIknW0lU-1Xx3Mb8OnO5L-DMq3W8xslAI6vlKnqrKaTztfOKSQOfn-5XWf4OuiuDCTdstSSCcsNDMu8b4NX6cnuRhGRdVonqtH3lf9TV7fIBJMchxy3l-i3W_tiGHO7NP9B2Rnvo2uJP7-pgbfxH_ki0DLerQhKK4hRx6KeHWfXL2XT80lLVYwfS2dk5XVAplFIIV7Lp9H7x3HERQzR7_1JshhluQyoG6Vqv7gRYyav8S7PrwkKXStCho5fc85ErZ0dQqJXmvNqCtdWCB8-KzIA5-UgjlLcDzk_mVYMUfcr-_i-R-5tA_Rnb0MmavB94aIj9EfEh0g0B6yCRnAHAIuob6EYFTeCVTs7XXBlqlMKF-P0A5L2d47f0pSQrosQUNshoZKKieSl71vD3kiFDZ4OIg5K-yPlkniodFuyRr-hf5LeBIZhMFNozA2nfGOU3cW3i_sJZgNJNf68UK_l1beTDJ5ZKEZ5ot0jgaQ7w_KlLEonaGJM4Lw7oVby-GbqmlFYe2SI9wwxcXURdW88AW4zipqCMOz_N7cBYC0zm1t4TRSW2-_uvsQWLQRA_9g8avGn8RIKr8i-ISa7sfMaUQEkY4eOtsV7l3JHNeKjmJtxSOJPwg487Cv0htwGt_3Kd6IbyFOb1l0l9wKtkIxkQqliTvAK7VXZUGr1Cdsbbhq1qy3AF1aMVPA1vghV2TOOr5rOzVkRUmTLQzU5WfsYOoNcKjJ7mPvuOirFkKvSHzBQDvZ8_B2RgwT7zMZ7LsjAhG1zS3eDTijUMi9QEM_FYkugRpZ36eg9SZWrEbHCp36y0kL7QK8gZHVP6ePvOqujXG1BCryrxp5UQ9AhZS3szhe54MDf1877LTEmCH5_utBvQqF31dlinmEWiL4YTwiSEwwUToJ38H7gmI-CWErYJsJylmuOSfUoJFpELSRi4Qw4fF-figbaB3w_BNhXvEBdUsMeSNkBkU5u4nwAfG8IJ6TxkyZZKgK4uIhG1R7mr7QaRJ_bizIRVUl&isca=1+
-   2. Remove the scheme and prepend the proxy URL of `https://gtr-proxy.677472.xyz/p/`.
-      * https://gtr-proxy.677472.xyz/p/00f74ba44b071b761059aef3fd79738daea1be7829-apidata.googleusercontent.com/download/storage/v1/b/dataliberation/o/20211113T212502Z%252F-4311693717716012545%252F498d83a5-1ab3-4a79-815f-e5cfda855e7a%252F1%252F869777c3-49ff-4d4e-a932-230a6b0b2a78?jk=AFshE3XT7l4gO3olRD23ASyAuaK-Lbi1Z4oc4eMBje8eLdA1mHPk-VeNNMCDno2sDlRKTKD2Nqau1HdkE9nX5f462yylgcSu5kmIknW0lU-1Xx3Mb8OnO5L-DMq3W8xslAI6vlKnqrKaTztfOKSQOfn-5XWf4OuiuDCTdstSSCcsNDMu8b4NX6cnuRhGRdVonqtH3lf9TV7fIBJMchxy3l-i3W_tiGHO7NP9B2Rnvo2uJP7-pgbfxH_ki0DLerQhKK4hRx6KeHWfXL2XT80lLVYwfS2dk5XVAplFIIV7Lp9H7x3HERQzR7_1JshhluQyoG6Vqv7gRYyav8S7PrwkKXStCho5fc85ErZ0dQqJXmvNqCtdWCB8-KzIA5-UgjlLcDzk_mVYMUfcr-_i-R-5tA_Rnb0MmavB94aIj9EfEh0g0B6yCRnAHAIuob6EYFTeCVTs7XXBlqlMKF-P0A5L2d47f0pSQrosQUNshoZKKieSl71vD3kiFDZ4OIg5K-yPlkniodFuyRr-hf5LeBIZhMFNozA2nfGOU3cW3i_sJZgNJNf68UK_l1beTDJ5ZKEZ5ot0jgaQ7w_KlLEonaGJM4Lw7oVby-GbqmlFYe2SI9wwxcXURdW88AW4zipqCMOz_N7cBYC0zm1t4TRSW2-_uvsQWLQRA_9g8avGn8RIKr8i-ISa7sfMaUQEkY4eOtsV7l3JHNeKjmJtxSOJPwg487Cv0htwGt_3Kd6IbyFOb1l0l9wKtkIxkQqliTvAK7VXZUGr1Cdsbbhq1qy3AF1aMVPA1vghV2TOOr5rOzVkRUmTLQzU5WfsYOoNcKjJ7mPvuOirFkKvSHzBQDvZ8_B2RgwT7zMZ7LsjAhG1zS3eDTijUMi9QEM_FYkugRpZ36eg9SZWrEbHCp36y0kL7QK8gZHVP6ePvOqujXG1BCryrxp5UQ9AhZS3szhe54MDf1877LTEmCH5_utBvQqF31dlinmEWiL4YTwiSEwwUToJ38H7gmI-CWErYJsJylmuOSfUoJFpELSRi4Qw4fF-figbaB3w_BNhXvEBdUsMeSNkBkU5u4nwAfG8IJ6TxkyZZKgK4uIhG1R7mr7QaRJ_bizIRVUl&isca=1+
-3. Perform any `PUT` operations with a `x-ms-copy-source` header with the proxified Google Takeout URL as the value as you wish through that URL as it will survive traversing Azure and hit the proxy where the URL will be converted back to the original takeout URL.
+3. Perform any `PUT` operations with a `x-ms-copy-source` header with the Google Takeout URL and `x-ms-copy-source-authorization` header with the cookie data. It should be like `Authorization: Gtr2Cookie <Google Cookie Data, all joined with ; no space>`
    * You can observe that the endpoint of the proxy is HTTP/3 after the first initial connection in the Network tab. This has a lot higher limits for simultaneous connections than HTTP/1.1.
+   * Additionally, the remote endpoint should see that the Cookie header is set to the Google Takeout cookie data.
 
 The example URL has expired, but you can use the above steps to construct your own.
 
