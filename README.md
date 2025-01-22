@@ -1,15 +1,17 @@
-# Gargantuan Takeout Rocket Proxy
+# Gargantuan Takeout Rocket 2 Proxy
 
-This is the Cloudflare Workers proxy component of [Gargantuan Takeout Rocket (GTR)][gtr], a toolkit to quickly backup Google Takeout archives to Azure Storage at extremely high speeds and low cost.
+This is the Cloudflare Workers proxy component of [Gargantuan Takeout Rocket 2 (GTR2)][gtr], a toolkit to quickly backup Google Takeout archives to Azure Storage at extremely high speeds and low cost.
+
+It is a rewrite of the original GTR Proxy as the original GTR Proxy wrapped and unwrapped URLs. In GTR Proxy 2, we unwrap the `Authorization` header as cookies to be passed onwards to Google.
 
 This proxy is required as:
 
-- [Microsoft's Azure Storage is unable to download from download URLs used in Google Takeout directly due to an URL Escaping issue in Google's URLs that Azure "helpfully" breaks.][msqa] 3xx redirects are not accepted either.
-- To transfer fast, we tell Cloudflare Workers to fetch from Google with 1000MB chunks simultaneously at nearly 50 connections at a time for 50GB files from the extension and put the data onto Azure as chunks. [Unfortunately, talking to Azure's endpoints only support 6 connections and thus only 6 requests at a time from a web browser due to Azure Storage's endpoints only supporting HTTP/1.1](https://learn.microsoft.com/en-us/rest/api/storageservices/http-version-support).
+- Microsoft's Azure Storage, when downloading from remote sources, is unable to set the Cookie header to be able to download from Google's Takeout URLs. This is a problem as Google Takeout URLs require cookies to be set to download the data.
+- To transfer fast, we tell Cloudflare Workers to fetch from Google with 1000MB chunks simultaneously at nearly 50 connections at a time for 50GB files from the extension and put the data onto Azure as chunks. [Unfortunately, talking to Azure's endpoints only support 6 connections and thus only 6 requests at a time from a web browser (even through a browser extension) due to Azure Storage's endpoints only supporting HTTP/1.1](https://learn.microsoft.com/en-us/rest/api/storageservices/http-version-support).
 
 Cloudflare Workers can be used to address these issues:
 
-- By offloading downloading of the offending URLs to Cloudflare, encoding the Takeout URL's escaped characters specially to be decoded via the real URLs in Cloudflare, Azure's mangling of Google's URLs for its "server-to-server" download capabilities is circumvented. Cloudflare charges nothing for ingress and egress as well, there is little to no worker CPU usage, and the bandwidth to do this proxying is pretty much free.
+- We can control the `Authorization` header via the (`x-ms-copy-source-authorization: <scheme> <signature>` header)[putblockfromurl]. Cloudflare Workersr can use this header to set cookies to talk to Google from the data in the `Authorization` header.
 - Cloudflare Workers are accessed over HTTP/3 or HTTP/2 which web browsers multiplex requests over a single connection and aren't bound by the 6 connections limit in the browser. This can be used to convert Azure's HTTP 1.1 endpoint to HTTP/3 or HTTP/2 and the GTR extension in the browser can command more chunks to be downloaded by Azure simultaneously through the proxy. Speeds of up to around 8.7GB/s can be achieved with this proxy from the browser versus 180MB/s with a direct connection to Azure's endpoint. For reliability reasons, this is limited to 1.0GB/s, but that's still fairly high speed.
 
 A public instance of this service is provided, but you may want to run your own private instance of this proxy for privacy reasons. If so, here is the source.
@@ -114,3 +116,4 @@ graph LR
 [chrome_connection_limit]: https://chromium.googlesource.com/chromium/src/net/+/master/socket/client_socket_pool_manager.cc#51
 [azcopy]: https://docs.microsoft.com/en-us/azure/storage/common/storage-use-azcopy-v10
 [cfhttp3]: https://developers.cloudflare.com/http3/
+[putblockfromurl]: https://learn.microsoft.com/en-us/rest/api/storageservices/put-block-from-url?tabs=microsoft-entra-id
