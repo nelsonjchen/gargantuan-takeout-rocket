@@ -1,13 +1,7 @@
 import { proxyPathnameToAzBlobSASUrl } from './azb'
-import { serializeError } from 'serialize-error';
-
 
 export async function handleRequest(request: Request): Promise<Response> {
   const url = new URL(request.url)
-
-  if (url.pathname.startsWith('/p/')) {
-    return handleProxyToGoogleTakeoutRequest(request)
-  }
 
   if (url.pathname.startsWith('/p-azb/')) {
     return handleProxyToAzStorageRequest(request)
@@ -41,58 +35,61 @@ export async function handleRequest(request: Request): Promise<Response> {
   })
 }
 
-export async function handleProxyToGoogleTakeoutRequest(
-  request: Request,
-): Promise<Response> {
-  // Extracted URL is after the /p/ in the path with https:// prepended to it
-  const original_url_segment = `https://${request.url.substring(request.url.indexOf('/p/') + 3)}`
-
-  // Strip off "/dummy.bin" from the end of the URL if it is there.
-  // This allows testing with azcopy which requires a nice filename at the end.
-  const original_url_segment_stripped = original_url_segment.replace(/\/dummy.bin$/, '')
-
-  // Replace %25 with % to get the original URL
-  const original_url_segment_stripped_processed = original_url_segment_stripped.replace(/%25/g, '%')
-
-  let extracted_url: URL
-  try {
-    // Replace %25 with % to get the original URL
-    extracted_url = new URL(original_url_segment_stripped_processed)
-  } catch (_) {
-    return new Response('invalid URL', {
-      status: 500,
-    })
-  }
-
-  if (
-    !(validGoogleTakeoutUrl(extracted_url) || validTestServerURL(extracted_url))
-  ) {
-    return new Response(
-      'encoded url was not a google takeout or test server url',
-      {
-        status: 403,
-      },
-    )
-  }
-
-  // Pass the original URL processed. A URL object will malform the `%2B` to `+`.
-  const originalResponse = await fetch(original_url_segment_stripped_processed, {
-    method: request.method,
-    headers: request.headers,
-  })
-
-  const response = new Response(originalResponse.body, {
-    status: originalResponse.status,
-    headers: originalResponse.headers,
-  })
-
-  console.log(response)
-
-  return response
-}
-
 export async function handleProxyToAzStorageRequest(request: Request): Promise<Response> {
   const url = new URL(request.url)
+
+  // Only specially handle PUT requests with x-ms-copy-source
+  if (request.method === 'PUT' && request.headers.get('x-ms-copy-source')) {
+    const sourceUrl = new URL(request.headers.get('x-ms-copy-source')!)
+
+    // Verify if it's a valid Google Takeout or test server URL
+    if (!(validGoogleTakeoutUrl(sourceUrl) || validTestServerURL(sourceUrl))) {
+      return new Response('Source URL must be a Google Takeout or valid test server URL', {
+        status: 403,
+      })
+    }
+
+    // For Google Takeout URLs, require cookie authentication
+    if (validGoogleTakeoutUrl(sourceUrl)) {
+      const authHeader = request.headers.get('x-ms-copy-source-authorization')
+      if (!authHeader) {
+        return new Response('Missing x-ms-copy-source-authorization header for Google Takeout URL', {
+          status: 400,
+        })
+      }
+
+      // Parse cookie data from authorization header
+      const [scheme, cookieData] = authHeader.split(' ')
+      if (scheme !== 'Gtr2Cookie' || !cookieData) {
+        return new Response('Invalid authorization format - expected "Gtr2Cookie <cookie_data>"', {
+          status: 400,
+        })
+      }
+
+      // Create new headers with cookie data for Google request
+      const headers = new Headers(request.headers)
+      headers.set('Cookie', cookieData)
+
+      try {
+        const azUrl = proxyPathnameToAzBlobSASUrl(url)
+        const originalResponse = await fetch(azUrl.toString(), {
+          method: request.method,
+          headers: headers,
+        })
+
+        return new Response(originalResponse.body, {
+          status: originalResponse.status,
+          headers: originalResponse.headers,
+        })
+      } catch (error) {
+        return new Response('Error processing request', {
+          status: 500,
+        })
+      }
+    }
+  }
+
+  // Handle regular Azure Storage requests
   try {
     const azUrl = proxyPathnameToAzBlobSASUrl(url)
     const originalResponse = await fetch(azUrl.toString(), {
@@ -100,15 +97,12 @@ export async function handleProxyToAzStorageRequest(request: Request): Promise<R
       headers: request.headers,
     })
 
-    const response = new Response(originalResponse.body, {
+    return new Response(originalResponse.body, {
       status: originalResponse.status,
       headers: originalResponse.headers,
     })
-    console.log(`response: ${JSON.stringify(response)}`)
-
-    return response
   } catch {
-    return new Response('invalid URL', {
+    return new Response('Invalid URL', {
       status: 500,
     })
   }
@@ -117,24 +111,16 @@ export async function handleProxyToAzStorageRequest(request: Request): Promise<R
 export function validTestServerURL(url: URL): boolean {
   return (
     // Cloudflare Bucket test server with unlimited download bandwidth
-    url.hostname.endsWith('gtr-test.677472.xyz') ||
-    // https://github.com/nelsonjchen/put-block-from-url-esc-issue-demo-server/
-    url.hostname.endsWith('3vngqvvpoq-uc.a.run.app')
+    url.hostname.endsWith('gtr-test.677472.xyz')
   )
 }
 
 export function validGoogleTakeoutUrl(url: URL): boolean {
   return (
+    // Domain for Takeout downloads
     (
-      url.hostname.endsWith('apidata.googleusercontent.com') &&
-      (
-        url.pathname.startsWith('/download/storage/v1/b/dataliberation/o/') ||
-        url.pathname.startsWith('/download/storage/v1/b/takeout')
-      )
-    ) ||
-    (
-      url.hostname.endsWith('storage.googleapis.com') &&
-      url.pathname.startsWith('/takeout-')
+      url.hostname.endsWith('takeout-download.usercontent.google.com') &&
+      url.pathname.startsWith('/download/')
     )
   )
 }
