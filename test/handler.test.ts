@@ -56,10 +56,6 @@ describe('azure proxy handler', () => {
     const base_request_url = new URL(
       `https://example.com/p-azb/${AZ_STORAGE_TEST_URL_SEGMENT}`,
     )
-    base_request_url.pathname = base_request_url.pathname.replace(
-      'test.dat',
-      'cookie-auth-test.dat',
-    )
 
     const request = new Request(base_request_url, {
       method: 'PUT',
