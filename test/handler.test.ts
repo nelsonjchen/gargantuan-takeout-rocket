@@ -38,7 +38,9 @@ describe('handler', () => {
       new Request(`https://example.com/version/`, {method: 'GET'}),
     )
     expect(result.status).toEqual(200)
-    const data = await result.json()
+    const data: {
+      apiVersion: string
+    } = await result.json()
     expect(data.apiVersion).toBe('2.0.0')
   })
 })
