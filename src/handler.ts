@@ -74,15 +74,10 @@ export async function handleProxyToAzStorageRequest(request: Request): Promise<R
         })
       }
 
-      // Create new headers with cookie data for Google request
-      const headers = new Headers(request.headers)
-      headers.set('Cookie', cookieData)
-
       try {
         const azUrl = proxyPathnameToAzBlobSASUrl(url)
         const originalResponse = await fetch(azUrl.toString(), {
           method: request.method,
-          headers: headers,
         })
 
         return new Response(originalResponse.body, {
@@ -90,7 +85,7 @@ export async function handleProxyToAzStorageRequest(request: Request): Promise<R
           headers: originalResponse.headers,
         })
       } catch (error) {
-        return new Response('Error processing request', {
+        return new Response(`Error processing request: ${error instanceof Error ? error.message : String(error)}`, {
           status: 500,
         })
       }
