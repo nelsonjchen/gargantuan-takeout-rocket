@@ -46,7 +46,7 @@ describe('handler', () => {
 })
 
 describe('azure proxy handler', () => {
-  test('handles cookie authentication for Google Takeout downloads', async () => {
+  test('handles cookie authentication for test downloads', async () => {
     const AZ_STORAGE_TEST_URL_SEGMENT = process.env.AZ_STORAGE_TEST_URL_SEGMENT
     if (!AZ_STORAGE_TEST_URL_SEGMENT) {
       throw new Error('AZ_STORAGE_TEST_URL_SEGMENT environment variable is not set')
@@ -61,13 +61,18 @@ describe('azure proxy handler', () => {
       method: 'PUT',
       headers: {
         'x-ms-blob-type': 'BlockBlob',
-        'x-ms-copy-source': real_takeout_url.toString(),
+        'x-ms-copy-source': file_test_cookie_url.toString(),
         'x-ms-copy-source-authorization': `Gtr2Cookie ${cookieData}`,
       }
     })
 
     const result = await handleRequest(request)
-    expect(result.status).toBe(201)
+    // This logs response status and body for debugging
+    const responseText = await result.clone().text();
+    console.log(`Response status: ${result.status}`);
+    console.log(`Response body: ${responseText}`);
+
+    expect(result.status).toBe(201);
   })
 
   test('rejects missing cookie authentication', async () => {
