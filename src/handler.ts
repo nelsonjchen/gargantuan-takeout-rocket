@@ -7,6 +7,14 @@ export async function handleRequest(request: Request): Promise<Response> {
     return handleProxyToAzStorageRequest(request)
   }
 
+  if (url.pathname.startsWith('/p/')) {
+    // return handleProxyToGoogleTakeoutRequest(request)
+    // TODO: Implement this
+    return new Response('Not implemented', {
+      status: 501,
+    })
+  }
+
   if (url.pathname.startsWith('/version/')) {
     return new Response(
       JSON.stringify(
