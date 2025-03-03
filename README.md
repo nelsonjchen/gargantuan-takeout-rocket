@@ -24,15 +24,15 @@ In general, you are expected to use the [Gargantuan Takeout Rocket (GTR)][gtr] e
 
 A public instance is hosted at https://gtr-proxy.677472.xyz that anybody may use with GTR. The front page of https://gtr-proxy.677472.xyz just goes to the GitHub repository for the proxy. The 677472.xyz (`67=g`, `74=t`, and `72=r` from ASCII) domain was chosen because it was $0.75 every year for numeric only `.xyz` domains and I wanted the bandwidth metrics for my personal site separated from this service. Visiting the domain will redirect to this GitHub repository.
 
-You are welcome to use the public instance for any load. You should mind the [privacy policy](https://github.com/nelsonjchen/gargantuan-takeout-rocket/blob/main/PRIVACY_POLICY.md) though.
+You are welcome to use the public instance for any load or testing. You should mind the [privacy policy](https://github.com/nelsonjchen/gargantuan-takeout-rocket/blob/main/PRIVACY_POLICY.md) though. Please look at the Private Instance section.
 
 Logs are not stored on this service but I reserve the right to stream the logs temporarily to observe and curb abuse if necessary.
 
 ## Private Instance
 
-You may be interested in running your own private instance so your data does not go through my public proxy.
+You should be interested in running your own private instance so your data does not go through my public proxy.
 
-Please try a Google Takeout with a small, non-sensitive, or already public data on your Google account to produce a non-sensitive Google Takeout test archive to test the public instance of the proxy to get familiar with the GTR toolkit first before setting up a private instance of this proxy for your actual sensitive and non-public takeout data.
+Please try a Google Takeout with a small, non-sensitive, or already public data on a throw-away Google account to produce a non-sensitive Google Takeout test archive to test the public instance of the proxy to get familiar with the GTR toolkit first before setting up a private instance of this proxy for your actual sensitive and non-public takeout data of your own account.
 
 Use this easy-to-use button:
 
@@ -40,7 +40,7 @@ Use this easy-to-use button:
 
 Out of the box, you should be able to use your `workers.dev` domain.
 
-Updates to this proxy may or may not be required in the future. If so, simply delete the old repository and old worker and redeploy.
+Updates to this proxy may or may not be required in the future. If so, simply delete the old repository, old worker on CloudFlare, and redeploy.
 
 The proxy should be usable within the free tier limits of Cloudflare Workers at a personal scale.
 
