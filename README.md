@@ -74,28 +74,29 @@ __Secure-1PSIDCC=5LBUKDUZGgLpIzhVF19MjCUBAybsFl43v_0I.R216HOKEOd1ktv9Trm5JwhC-OS
 __Secure-3PSIDCC=2i1fwb-_c22HuZ6j_AbhE1mP-7KxqsKsTG.1mVmo-EkY/WIh3Dex/JbwLnZd-4y0c-Ns-HNAmfP7CfAk;
 ```
 
-1. Get your original SAS URL from Azure and append a blob name to it in the path. For our example, we'll use this:
+To be honest, I don't know what all of these cookies do. I just know that they are necessary to download from Google Takeout URLs and I'm not in the business of reverse engineering Google's cookies. That's OK, we'll just send them all!
+
+1. Get your original SAS URL from Azure and append a blob name to it in the path. For our example, we'll use this for `data.dat` in the `some-container` container of the `urlcopytest` storage account:
    https://urlcopytest.blob.core.windows.net/some-container/data.dat?sp=r&st=2022-04-02T18:23:20Z&se=2022-04-03T06:24:20Z&spr=https&sv=2020-08-04&sr=c&sig=KNz4a1xHnmfi7afzrnkBFtls52YIZ0xtzn1Y7udqXBw%3D
-2. The account name is `urlcopytest`. Construct a new proxyfied URL as such:
+2. The account name is `urlcopytest`. Construct a new proxyfied URL as such with the storage account name, the container name, the blob name and relevant SAS parameters as the first, second, third, and fourth path segments and parameters respectively:
    https://gtr-proxy.677472.xyz/p-azb/urlcopytest/some-container/data.dat?sp=r&st=2022-04-02T18:23:20Z&se=2022-04-03T06:24:20Z&spr=https&sv=2020-08-04&sr=c&sig=KNz4a1xHnmfi7afzrnkBFtls52YIZ0xtzn1Y7udqXBw%3D
-3. Perform any `PUT` operations with a `x-ms-copy-source` header with the Google Takeout URL and `x-ms-copy-source-authorization` header with the cookie data. It should be like `Authorization: Gtr2Cookie <Google Cookie Data, all joined with ; no space>`
+3. Transform the Google Takeout URL to the gtr-proxy 2 URL. The above Takeout URL would be transformed to:
+   https://gtr-proxy.677472.xyz/p/takeout-download.usercontent.google.com/download/takeout-20241222T093656Z-002.zip?j=3647d71e-7af8-4aa7-9dc1-1f682197329a&i=1&user=798667665537&authuser=0
+4. Perform any `PUT` operations with a `x-ms-copy-source` header with the Proxified Google Takeout URL and `x-ms-copy-source-authorization` header with the cookie data with a special `Gtr2Cookie` scheme. It should be like `Authorization: Gtr2Cookie <Google Cookie Data, all joined with ; no space as-is>`
    * You can observe that the endpoint of the proxy is HTTP/3 after the first initial connection in the Network tab. This has a lot higher limits for simultaneous connections than HTTP/1.1.
-   * Additionally, the remote endpoint should see that the Cookie header is set to the Google Takeout cookie data.
+   * Additionally, the final destination Google Takeout endpoint should see that the Cookie header is set to the Google Takeout cookie data even though Azure Storage does not support setting the Cookie header. This is accomplished by the proxy converting the `Authorization` header that Azure Storage does support setting to the `Cookie` header that Google Takeout requires.
 
-The example URL has expired, but you can use the above steps to construct your own.
+The example URL has expired, but a test server is setup here:
 
-You can try an alternative URL that is not expired:
-
-https://gtr-test.677472.xyz/200MB.zip
+https://gtr-2-dev-server-262382012399.us-central1.run.app/
 
 ## Limits
 
 For anti-abuse reasons, the service is limited to test servers and Google Takeout download URLs for the aformentioned pathing issue and the Google Takeout URLs as unrestricted open proxies on the internet may be abused.
 
 - One of the following must be true:
-  - The source URL is a test URL from `*-3vngqvvpoq-uc.a.run.app` which can respond with paths that can cause issues for Azure direct downloads. The source for this can be found at: https://github.com/nelsonjchen/put-block-from-url-esc-issue-demo-server/blob/master/main.go
-  - The source URL is a test URL from a test download location from `gtr-test.677472.xyz`.
-  - The URL must be a valid Google Takeout download URL. Regions may have different data policies. Please create an issue if your region is unsupported.
+  - The source URL is a test URL from a test download location from https://gtr-2-dev-server-262382012399.us-central1.run.app/ which is set up for testing purposes.
+  - The URL must be a valid Google Takeout download URL.
 
 ## Design and Implementation
 
