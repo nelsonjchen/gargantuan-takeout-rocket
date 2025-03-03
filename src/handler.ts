@@ -110,8 +110,8 @@ export async function handleProxyToAzStorageRequest(request: Request): Promise<R
 
 export function validTestServerURL(url: URL): boolean {
   return (
-    // Cloudflare Bucket test server with unlimited download bandwidth
-    url.hostname.endsWith('gtr-test.677472.xyz')
+    // Gargantuan Takeout Rocket 2 Dev Server on Cloud Run
+    url.hostname.endsWith('gtr-2-dev-server-262382012399.us-central1.run.app')
   )
 }
 

@@ -12,7 +12,7 @@ import {
 import {
   real_takeout_url,
   real_azb_url,
-  file_test_small_url,
+  file_test_cookie_url,
 } from './real_url'
 
 describe('handler utilities', () => {
@@ -20,7 +20,7 @@ describe('handler utilities', () => {
     const bad_url = new URL('http://iscaliforniaonfire.com/')
     expect(validGoogleTakeoutUrl(bad_url)).toBeFalsy()
     expect(validGoogleTakeoutUrl(real_takeout_url)).toBeTruthy()
-    expect(validTestServerURL(file_test_small_url)).toBeTruthy()
+    expect(validTestServerURL(file_test_cookie_url)).toBeTruthy()
   })
 })
 
