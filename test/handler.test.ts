@@ -1,5 +1,6 @@
 import {
   handleRequest,
+  handleProxyToGoogleTakeoutRequest,
   validGoogleTakeoutUrl,
   validTestServerURL,
 } from '../src/handler'
@@ -7,6 +8,10 @@ import {
   azBlobSASUrlToProxyPathname,
   proxyPathnameToAzBlobSASUrl,
 } from '../src/azb'
+import {
+  takeoutUrlToProxyPathname,
+  proxyPathnameToTakeoutUrl,
+} from '../src/takeout'
 
 // URL is too long, just move it to another file.
 import {
@@ -73,6 +78,55 @@ describe('azure proxy handler', () => {
     console.log(`Response body: ${responseText}`);
 
     expect(result.status).toBe(201);
+  })
+
+  test('handles proxified Google Takeout URLs', async () => {
+    // Mock fetch to avoid actual network requests
+    global.fetch = jest.fn().mockImplementation(() =>
+      Promise.resolve({
+        status: 200,
+        headers: new Headers(),
+        body: null,
+      })
+    );
+
+    const AZ_STORAGE_TEST_URL_SEGMENT = process.env.AZ_STORAGE_TEST_URL_SEGMENT || 'urlcopytest/some-container/test.dat'
+    const cookieData = 'SOCS=test_cookie;SID=test_sid;HSID=test_hsid'
+
+    // Create a proxified Google Takeout URL
+    const proxyTakeoutUrl = takeoutUrlToProxyPathname(
+      real_takeout_url,
+      'https://example.com',
+    )
+
+    const base_request_url = new URL(
+      `https://example.com/p-azb/${AZ_STORAGE_TEST_URL_SEGMENT}`,
+    )
+
+    const request = new Request(base_request_url, {
+      method: 'PUT',
+      headers: {
+        'x-ms-blob-type': 'BlockBlob',
+        'x-ms-copy-source': proxyTakeoutUrl.toString(),
+        'x-ms-copy-source-authorization': `Gtr2Cookie ${cookieData}`,
+        'host': 'example.com', // Needed for the hostname check
+      }
+    })
+
+    const result = await handleRequest(request)
+    expect(result.status).toBe(200)
+
+    // Verify that fetch was called with the correct URL and headers
+    expect(fetch).toHaveBeenCalled()
+
+    // Check that the x-ms-copy-source header was set to the original Google Takeout URL
+    const fetchCall = (fetch as jest.Mock).mock.calls[0];
+    const fetchOptions = fetchCall[1];
+    expect(fetchOptions.headers.get('x-ms-copy-source')).toBe(real_takeout_url.toString());
+    expect(fetchOptions.headers.get('x-ms-copy-source-cookie')).toBe(cookieData);
+
+    // Restore the original fetch
+    (global.fetch as jest.Mock).mockRestore();
   })
 
   test('rejects missing cookie authentication', async () => {
@@ -157,5 +211,101 @@ describe('url-parser', () => {
     )
     const url = proxyPathnameToAzBlobSASUrl(path)
     expect(url).toEqual(real_azb_url)
+  })
+
+  test('can proxify the Google Takeout URL', async () => {
+    const path = takeoutUrlToProxyPathname(
+      real_takeout_url,
+      'https://example.com',
+    )
+    expect(path).toEqual(
+      new URL(
+        '/p/takeout-download.usercontent.google.com/download/takeout-20241222T093656Z-002.zip?j=3647d71e-7af8-4aa7-9dc1-1f682197329a&i=1&user=798667665537&authuser=0',
+        'https://example.com',
+      ),
+    )
+    const url = proxyPathnameToTakeoutUrl(path)
+    expect(url).toEqual(real_takeout_url)
+  })
+})
+
+describe('google takeout proxy handler', () => {
+  test('handles cookie authentication for Google Takeout', async () => {
+    // Mock fetch to avoid actual network requests
+    global.fetch = jest.fn().mockImplementation(() =>
+      Promise.resolve({
+        status: 200,
+        headers: new Headers(),
+        body: null,
+      })
+    );
+
+    const cookieData = 'SOCS=test_cookie;SID=test_sid;HSID=test_hsid'
+    const proxyUrl = takeoutUrlToProxyPathname(
+      real_takeout_url,
+      'https://example.com',
+    )
+
+    const request = new Request(proxyUrl, {
+      method: 'GET',
+      headers: {
+        'x-ms-copy-source-authorization': `Gtr2Cookie ${cookieData}`,
+      }
+    })
+
+    const result = await handleProxyToGoogleTakeoutRequest(request)
+    expect(result.status).toBe(200)
+
+    // Verify that fetch was called with the correct URL and headers
+    expect(fetch).toHaveBeenCalledWith(
+      real_takeout_url.toString(),
+      expect.objectContaining({
+        method: 'GET',
+        headers: expect.any(Headers),
+      })
+    )
+
+    // Check that the Cookie header was set correctly
+    const fetchCall = (fetch as jest.Mock).mock.calls[0];
+    const fetchOptions = fetchCall[1];
+    expect(fetchOptions.headers.get('Cookie')).toBe(cookieData);
+
+    // Restore the original fetch
+    (global.fetch as jest.Mock).mockRestore();
+  })
+
+  test('rejects missing cookie authentication for Google Takeout', async () => {
+    const proxyUrl = takeoutUrlToProxyPathname(
+      real_takeout_url,
+      'https://example.com',
+    )
+
+    const request = new Request(proxyUrl, {
+      method: 'GET',
+    })
+
+    const result = await handleProxyToGoogleTakeoutRequest(request)
+    expect(result.status).toBe(400)
+    const error = await result.text()
+    expect(error).toContain('Missing x-ms-copy-source-authorization header')
+  })
+
+  test('rejects invalid cookie authentication format for Google Takeout', async () => {
+    const proxyUrl = takeoutUrlToProxyPathname(
+      real_takeout_url,
+      'https://example.com',
+    )
+
+    const request = new Request(proxyUrl, {
+      method: 'GET',
+      headers: {
+        'x-ms-copy-source-authorization': 'InvalidFormat cookie=data',
+      }
+    })
+
+    const result = await handleProxyToGoogleTakeoutRequest(request)
+    expect(result.status).toBe(400)
+    const error = await result.text()
+    expect(error).toContain('Invalid authorization format')
   })
 })
