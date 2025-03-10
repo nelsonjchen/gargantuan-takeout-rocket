@@ -83,7 +83,7 @@ To be honest, I don't know what all of these cookies do. I just know that they a
 3. Transform the Google Takeout URL to the gtr-proxy 2 URL. The above Takeout URL would be transformed to:
    https://gtr-proxy.677472.xyz/p/takeout-download.usercontent.google.com/download/takeout-20241222T093656Z-002.zip?j=3647d71e-7af8-4aa7-9dc1-1f682197329a&i=1&user=798667665537&authuser=0
 4. Perform any `PUT` operations with a `x-ms-copy-source` header with the Proxified Google Takeout URL and `x-ms-copy-source-authorization` header with the cookie data with a special `Gtr2Cookie` scheme. It should be like `Authorization: Gtr2Cookie <Google Cookie Data, all joined with ; no space as-is>`
-   * You can observe that the endpoint of the proxy is HTTP/3 after the first initial connection in the Network tab. This has a lot higher limits for simultaneous connections than HTTP/1.1.
+   * You can observe that the endpoint of the proxy is HTTP/3 after the first initial connection in the Network tab. This has a lot higher limits for simultaneous connections than HTTP/1.1 from a standard web browser. This is how we can achieve high concurrency with Azure Storage being stuck on HTTP/1.1!
    * Additionally, the final destination Google Takeout endpoint should see that the Cookie header is set to the Google Takeout cookie data even though Azure Storage does not support setting the Cookie header. This is accomplished by the proxy converting the `Authorization` header that Azure Storage does support setting to the `Cookie` header that Google Takeout requires.
 
 The example URL has expired, but a test server is setup here:
