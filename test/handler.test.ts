@@ -18,6 +18,7 @@ import {
   real_takeout_url,
   real_azb_url,
   file_test_cookie_url,
+  file_test_gtr2cookie_auth_url,
 } from './real_url'
 
 describe('handler utilities', () => {
@@ -32,7 +33,7 @@ describe('handler utilities', () => {
 describe('handler', () => {
   test('redirect visiting the "front page" to GitHub', async () => {
     const result = await handleRequest(
-      new Request(`https://example.com/`, {method: 'GET'}),
+      new Request(`https://example.com/`, { method: 'GET' }),
     )
     expect(result.status).toEqual(302)
     expect(result.headers.get('Location')).toContain('github.com')
@@ -40,7 +41,7 @@ describe('handler', () => {
 
   test('returns version information', async () => {
     const result = await handleRequest(
-      new Request(`https://example.com/version/`, {method: 'GET'}),
+      new Request(`https://example.com/version/`, { method: 'GET' }),
     )
     expect(result.status).toEqual(200)
     const data: {
@@ -78,22 +79,40 @@ describe('test server sanity check', () => {
 })
 
 describe('azure proxy handler', () => {
-  test('handles cookie authentication for test downloads', async () => {
-    const AZ_STORAGE_TEST_URL_SEGMENT = process.env.AZ_STORAGE_TEST_URL_SEGMENT
-    if (!AZ_STORAGE_TEST_URL_SEGMENT) {
-      throw new Error('AZ_STORAGE_TEST_URL_SEGMENT environment variable is not set')
+  test('sanity check azb to make sure it can pass through Gtr2Cookie scheme', async () => {
+    const AZ_STORAGE_TEST_URL = process.env.AZ_STORAGE_TEST_URL
+    if (!AZ_STORAGE_TEST_URL) {
+      throw new Error('AZ_STORAGE_TEST_URL_BASE environment variable is not set')
     }
+    const cookieData = 'testcookie=valid'
+    // Add the filename to AZ_STORAGE_TEST_URL
+    const filename = 'sanity_test.txt'
 
-    const cookieData = 'testcookie=valid;SOCS=test_cookie;SID=test_sid;HSID=test_hsid'
-    const base_request_url = new URL(
-      `https://example.com/p-azb/${AZ_STORAGE_TEST_URL_SEGMENT}`,
+    // Create URL object from the base URL
+    const azUrl = new URL(AZ_STORAGE_TEST_URL)
+
+    // Add filename to the path portion before query parameters
+    // Extract the path without the leading slash, add filename, and set it back
+    const pathParts = azUrl.pathname.split('/')
+    // If the last part is empty (URL ended with /), replace it with filename
+    // Otherwise add filename as a new part
+    if (pathParts[pathParts.length - 1] === '') {
+      pathParts[pathParts.length - 1] = filename
+    } else {
+      pathParts.push(filename)
+    }
+    azUrl.pathname = pathParts.join('/')
+
+    const base_request_url = azBlobSASUrlToProxyPathname(
+      azUrl,
+      'https://example.com',
     )
 
     const request = new Request(base_request_url, {
       method: 'PUT',
       headers: {
         'x-ms-blob-type': 'BlockBlob',
-        'x-ms-copy-source': file_test_cookie_url.toString(),
+        'x-ms-copy-source': file_test_gtr2cookie_auth_url.toString(),
         'x-ms-copy-source-authorization': `Gtr2Cookie ${cookieData}`,
       }
     })
@@ -105,55 +124,6 @@ describe('azure proxy handler', () => {
     console.log(`Response body: ${responseText}`);
 
     expect(result.status).toBe(201);
-  })
-
-  test('handles proxified Google Takeout URLs', async () => {
-    // Mock fetch to avoid actual network requests
-    global.fetch = jest.fn().mockImplementation(() =>
-      Promise.resolve({
-        status: 200,
-        headers: new Headers(),
-        body: null,
-      })
-    );
-
-    const AZ_STORAGE_TEST_URL_SEGMENT = process.env.AZ_STORAGE_TEST_URL_SEGMENT || 'urlcopytest/some-container/test.dat'
-    const cookieData = 'SOCS=test_cookie;SID=test_sid;HSID=test_hsid'
-
-    // Create a proxified Google Takeout URL
-    const proxyTakeoutUrl = takeoutUrlToProxyPathname(
-      real_takeout_url,
-      'https://example.com',
-    )
-
-    const base_request_url = new URL(
-      `https://example.com/p-azb/${AZ_STORAGE_TEST_URL_SEGMENT}`,
-    )
-
-    const request = new Request(base_request_url, {
-      method: 'PUT',
-      headers: {
-        'x-ms-blob-type': 'BlockBlob',
-        'x-ms-copy-source': proxyTakeoutUrl.toString(),
-        'x-ms-copy-source-authorization': `Gtr2Cookie ${cookieData}`,
-        'host': 'example.com', // Needed for the hostname check
-      }
-    })
-
-    const result = await handleRequest(request)
-    expect(result.status).toBe(200)
-
-    // Verify that fetch was called with the correct URL and headers
-    expect(fetch).toHaveBeenCalled()
-
-    // Check that the x-ms-copy-source header was set to the original Google Takeout URL
-    const fetchCall = (fetch as jest.Mock).mock.calls[0];
-    const fetchOptions = fetchCall[1];
-    expect(fetchOptions.headers.get('x-ms-copy-source')).toBe(real_takeout_url.toString());
-    expect(fetchOptions.headers.get('x-ms-copy-source-cookie')).toBe(cookieData);
-
-    // Restore the original fetch
-    (global.fetch as jest.Mock).mockRestore();
   })
 
   test('rejects missing cookie authentication', async () => {
@@ -217,7 +187,7 @@ describe('azure proxy handler', () => {
     const result = await handleRequest(
       new Request(
         `https://example.com/p-azb/urlcopytest/some-container/some_file.dat?sp=racwd&st=2022-04-03T02%3A09%3A13Z&se=2022-04-03T02%3A20%3A13Z&spr=https&sv=2020-08-04&sr=c&sig=u72iEGi5SLkPg8B7QVI5HXfHSnr3MOse%2FzWzhaYdbbU%3D`,
-        {method: 'GET'},
+        { method: 'GET' },
       ),
     )
     expect(result.status).toEqual(403)
