@@ -50,6 +50,33 @@ describe('handler', () => {
   })
 })
 
+describe('test server sanity check', () => {
+  test('sanity check the test server URL to see if it is a valid URL', async () => {
+    const testServerUrl = new URL(file_test_cookie_url)
+    expect(validTestServerURL(testServerUrl)).toBeTruthy()
+
+    // Check if you can do a fetch to the test server URL, and not get a redirect
+    const noAuthResponse = await fetch(testServerUrl)
+    // Check if the response is a redirect
+    expect(noAuthResponse.redirected).toBeTruthy()
+    // Now try it with a cookie to authenticate
+    const cookieData = 'testcookie=valid;'
+    const requestWithCookie = new Request(testServerUrl, {
+      method: 'GET',
+      headers: {
+        'Cookie': cookieData,
+      }
+    })
+    const responseWithCookie = await fetch(requestWithCookie)
+    expect(responseWithCookie.status).toBe(200)
+    // Make sure it is not a redirect-
+    expect(responseWithCookie.redirected).toBeFalsy()
+    // Check the response body for 0-9
+    const responseBody = await responseWithCookie.text()
+    expect(responseBody).toMatch(/[0-9]/)
+  })
+})
+
 describe('azure proxy handler', () => {
   test('handles cookie authentication for test downloads', async () => {
     const AZ_STORAGE_TEST_URL_SEGMENT = process.env.AZ_STORAGE_TEST_URL_SEGMENT
@@ -57,7 +84,7 @@ describe('azure proxy handler', () => {
       throw new Error('AZ_STORAGE_TEST_URL_SEGMENT environment variable is not set')
     }
 
-    const cookieData = 'SOCS=test_cookie;SID=test_sid;HSID=test_hsid'
+    const cookieData = 'testcookie=valid;SOCS=test_cookie;SID=test_sid;HSID=test_hsid'
     const base_request_url = new URL(
       `https://example.com/p-azb/${AZ_STORAGE_TEST_URL_SEGMENT}`,
     )
