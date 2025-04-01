@@ -6,3 +6,6 @@ export const real_azb_url = new URL("https://urlcopytest.blob.core.windows.net/s
 // This endpoint will require a cookie named `testcookie` with value `valid` to download the file. If this cookie is not set or has an invalid value, it will return a 302 redirect to `/setup.html`, similar to Google Takeout.
 export const file_test_cookie_url = new URL("https://gtr-2-dev-server-262382012399.us-central1.run.app/download/test.txt")
 
+// This is a test endpoint with the custom Gtr2Cookie Authentication scheme.
+// It will require a cookie named `testcookie` with value `valid` to download the file. If this cookie is not set or has an invalid value, it will return a 302 redirect to `/setup.html`, similar to Google Takeout.
+export const file_test_gtr2cookie_auth_url = new URL("https://gtr-2-dev-server-262382012399.us-central1.run.app/download-gtr2cookie-auth/test.txt")
