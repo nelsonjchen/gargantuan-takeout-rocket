@@ -164,10 +164,10 @@ export async function handleProxyToGoogleTakeoutRequest(request: Request): Promi
     // Convert the proxy URL to the original Google Takeout URL
     const takeoutUrl = proxyPathnameToTakeoutUrl(url)
 
-    // For all requests to Google Takeout, we need cookie authentication
-    const authHeader = request.headers.get('x-ms-copy-source-authorization')
+    // For all requests to Google Takeout, we get Authorization
+    const authHeader = request.headers.get('Authorization')
     if (!authHeader) {
-      return new Response('Missing x-ms-copy-source-authorization header for Google Takeout URL', {
+      return new Response('Missing Authorization header from AZB for Authorization to Cookie map', {
         status: 400,
       })
     }

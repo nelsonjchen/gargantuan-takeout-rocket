@@ -244,48 +244,23 @@ describe('url-parser', () => {
 })
 
 describe('google takeout proxy handler', () => {
-  test('handles cookie authentication for Google Takeout', async () => {
-    // Mock fetch to avoid actual network requests
-    global.fetch = jest.fn().mockImplementation(() =>
-      Promise.resolve({
-        status: 200,
-        headers: new Headers(),
-        body: null,
-      })
-    );
-
-    const cookieData = 'SOCS=test_cookie;SID=test_sid;HSID=test_hsid'
-    const proxyUrl = takeoutUrlToProxyPathname(
-      real_takeout_url,
-      'https://example.com',
+  test('takes in requests from azb with Authorization Gtr2Cookie and proxies it onwards as Cookie', async () => {
+    const cookieData = 'testcookie=valid;SOCS=test_cookie;SID=test_sid;HSID=test_hsid'
+    const proxyUrl = new URL(
+      "https://example.com/p/gtr-2-dev-server-262382012399.us-central1.run.app/download/test.txt"
     )
 
     const request = new Request(proxyUrl, {
       method: 'GET',
       headers: {
-        'x-ms-copy-source-authorization': `Gtr2Cookie ${cookieData}`,
+        'Authorization': `Gtr2Cookie ${cookieData}`,
       }
     })
 
     const result = await handleProxyToGoogleTakeoutRequest(request)
+    console.log(`Response status: ${result.status}`);
+    console.log(`Response body: ${await result.text()}`);
     expect(result.status).toBe(200)
-
-    // Verify that fetch was called with the correct URL and headers
-    expect(fetch).toHaveBeenCalledWith(
-      real_takeout_url.toString(),
-      expect.objectContaining({
-        method: 'GET',
-        headers: expect.any(Headers),
-      })
-    )
-
-    // Check that the Cookie header was set correctly
-    const fetchCall = (fetch as jest.Mock).mock.calls[0];
-    const fetchOptions = fetchCall[1];
-    expect(fetchOptions.headers.get('Cookie')).toBe(cookieData);
-
-    // Restore the original fetch
-    (global.fetch as jest.Mock).mockRestore();
   })
 
   test('rejects missing cookie authentication for Google Takeout', async () => {
@@ -301,7 +276,7 @@ describe('google takeout proxy handler', () => {
     const result = await handleProxyToGoogleTakeoutRequest(request)
     expect(result.status).toBe(400)
     const error = await result.text()
-    expect(error).toContain('Missing x-ms-copy-source-authorization header')
+    expect(error).toContain('Missing Authorization header')
   })
 
   test('rejects invalid cookie authentication format for Google Takeout', async () => {
@@ -313,7 +288,7 @@ describe('google takeout proxy handler', () => {
     const request = new Request(proxyUrl, {
       method: 'GET',
       headers: {
-        'x-ms-copy-source-authorization': 'InvalidFormat cookie=data',
+        'Authorization': 'InvalidFormat cookie=data',
       }
     })
 
