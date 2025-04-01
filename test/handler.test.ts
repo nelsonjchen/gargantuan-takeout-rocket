@@ -127,17 +127,23 @@ describe('azure proxy handler', () => {
   })
 
   test('rejects missing cookie authentication', async () => {
-    const AZ_STORAGE_TEST_URL_SEGMENT = process.env.AZ_STORAGE_TEST_URL_SEGMENT
-    if (!AZ_STORAGE_TEST_URL_SEGMENT) {
-      throw new Error('AZ_STORAGE_TEST_URL_SEGMENT environment variable is not set')
+    const AZ_STORAGE_TEST_URL = process.env.AZ_STORAGE_TEST_URL
+    if (!AZ_STORAGE_TEST_URL) {
+      throw new Error('AZ_STORAGE_TEST_URL_BASE environment variable is not set')
     }
 
-    const base_request_url = new URL(
-      `https://example.com/p-azb/${AZ_STORAGE_TEST_URL_SEGMENT}`,
-    )
-    base_request_url.pathname = base_request_url.pathname.replace(
-      'test.dat',
-      'cookie-auth-missing.dat',
+    const filename = 'sanity_test.txt'
+    const azUrl = new URL(AZ_STORAGE_TEST_URL)
+    const pathParts = azUrl.pathname.split('/')
+    if (pathParts[pathParts.length - 1] === '') {
+      pathParts[pathParts.length - 1] = filename
+    } else {
+      pathParts.push(filename)
+    }
+    azUrl.pathname = pathParts.join('/')
+    const base_request_url = azBlobSASUrlToProxyPathname(
+      azUrl,
+      'https://example.com',
     )
 
     const request = new Request(base_request_url, {
