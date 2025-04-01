@@ -164,6 +164,13 @@ export async function handleProxyToGoogleTakeoutRequest(request: Request): Promi
     // Convert the proxy URL to the original Google Takeout URL
     const takeoutUrl = proxyPathnameToTakeoutUrl(url)
 
+    // Verify if it's a valid Google Takeout or test server URL
+    if (!(validGoogleTakeoutUrl(takeoutUrl) || validTestServerURL(takeoutUrl))) {
+      return new Response('Source URL must be a Google Takeout or valid test server URL', {
+        status: 403,
+      })
+    }
+
     // For all requests to Google Takeout, we get Authorization
     const authHeader = request.headers.get('Authorization')
     if (!authHeader) {
@@ -182,11 +189,11 @@ export async function handleProxyToGoogleTakeoutRequest(request: Request): Promi
 
     // Create a new request with the cookie data
     const headers = new Headers(request.headers)
-    headers.delete('x-ms-copy-source-authorization') // Remove the authorization header
+    headers.delete('Authorization') // Remove the authorization header
     headers.set('Cookie', cookieData) // Set the cookie header with the cookie data
 
     // Fetch the content from Google Takeout
-    const response = await fetch(takeoutUrl.toString(), {
+    const response = await fetch(takeoutUrl, {
       method: request.method,
       headers: headers,
       body: request.method !== 'GET' && request.method !== 'HEAD' ? await request.blob() : undefined,

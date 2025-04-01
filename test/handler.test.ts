@@ -258,9 +258,12 @@ describe('google takeout proxy handler', () => {
     })
 
     const result = await handleProxyToGoogleTakeoutRequest(request)
+    const responseText = await result.clone().text();
     console.log(`Response status: ${result.status}`);
-    console.log(`Response body: ${await result.text()}`);
+    console.log(`Response body: ${responseText}`);
     expect(result.status).toBe(200)
+    // The string abcdefghijklmnopqrstuvwxyz0123456789 should be in the response body
+    expect(responseText).toMatch(/abcdefghijklmnopqrstuvwxyz0123456789/)
   })
 
   test('rejects missing cookie authentication for Google Takeout', async () => {
