@@ -1,6 +1,0 @@
-name = "gtr-proxy"
-main = "dist/worker.mjs"
-compatibility_date = "2022-07-12"
-
-[build]
-command = "npm install && npm run build"
