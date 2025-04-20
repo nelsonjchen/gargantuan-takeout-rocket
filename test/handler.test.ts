@@ -1,3 +1,4 @@
+import { describe, test, expect } from 'vitest'
 import {
   handleRequest,
   handleProxyToGoogleTakeoutRequest,
@@ -80,16 +81,16 @@ describe('test server sanity check', () => {
 
 describe('azure proxy handler', () => {
   test('sanity check azb to make sure it can pass through Gtr2Cookie scheme', async () => {
-    const AZ_STORAGE_TEST_URL = process.env.AZ_STORAGE_TEST_URL
-    if (!AZ_STORAGE_TEST_URL) {
-      throw new Error('AZ_STORAGE_TEST_URL_BASE environment variable is not set')
+    const azStorageTestUrl = "https://urlcopytest.blob.core.windows.net/some-container?sv=2023-01-03&st=2025-04-01T05%3A15%3A12Z&se=2025-06-02T05%3A15%3A00Z&sr=c&sp=racwdxltf&sig=6IPtXngAVE11zAod6lpnvHtJZvBAr79XvqB33QRdlts%3D"
+    if (!azStorageTestUrl) {
+      throw new Error('Azure Storage Test URL is not available')
     }
     const cookieData = 'testcookie=valid'
     // Add the filename to AZ_STORAGE_TEST_URL
     const filename = 'sanity_test.txt'
 
     // Create URL object from the base URL
-    const azUrl = new URL(AZ_STORAGE_TEST_URL)
+    const azUrl = new URL(azStorageTestUrl)
 
     // Add filename to the path portion before query parameters
     // Extract the path without the leading slash, add filename, and set it back
@@ -127,13 +128,13 @@ describe('azure proxy handler', () => {
   })
 
   test('rejects missing cookie authentication', async () => {
-    const AZ_STORAGE_TEST_URL = process.env.AZ_STORAGE_TEST_URL
-    if (!AZ_STORAGE_TEST_URL) {
-      throw new Error('AZ_STORAGE_TEST_URL_BASE environment variable is not set')
+    const azStorageTestUrl = "https://urlcopytest.blob.core.windows.net/some-container?sv=2023-01-03&st=2025-04-01T05%3A15%3A12Z&se=2025-06-02T05%3A15%3A00Z&sr=c&sp=racwdxltf&sig=6IPtXngAVE11zAod6lpnvHtJZvBAr79XvqB33QRdlts%3D"
+    if (!azStorageTestUrl) {
+      throw new Error('Azure Storage Test URL is not available')
     }
 
     const filename = 'sanity_test.txt'
-    const azUrl = new URL(AZ_STORAGE_TEST_URL)
+    const azUrl = new URL(azStorageTestUrl)
     const pathParts = azUrl.pathname.split('/')
     if (pathParts[pathParts.length - 1] === '') {
       pathParts[pathParts.length - 1] = filename
@@ -161,13 +162,13 @@ describe('azure proxy handler', () => {
   })
 
   test('rejects invalid cookie authentication format', async () => {
-    const AZ_STORAGE_TEST_URL = process.env.AZ_STORAGE_TEST_URL
-    if (!AZ_STORAGE_TEST_URL) {
-      throw new Error('AZ_STORAGE_TEST_URL_BASE environment variable is not set')
+    const azStorageTestUrl = "https://urlcopytest.blob.core.windows.net/some-container?sv=2023-01-03&st=2025-04-01T05%3A15%3A12Z&se=2025-06-02T05%3A15%3A00Z&sr=c&sp=racwdxltf&sig=6IPtXngAVE11zAod6lpnvHtJZvBAr79XvqB33QRdlts%3D"
+    if (!azStorageTestUrl) {
+      throw new Error('Azure Storage Test URL is not available')
     }
 
     const filename = 'sanity_test.txt'
-    const azUrl = new URL(AZ_STORAGE_TEST_URL)
+    const azUrl = new URL(azStorageTestUrl)
     const pathParts = azUrl.pathname.split('/')
     if (pathParts[pathParts.length - 1] === '') {
       pathParts[pathParts.length - 1] = filename
