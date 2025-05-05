@@ -1,3 +1,8 @@
+import {
+  env,
+  createExecutionContext,
+  waitOnExecutionContext,
+} from "cloudflare:test";
 import { describe, test, expect } from 'vitest'
 import {
   handleRequest,
@@ -81,7 +86,7 @@ describe('test server sanity check', () => {
 
 describe('azure proxy handler', () => {
   test('sanity check azb to make sure it can pass through Gtr2Cookie scheme', async () => {
-    const azStorageTestUrl = "https://urlcopytest.blob.core.windows.net/some-container?sv=2023-01-03&st=2025-04-01T05%3A15%3A12Z&se=2025-06-02T05%3A15%3A00Z&sr=c&sp=racwdxltf&sig=6IPtXngAVE11zAod6lpnvHtJZvBAr79XvqB33QRdlts%3D"
+    const azStorageTestUrl = env.VITE_AZ_STORAGE_TEST_URL
     if (!azStorageTestUrl) {
       throw new Error('Azure Storage Test URL is not available')
     }
@@ -128,7 +133,7 @@ describe('azure proxy handler', () => {
   })
 
   test('rejects missing cookie authentication', async () => {
-    const azStorageTestUrl = "https://urlcopytest.blob.core.windows.net/some-container?sv=2023-01-03&st=2025-04-01T05%3A15%3A12Z&se=2025-06-02T05%3A15%3A00Z&sr=c&sp=racwdxltf&sig=6IPtXngAVE11zAod6lpnvHtJZvBAr79XvqB33QRdlts%3D"
+    const azStorageTestUrl = env.VITE_AZ_STORAGE_TEST_URL
     if (!azStorageTestUrl) {
       throw new Error('Azure Storage Test URL is not available')
     }
@@ -162,7 +167,7 @@ describe('azure proxy handler', () => {
   })
 
   test('rejects invalid cookie authentication format', async () => {
-    const azStorageTestUrl = "https://urlcopytest.blob.core.windows.net/some-container?sv=2023-01-03&st=2025-04-01T05%3A15%3A12Z&se=2025-06-02T05%3A15%3A00Z&sr=c&sp=racwdxltf&sig=6IPtXngAVE11zAod6lpnvHtJZvBAr79XvqB33QRdlts%3D"
+    const azStorageTestUrl = env.VITE_AZ_STORAGE_TEST_URL
     if (!azStorageTestUrl) {
       throw new Error('Azure Storage Test URL is not available')
     }
