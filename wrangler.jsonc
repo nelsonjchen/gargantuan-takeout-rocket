@@ -10,10 +10,11 @@
 	"compatibility_flags": [
 		"nodejs_compat"
 	],
-	"assets": {
-		"binding": "ASSETS",
-		"directory": "./public"
-	},
+	// No assets in this project.
+	// "assets": {
+	// 	"binding": "ASSETS",
+	// 	"directory": "./public"
+	// },
 	"observability": {
 		"enabled": true
 	}
