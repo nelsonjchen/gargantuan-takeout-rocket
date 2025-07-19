@@ -1,0 +1,20 @@
+name: fmt
+
+on: [push, pull_request]
+
+jobs:
+  fmt:
+    name: Check code formatting
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-node@v1
+        with:
+          node-version: "18"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Check fmt
+        run: npm run fmt:check
