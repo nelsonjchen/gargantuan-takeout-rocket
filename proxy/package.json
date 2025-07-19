@@ -1,0 +1,20 @@
+{
+	"name": "gtr-proxy",
+	"version": "2.0.0",
+	"private": true,
+	"scripts": {
+		"deploy": "wrangler deploy",
+		"dev": "wrangler dev",
+		"start": "wrangler dev",
+		"test": "vitest run",
+		"cf-typegen": "wrangler types"
+	},
+	"devDependencies": {
+		"@cloudflare/vitest-pool-workers": "^0.8.43",
+		"@cloudflare/workers-types": "^4.20250620.0",
+		"@types/node": "^24.0.3",
+		"typescript": "^5.8.3",
+		"vitest": "~3.2.0",
+		"wrangler": "^4.20.5"
+	}
+}
