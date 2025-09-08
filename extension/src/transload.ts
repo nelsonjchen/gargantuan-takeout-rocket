@@ -30,15 +30,19 @@ export function sourceToGtrProxySource(
 
 export async function createJobPlan(
   source_url: string,
-  chunk_size_mb?: number
+  options?: { chunk_size_mb?: number; cookies?: string }
 ): Promise<JobPlan> {
-  if (!chunk_size_mb) {
-    chunk_size_mb = 1000;
-  }
+  const chunk_size_mb = options?.chunk_size_mb ?? 1000;
+  const cookies = options?.cookies;
+
   // Fetch HEAD of source
-  const resp = await fetch(source_url, {
-    method: "HEAD"
-  });
+  const headers: HeadersInit = {
+    method: "HEAD",
+  };
+  if (cookies) {
+    headers["Cookie"] = cookies;
+  }
+  const resp = await fetch(source_url, headers);
   const content_length_header = resp.headers.get("content-length");
   if (!content_length_header) {
     throw new Error("No content-length header");
@@ -69,7 +73,7 @@ export async function transload(
   destination: string,
   name: string,
   proxyBase?: string,
-  chunk_size_mb?: number
+  options?: { chunk_size_mb?: number; cookies?: string }
 ): Promise<Download> {
   console.log(`Transloading ${sourceUrl} to ${destination}`);
 
@@ -78,7 +82,7 @@ export async function transload(
     proxyBase = built_in_proxy_base;
   }
   const blobClient = containerClient.getBlockBlobClient(name, proxyBase);
-  const jobPlan = await createJobPlan(sourceUrl, chunk_size_mb);
+  const jobPlan = await createJobPlan(sourceUrl, options);
   console.log(`Got job plan: `, jobPlan);
   console.log(`Staging Blocks`);
   const responses = jobPlan.chunks.map(async (chunk) =>

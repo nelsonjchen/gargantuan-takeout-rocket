@@ -14,7 +14,7 @@ const superlargeFileUrl = "https://gtr-test.677472.xyz/50GB.dat";
 describe("transload", () => {
   test("is able to produce a job plan from a source", async () => {
     const mb = 100;
-    const jobPlan = await createJobPlan(someFileUrl, mb);
+    const jobPlan = await createJobPlan(someFileUrl, { chunk_size_mb: mb });
     console.log(`Got job plan: `, jobPlan);
     expect(jobPlan.chunks.length).toBeGreaterThan(0);
     expect(jobPlan.chunks[0].start).toBe(0);
@@ -26,7 +26,7 @@ describe("transload", () => {
     expect(jobPlan.chunks[jobPlan.chunks.length - 1].size).toBeGreaterThan(0);
     expect(
       jobPlan.chunks[jobPlan.chunks.length - 1].start +
-        jobPlan.chunks[jobPlan.chunks.length - 1].size
+      jobPlan.chunks[jobPlan.chunks.length - 1].size
     ).toBe(jobPlan.length);
     // Make sure none of the job plans have a size of 0
     jobPlan.chunks.forEach((chunk) => {
@@ -48,7 +48,7 @@ describe("transload", () => {
       AZURE_STORAGE_CONNECTION_STRING,
       "gtr-ext-test-medium-file.dat",
       proxyBaseUrl,
-      50
+      { chunk_size_mb: 50 }
     );
   }, 30000);
 
@@ -83,7 +83,7 @@ describe("transload", () => {
       AZURE_STORAGE_CONNECTION_STRING,
       "gtr-ext-test-superlarge-file.dat",
       proxyBaseUrl,
-      1000
+      { chunk_size_mb: 1000 }
     );
   }, 60000);
 });
