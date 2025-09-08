@@ -7,7 +7,8 @@
   "permissions": ["notifications", "downloads", "storage"],
   "host_permissions": ["*://*/*"],
   "background": {
-    "service_worker": "build/background.js"
+    "service_worker": "src/background.ts",
+    "type": "module"
   },
   "icons": {
     "192": "logo192.png",
