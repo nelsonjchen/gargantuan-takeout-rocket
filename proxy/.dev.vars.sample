@@ -1,0 +1,2 @@
+# This is a sample file. Copy it to .dev.vars and replace the placeholder with a real SAS URL.
+VITE_AZ_STORAGE_TEST_URL="<your-azure-storage-sas-url-here>"
