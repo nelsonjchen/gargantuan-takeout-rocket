@@ -24,6 +24,7 @@
     "dotenv": "^17.2.3",
     "esbuild": "^0.25.11",
     "fetch-retry": "^6.0.0",
+    "happy-dom": "^20.0.8",
     "isomorphic-fetch": "^3.0.0",
     "node-fetch": "^3.3.2",
     "prettier": "^3.6.2",
