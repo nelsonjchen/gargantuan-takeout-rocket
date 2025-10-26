@@ -35,7 +35,7 @@ export async function handleRequest(request: Request): Promise<Response> {
   return new Response(null, {
     status: 302,
     headers: {
-      Location: 'https://github.com/nelsonjchen/gtr-proxy#readme',
+      Location: 'https://github.com/nelsonjchen/gtr',
     },
   })
 }
