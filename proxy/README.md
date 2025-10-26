@@ -76,10 +76,10 @@ __Secure-3PSIDCC=2i1fwb-_c22HuZ6j_AbhE1mP-7KxqsKsTG.1mVmo-EkY/WIh3Dex/JbwLnZd-4y
 
 To be honest, I don't know what all of these cookies do. I just know that they are necessary to download from Google Takeout URLs and I'm not in the business of reverse engineering Google's cookies. That's OK, we'll just send them all!
 
-1. Get your original SAS URL from Azure and append a blob name to it in the path. For our example, we'll use this for `data.dat` in the `some-container` container of the `urlcopytest` storage account:
-   https://urlcopytest.blob.core.windows.net/some-container/data.dat?sp=r&st=2022-04-02T18:23:20Z&se=2022-04-03T06:24:20Z&spr=https&sv=2020-08-04&sr=c&sig=KNz4a1xHnmfi7afzrnkBFtls52YIZ0xtzn1Y7udqXBw%3D
-2. The account name is `urlcopytest`. Construct a new proxyfied URL as such with the storage account name, the container name, the blob name and relevant SAS parameters as the first, second, third, and fourth path segments and parameters respectively:
-   https://gtr-proxy.677472.xyz/p-azb/urlcopytest/some-container/data.dat?sp=r&st=2022-04-02T18:23:20Z&se=2022-04-03T06:24:20Z&spr=https&sv=2020-08-04&sr=c&sig=KNz4a1xHnmfi7afzrnkBFtls52YIZ0xtzn1Y7udqXBw%3D
+1. Get your original SAS URL from Azure. You can use a URL for a container or for a specific blob. For our example, we'll use this for the `some-container` container of the `urlcopytest` storage account:
+   https://urlcopytest.blob.core.windows.net/some-container?sp=r&st=2022-04-02T18:23:20Z&se=2022-04-03T06:24:20Z&spr=https&sv=2020-08-04&sr=c&sig=KNz4a1xHnmfi7afzrnkBFtls52YIZ0xtzn1Y7udqXBw%3D
+2. The account name is `urlcopytest`. Construct a new proxyfied URL as such with the storage account name, the container name, and relevant SAS parameters. If you are targeting a specific blob, its name will be part of the path after the container:
+   https://gtr-proxy.677472.xyz/p-azb/urlcopytest/some-container?sp=r&st=2022-04-02T18:23:20Z&se=2022-04-03T06:24:20Z&spr=https&sv=2020-08-04&sr=c&sig=KNz4a1xHnmfi7afzrnkBFtls52YIZ0xtzn1Y7udqXBw%3D
 3. Transform the Google Takeout URL to the gtr-proxy 2 URL. The above Takeout URL would be transformed to:
    https://gtr-proxy.677472.xyz/p/takeout-download.usercontent.google.com/download/takeout-20241222T093656Z-002.zip?j=3647d71e-7af8-4aa7-9dc1-1f682197329a&i=1&user=798667665537&authuser=0
 4. Perform any `PUT` operations with a `x-ms-copy-source` header with the Proxified Google Takeout URL and `x-ms-copy-source-authorization` header with the cookie data with a special `Gtr2Cookie` scheme. It should be like `Authorization: Gtr2Cookie <Google Cookie Data, all joined with ; no space as-is>`
