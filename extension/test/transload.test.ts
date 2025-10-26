@@ -37,15 +37,15 @@ describe("transload", () => {
   });
 
   test("can tell azure to transload a file", async () => {
-    const AZURE_STORAGE_CONNECTION_STRING =
-      process.env.AZURE_STORAGE_CONNECTION_STRING;
-    if (!AZURE_STORAGE_CONNECTION_STRING) {
-      throw new Error("No AZURE_STORAGE_CONNECTION_STRING");
+    const VITE_AZ_STORAGE_TEST_URL =
+      process.env.VITE_AZ_STORAGE_TEST_URL;
+    if (!VITE_AZ_STORAGE_TEST_URL) {
+      throw new Error("No VITE_AZ_STORAGE_TEST_URL");
     }
 
     await transload(
       someFileUrl,
-      AZURE_STORAGE_CONNECTION_STRING,
+      VITE_AZ_STORAGE_TEST_URL,
       "gtr-ext-test-medium-file.dat",
       proxyBaseUrl,
       { chunk_size_mb: 50 }
@@ -53,34 +53,34 @@ describe("transload", () => {
   }, 30000);
 
   test("can tell azure to transload a file that is from the proxy", async () => {
-    const AZURE_STORAGE_CONNECTION_STRING =
-      process.env.AZURE_STORAGE_CONNECTION_STRING;
-    if (!AZURE_STORAGE_CONNECTION_STRING) {
-      throw new Error("No AZURE_STORAGE_CONNECTION_STRING");
+    const VITE_AZ_STORAGE_TEST_URL =
+      process.env.VITE_AZ_STORAGE_TEST_URL;
+    if (!VITE_AZ_STORAGE_TEST_URL) {
+      throw new Error("No VITE_AZ_STORAGE_TEST_URL");
     }
 
     const proxifiedSomeFileUrl = sourceToGtrProxySource(someFileUrl);
 
     await transload(
       proxifiedSomeFileUrl,
-      AZURE_STORAGE_CONNECTION_STRING,
+      VITE_AZ_STORAGE_TEST_URL,
       "gtr-ext-test-medium-file-proxy.dat"
     );
   }, 30000);
 
   // This test is disabled because hosting the 50GB test file is too expensive.
   test.skip("can transload a superlarge test file from the test site directly to azure", async () => {
-    const AZURE_STORAGE_CONNECTION_STRING =
-      process.env.AZURE_STORAGE_CONNECTION_STRING;
-    if (!AZURE_STORAGE_CONNECTION_STRING) {
-      throw new Error("No AZURE_STORAGE_CONNECTION_STRING");
+    const VITE_AZ_STORAGE_TEST_URL =
+      process.env.VITE_AZ_STORAGE_TEST_URL;
+    if (!VITE_AZ_STORAGE_TEST_URL) {
+      throw new Error("No VITE_AZ_STORAGE_TEST_URL");
     }
 
     const targetUrl = sourceToGtrProxySource(superlargeFileUrl);
 
     await transload(
       targetUrl,
-      AZURE_STORAGE_CONNECTION_STRING,
+      VITE_AZ_STORAGE_TEST_URL,
       "gtr-ext-test-superlarge-file.dat",
       proxyBaseUrl,
       { chunk_size_mb: 1000 }

@@ -12,12 +12,9 @@ export default function App() {
     "azureSasUrl",
     ""
   );
-  const [downloads, setDownloads]: [
-    { [key: string]: Download },
-    (val: { [key: string]: Download }) => any,
-    any,
-    any
-  ] = useChromeStorageLocal("downloads", new Map());
+  const [downloads, setDownloads] = useChromeStorageLocal<{
+    [key: string]: Download;
+  }>("downloads", {});
 
   return (
     <div>
