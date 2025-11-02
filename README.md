@@ -172,6 +172,8 @@ For 1TB, this will cost about $108. Small price for salvation.
   * A neverending stream of "I can't takeout my banned youtube account!".
 * https://www.reddit.com/r/googlephotos/comments/1f8mhds/my_google_account_banned_because_of_false_cp/
   * Never upload photos of yourself when you were young and in your birthday suit
+* https://www.reddit.com/r/gsuite/comments/1ofo8x5/google_account_restored_after_some_explicit/
+  * Suddenly there's a radioactive file inside your Google Drive. Think you could just take it out? NO, straight to ban, no telling. And after restore, they will not tell you.
 
 and there's many more. oh there's just so many. too many.
 
