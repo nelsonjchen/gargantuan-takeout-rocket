@@ -12,6 +12,7 @@ import prettyBytes from "pretty-bytes";
 
 console.log("initialized gtr extension");
 
+
 function getConfig(): Promise<[boolean, string, string]> {
   // Immediately return a promise and start asynchronous work
   return new Promise((resolve, reject) => {
