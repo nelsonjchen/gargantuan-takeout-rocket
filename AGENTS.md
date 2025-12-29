@@ -6,3 +6,10 @@ Non-obvious, project-specific rules:
 
 * `vitest` will block as it is a watching interactive command. Use `vitest run` instead.
 * When testing with a browser, feel free to use https://gtr-2-dev-server-262382012399.us-central1.run.app/ as a test server to do end-to-end testing from. Feel free to read the README at https://github.com/nelsonjchen/gtr-2-dev-server for more information.
+* **Proxy Information (`gtr-proxy`)**:
+  * The public proxy (`gtr-proxy.677472.xyz`) is **integral** because the connection to Azure is HTTP/1.1 only. Laundering it through Cloudflare gets it into **HTTP/3** and thus higher concurrency in a browser.
+  * The public proxy has a **strict whitelist**. It only allows through:
+    * `example.com`
+    * `www.google.com`
+    * `gtr-2-dev-server-262382012399.us-central1.run.app`
+  * The proxy requires an `Authorization` header with the format `Gtr2Cookie <cookie_data>`.
