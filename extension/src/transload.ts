@@ -19,8 +19,11 @@ export function sourceToGtrProxySource(
   source: string,
   proxyBase?: string
 ): string {
-  if (!proxyBase) {
+  if (proxyBase === undefined) {
     proxyBase = built_in_proxy_base;
+  }
+  if (proxyBase === "") {
+    return source;
   }
   // Replace all %2F with %252F and remove scheme
   const url = source.replace(/%2F/g, "%252F").replace(/https?:\/\//, "");
@@ -36,18 +39,39 @@ export async function createJobPlan(
   const cookies = options?.cookies;
 
   // Fetch HEAD of source
-  const headers: HeadersInit = {
+  const fetchOptions: RequestInit = {
     method: "HEAD",
+    headers: {
+      "Range": "bytes=0-0"
+    }
   };
+
   if (cookies) {
-    headers["Cookie"] = cookies;
+    // Note: Cookie header might be stripped by browser, but we leave it for compatibility if environment allows
+    (fetchOptions.headers as Record<string, string>)["Cookie"] = cookies;
   }
-  const resp = await fetch(source_url, headers);
-  const content_length_header = resp.headers.get("content-length");
-  if (!content_length_header) {
-    throw new Error("No content-length header");
+
+  const resp = await fetch(source_url, fetchOptions);
+
+  let length = 0;
+  const content_range = resp.headers.get("content-range");
+  if (content_range) {
+    const match = content_range.match(/\/(\d+)$/);
+    if (match) {
+      length = parseInt(match[1]);
+    }
   }
-  const length = parseInt(content_length_header);
+
+  if (!length) {
+    const content_length_header = resp.headers.get("content-length");
+    if (content_length_header) {
+      length = parseInt(content_length_header);
+    }
+  }
+
+  if (!length) {
+    throw new Error("No content-length or content-range header");
+  }
 
   console.log(`Got length bytes: ${length}`);
 
@@ -78,7 +102,7 @@ export async function transload(
   console.log(`Transloading ${sourceUrl} to ${destination}`);
 
   const containerClient = new ContainerClient(destination);
-  if (!proxyBase) {
+  if (proxyBase === undefined) {
     proxyBase = built_in_proxy_base;
   }
   const blobClient = containerClient.getBlockBlobClient(name, proxyBase);

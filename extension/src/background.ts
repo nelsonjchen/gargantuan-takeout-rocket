@@ -12,7 +12,6 @@ import prettyBytes from "pretty-bytes";
 
 console.log("initialized gtr extension");
 
-
 function getConfig(): Promise<[boolean, string, string]> {
   // Immediately return a promise and start asynchronous work
   return new Promise((resolve, reject) => {
@@ -48,11 +47,15 @@ function getDownloads(): Promise<{ [key: string]: Download }> {
   });
 }
 
+
+
+
 async function captureDownload(
   downloadItem: chrome.downloads.DownloadItem,
   suggestion: Function
 ) {
   const [enabled, azureSasUrl, proxyBaseUrl] = await getConfig();
+
   if (!enabled) {
     console.log("Skipping interception of download.");
     return;
@@ -61,6 +64,13 @@ async function captureDownload(
   console.log("download started:", downloadItem);
   console.log("final url:", downloadItem.finalUrl);
   console.log("filename:", downloadItem.filename);
+
+  if (!downloadItem.filename || downloadItem.filename === "") {
+    const urlParts = downloadItem.finalUrl.split('/');
+    downloadItem.filename = urlParts[urlParts.length - 1] || "download.bin";
+    console.log("derived filename:", downloadItem.filename);
+  }
+
   chrome.notifications.create(`transload-start-${downloadItem.filename}`, {
     title: "🚀 GTR Transload Started",
     message: `⏳ ${downloadItem.filename} started (disable interception in extension popup)`,
@@ -87,12 +97,14 @@ async function captureDownload(
     })()
   });
 
+
+
   let download: Download;
   let prettySpeed: string = "";
   try {
     const now = new Date();
     download = await transload(
-      sourceToGtrProxySource(downloadItem.finalUrl, proxyBaseUrl),
+      downloadItem.finalUrl,
       sas,
       downloadItem.filename,
       proxyBaseUrl
@@ -146,3 +158,7 @@ async function captureDownload(
 
 //  Stop all the downloading
 chrome.downloads.onDeterminingFilename.addListener(captureDownload);
+
+chrome.downloads.onCreated.addListener(async (item) => {
+  captureDownload(item, () => { });
+});

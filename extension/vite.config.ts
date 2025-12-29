@@ -6,5 +6,6 @@ import manifest from './public/manifest.json'
 export default defineConfig({
   plugins: [tsconfigPaths(), crx({ manifest })],
   test: {
+    exclude: ['test/e2e/**', 'node_modules/**'],
   },
 } as UserConfig)
