@@ -1,25 +1,23 @@
-# Currently Broken: https://github.com/nelsonjchen/gargantuan-takeout-rocket/issues/11 Need rewrite.
-
 # 🚀 Gargantuan Takeout Rocket
 
 *Liftoff from Google Takeout into Azure Storage, repeatedly, **very** fast, like 1GB/s+ or 10 minutes total per takeout fast*
 
-<img width="553" alt="Screen Shot 2022-04-22 at 12 26 14 PM" src="https://user-images.githubusercontent.com/5363/164781196-01e1f0d7-6aa3-4b89-a161-8c983663297c.png">
+<img width="505" height="598" alt="Image" src="https://github.com/user-attachments/assets/4c9bb135-76dc-4833-b38a-e789d11a08ac" />
 
 * Setup Time: < 1hr
 * Every x month(s): 10 minutes.
 
 Gargantuan Takeout Rocket (GTR) is a toolkit of guides and software to help you take out your data from [Google Takeout][takeout] and put it somewhere *else* safe easily, periodically, and fast to make it easy to do the right thing of backing up your Google account and related services such as your YouTube account or Google Photos periodically.
 
-GTR is not a fully automated solution as that is impossible with Google Takeout's anti-automation measures, but GTR is an assistive solution. GTR takes a less than an hour to setup and less than 10 minutes every 2 months (or whatever interval you want) to use. The cost to backup 1TB on Azure every month is $1 dollar a month as long as you store each backup archive for 6 months at a minimum. You don't need a fast internet connection on your client to use this tool as all data transfer from Google to the backup destination is handled remotely by many servers in data centers. There are no bandwidth charges for the backup process, [however restoration in case of an emergency is fairly expensive](https://github.com/nelsonjchen/gargantuan-takeout-rocket/tree/main#restoration). All resources used are serverless and are almost practically highly scalable including to zero.
+GTR is not a fully automated solution as that is impossible with Google Takeout's anti-automation measures, but GTR is an assistive solution. GTR takes a less than an hour to setup and less than 10 minutes every 2 months (or whatever interval you want) to use. The cost to backup 1TB on Azure every month is $1 dollar a month as long as you store each backup archive for 6 months at a minimum. You don't need a fast internet connection on your client to use this tool as all data transfer from Google to the backup destination is handled remotely by many servers in data centers. There are no bandwidth charges for the backup process, [however restoration in case of an emergency is fairly expensive](https://github.com/nelsonjchen/gargantuan-takeout-rocket/tree/main#restoration). All resources used are serverless and are practically highly scalable including to zero.
 
-The only backup destination currently available in GTR is Microsoft Azure Blob Storage due to Azure's unique [API which allows commanding Azure Blob Storage to download from a remote URL][pbfu]. A Cloudflare Workers proxy is used to work around a [URL escaping bug][azbesc] and [a parallelism limitation][azb11] in the Azure Blob Storage API. Speeds of up to 1GB/s or more from Google Takeout to Azure Blob Storage's Archive Tier can be seen with this setup.
+The only backup destination currently available in GTR is Microsoft Azure Blob Storage due to Azure's unique [API which allows commanding Azure Blob Storage to download from a remote URL][pbfu]. A Cloudflare Workers proxy is used to produce a method to GET from cookie protected endpoints and [a parallelism limitation][azb11] in the Azure Blob Storage API. Speeds of up to 350MB/s or more (with more possible overall from parallelism) for each transfer from Google Takeout to Azure Blob Storage's Archive Tier can be seen with this setup. 
 
-A [browser extension][ext] is provided to intercept downloads from Google Takeout and command Azure to download the file. Behind the scenes, the extension immediately stops and prevents the local download, discovers the temporary (valid 15 minutes) direct URL to download the Google Takeout Archive, analyzes the size of the source file remotely to generate a download plan consisting of file chunks of 1000MB, specially encodes the URL so Azure is able to download from Google via the Cloudflare Workers proxy, executes the download plan by shotgunning all the download commands in parallel to Azure through the Cloudflare Worker proxy to transload the file from Google as quickly as possible, and commits all the 1000MB chunks into one seamless file on Azure. The download for each file completes in 30 to 60 seconds, well before the direct URL expires in 15 minutes and with rather high limits on how many parallel downloads of this archive or other archives in the same takeout can be happening at once.
+A [browser extension][ext] is provided to intercept downloads from Google Takeout and command Azure to download the file. Behind the scenes, the extension immediately stops and prevents the local download, grabs select Google cookies to authenticate requests, analyzes the size of the source file remotely to generate a download plan consisting of file chunks of 1000MB, specially encodes the URL so Azure is able to download from Google via the Cloudflare Workers proxy, executes the download plan by shotgunning all the download commands in parallel to Azure through the Cloudflare Worker proxy to transload the file from Google as quickly as possible, and commits all the 1000MB chunks into one seamless file on Azure. The download for each file completes in a few minutes, well before the direct URL expires in 15 minutes and with rather high limits on how many parallel downloads of this archive or other archives in the same takeout can be happening at once.
 
-A public instance of the Cloudflare Workers proxy is provided for convenience but users can setup and run their own [Cloudflare Workers proxy][proxy] if desired and target their own proxy in the extension instead of the public one for privacy reasons. For most users who are looking to run their own Cloudflare Workers proxy instead of using the public Cloudflare Workers proxy, the free tier of Cloudflare Workers should suffice.
+A public instance of the Cloudflare Workers proxy is provided for demo purposes but users should setup and run their own [Cloudflare Workers proxy][proxy] as cookies are highly sensitive and should not be exposed to the public such as in a public instance. For most users who are looking to run their own Cloudflare Workers proxy instead of using the public Cloudflare Workers proxy, the free tier of Cloudflare Workers should suffice.
 
-The original author of GTR's Google account is about 1.25TB in size (80% Youtube Videos, 20% other, Google Photos ~200GB). Pre-GTR, the backup procedure would have taken at least 3 hours even with a [VPS Setup][vps_fxp] facilitating the transfer from Google Takeout as even large instances on the cloud with large disks, much memory, and many CPUs would eventually choke with too many files being downloaded in parallel. The highest speed seen was about 300MB/s. It was also exhaustively high-touch and toilsome, requiring many clicks, reauthorizations, and setup of the workspace. By delegating the task of downloading to Azure with assists from CloudFlare Workers and the browser extension that makes up GTR, the original author is able to transfer the 1.25TB of 50GB Google Takeout files to Azure Storage in 10 minutes at anytime with little to no setup.
+The original author of GTR's Google account is about 3.25TB in size (80% Youtube Videos, 20% other, Google Photos ~200GB). Pre-GTR, the backup procedure would have taken at least 3 hours even with a [VPS Setup][vps_fxp] facilitating the transfer from Google Takeout as even large instances on the cloud with large disks, much memory, and many CPUs would eventually choke with too many files being downloaded in parallel. The highest speed seen was about 300MB/s total. It was also exhaustively high-touch and toilsome, requiring many clicks, reauthorizations, and setup of the workspace. By delegating the task of downloading to Azure with assists from CloudFlare Workers and the browser extension that makes up GTR, the original author is able to transfer the 3.25TB of 50GB Google Takeout files to Azure Storage in a few minutes at anytime with little to no setup.
 
 GTR is right for you if:
 
@@ -66,7 +64,7 @@ You can adjust the numbers and redundancies as needed or desired.
 
 ### Setup or configure own Cloudflare Workers GTR Proxy (Optional)
 
-See [GTR Proxy readme][proxy] for details on setting one up yourself. You may want to setup your own GTR Proxy for privacy reasons. The Cloudflare Worker implementation is serverless and there are no fees or usage accrued while it is idle. There are also no charges for incoming and outgoing bandwidth [as long as both azure and google's servers reside in the same continent](https://azure.microsoft.com/en-us/pricing/details/bandwidth/) and for most people, their usage of their own GTR Proxy should fall under Cloudflare's free tier.
+See [GTR Proxy readme][proxy] for details on setting one up yourself. You should setup your own GTR Proxy for privacy reasons. The Cloudflare Worker implementation is serverless and there are no fees or usage accrued while it is idle. [There are also no charges for incoming bandwidth to Azure](https://azure.microsoft.com/en-us/pricing/details/bandwidth/). For most people, their usage of their own GTR Proxy should fall under Cloudflare's free tier.
 
 If you decided to use the public GTR Proxy, please see the [privacy policy on it](./PRIVACY_POLICY.md).
 
@@ -125,7 +123,7 @@ You may also want to configure Google Takeout to run automatically every two mon
 8. Notifications will come and go as each archive is transloaded into Azure Blob Storage.
 9. Once complete, check Azure to make sure everything has been retrieved and is available in the container.
    * Beware of downloading the archives to your local machine as Azure charges about $4.50 per 50GB download. Just check that they are there. If you wish to check the contents, you should spin up a virtual machine in Azure and download the data to that instance for inspection. That is beyond the scope of this guide.
-10. Disable the extension in the popup as it isnt needed. You may also want to turn off the extension altogether for extra memory savings.
+10. Disable the extension in the popup as it isnt needed. You may also want to turn off the extension altogether for extra memory savings. 
    * <img width="509" alt="image" src="https://user-images.githubusercontent.com/5363/163747622-4abef856-ac3b-4304-a6c2-2fccad9a41f9.png">
 
 ---
@@ -150,7 +148,7 @@ Costs:
 * $0.02 per GB to re-hydrate and retrieve the data
 * $0.0875 per GB to transfer the data from Azure to another system outside of azure.
 
-For 1TB, this will cost about $108. Small price for salvation.
+For 1TB, this will cost about $108. It is a small price for salvation which I hope you will never need to pay but are glad to have the option.
 
 ---
 
@@ -174,7 +172,7 @@ For 1TB, this will cost about $108. Small price for salvation.
   * Never upload photos of yourself when you were young and in your birthday suit
 * https://www.reddit.com/r/gsuite/comments/1ofo8x5/google_account_restored_after_some_explicit/
   * "Google account restored after “some explicit content” flag. But Google won’t tell which file, making Drive sync unsafe."
-  * Suddenly there's a radioactive file inside your Google Drive. Think you could just take it out? NO, straight to ban, no telling. And after restore, they will not tell you.
+  * Suddenly there's a radioactive file inside your Google Drive. Think you could just take it out? NO, [straight to jail](https://www.youtube.com/watch?v=eiyfwZVAzGw), no telling. And after restore, they will not tell you.
 
 and there's many more. oh there's just so many. too many.
 
@@ -202,7 +200,7 @@ Sometimes a hit, sometimes not. Just depends on how the community is feeling.
 
 ### Complaints about Takeout being hard to use
 
-just search twitter for "google takeout". you'll find users complaining about sizes and archive amounts quite a lot.
+just search Bluesky/X/twitter for "google takeout". you'll find users complaining about sizes and archive amounts quite a lot.
 
 ### Other people backing up to cloud storage and their setups and possible futures of this sort of setup.
 
@@ -212,7 +210,7 @@ I'm also **extremely** curious about storing the "hot" data in [Cloudflare R2][r
 
 [Encryption is a concern. I don't have a solution thought out yet. With the high use of blocks, it is unknown if compatiblity can be retained. It can complicates restoration and makes the Azure GUIs unable download easily. An issue is open about that.](https://github.com/nelsonjchen/gargantuan-takeout-rocket/issues/3)
 
-With the recent news about Cloudflare, some users may also wish to use a non-Cloudflare alternative. I don't know of a good alternative with the same free "price point", geographical reach, computing power, network outlay, scalability, and permissive use.
+Cloudflare doesn't always have the best reputation, some users may also wish to use a non-Cloudflare alternative. I don't know of a good alternative with the same free "price point", geographical reach, computing power, network outlay, scalability, security, and permissive use.
 
 In the meantime:
 
