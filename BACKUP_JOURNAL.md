@@ -15,7 +15,7 @@ Top will be the latest.
 * Unfortunately, reliability and performance has kind of dropped like a rock. By not having direct access to signed Google Storage URLs, we're forced to go through their application server. We top out at 300MB/s now instead of 1GB/s. Even with a lot of parallelism, it tops out. 
 * 9.8TB takeout, 149 archives
     * A lot of this is 360 5K/8K videos on YouTube. I'm probably going to exclude them next time. I have the raw file sources on my NAS already. I do want the non-360 stuff though. Not sure how to make this work in the future.
-* Having some reliability issues with the extension. Definitely not as reliable as it used to be. Settled for a less than 100% success rate. 
+* Having some reliability issues with the extension. Definitely not as reliable as it used to be which wasn't great anyway. Settled for a less than 100% success rate. 
 
 ## December 2024
 
