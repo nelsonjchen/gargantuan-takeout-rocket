@@ -16,6 +16,11 @@ Top will be the latest.
 * 9.8TB takeout, 149 archives
     * A lot of this is 360 5K/8K videos on YouTube. I'm probably going to exclude them next time. I have the raw file sources on my NAS already. I do want the non-360 stuff though. Not sure how to make this work in the future.
 * Having some reliability issues with the extension. Definitely not as reliable as it used to be which wasn't great anyway. Settled for a less than 100% success rate. 
+* Later made a 500GB Takeout, 13 archives, sans YouTube
+    * Still very much in need using proper background APIs for Chrome extensions for downloads, stalled otherwise.
+    * Had some reliability issues with extension. Gave up a bit for now.
+    * Did it from my TrueNAS running Chrome in a container.
+    * Latere sync'd back up to Azure and deleted 9TB takeout since I wasn't sure if I wanted to keep that in Azure. Yay for Fiber, but not happy about not using GTR.
 
 ## December 2024
 
