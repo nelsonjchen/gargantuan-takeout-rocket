@@ -173,6 +173,8 @@ For 1TB, this will cost about $108. It is a small price for salvation which I ho
 * https://www.reddit.com/r/gsuite/comments/1ofo8x5/google_account_restored_after_some_explicit/
   * "Google account restored after “some explicit content” flag. But Google won’t tell which file, making Drive sync unsafe."
   * Suddenly there's a radioactive file inside your Google Drive. Think you could just take it out? NO, [straight to jail](https://www.youtube.com/watch?v=eiyfwZVAzGw), no telling. And after restore, they will not tell you.
+* Don't use Google's AI the wrong way.
+  * https://www.reddit.com/r/google_antigravity/comments/1rgdnke/go_get_em_tigers/
 
 and there's many more. oh there's just so many. too many.
 
