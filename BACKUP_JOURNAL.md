@@ -9,6 +9,12 @@ Just wanted to provide a journal of my backup escapades with GTR since:
 
 Top will be the latest.
 
+## March 2026
+
+* 9.8TB takeout, 149 archives again
+* Such a PITA, thinking of vibing some quality of life changes.
+* Noticed that having a passkey to-relogin easily available was quite handy. Hmm.
+
 ## December 2025
 
 * Major thanks to @fcfort for fixing the issue with Google Takeout not working and porting the toolkit to use Google cookies.
