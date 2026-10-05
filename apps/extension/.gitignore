@@ -1,0 +1,13 @@
+/node_modules
+test/cf-origin/node_modules
+test/cf-origin/.wrangler
+/build
+/.vscode
+.eslintcache
+*.env
+*.local
+*.log
+/public/build
+.env
+*.zip
+.idea

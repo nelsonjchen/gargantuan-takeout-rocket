@@ -1,0 +1,7 @@
+name = "gtr-cf-test-origin"
+main = "src/index.ts"
+compatibility_date = "2025-12-01"
+workers_dev = true
+routes = [
+  { pattern = "gtr-cf-test-origin.677472.xyz", custom_domain = true }
+]

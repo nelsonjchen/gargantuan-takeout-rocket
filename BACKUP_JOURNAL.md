@@ -9,6 +9,17 @@ Just wanted to provide a journal of my backup escapades with GTR since:
 
 Top will be the latest.
 
+## October 2026
+
+* 22 ZIP archives, sans YouTube and YouTube Music. About 673 GB (626.54 GiB), all available parts transloaded to Azure without any archive transfer failures.
+* **Codex drove this one.** Revived the project, polished the extension, watched Gmail for the export, and did the browser clicking through Computer Use. I wasn't the one clicking through Takeout.
+* Still a bit jank. Browser control needed recovery, Google wanted repeated sign-ins, and the extension still needed its service worker's DevTools window open. The passkey was handy again. Got it done, but there's still work before this is a reliable unattended workflow.
+* Started with a small Contacts-only Takeout, about 4.68 MB. Its Google and Azure copies matched by SHA-256, and the ZIP passed its CRC checks. For the full export, every archive's filename and exact byte size matched the committed Azure blob. Google didn't expose archive checksums, so that wasn't a full content checksum verification.
+* Google failed to export Google Play Movies & TV. All 22 available parts and the export report are backed up, but that missing data is still missing.
+* The popup is much more usable now: clearer settings, credential expiry, actual block progress, a separate finalizing step, and useful errors. Old pending entries no longer pretend they're still transferring.
+* Existing retention is still Archive after 2 days, delete after 180 days. Older backups are already gone from this container. This full backup becomes eligible for deletion April 3, 2027; the Contacts test April 2. Azure's background processing decides the actual deletion time.
+* Next up: stop needing DevTools, add a transfer queue, and make the Azure reconciliation part of the tool itself.
+
 ## March 2026
 
 * 9.8TB takeout, 149 archives again

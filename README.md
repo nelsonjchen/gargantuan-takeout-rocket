@@ -11,6 +11,54 @@ Gargantuan Takeout Rocket (GTR) is a toolkit of guides and software to help you 
 
 GTR is not a fully automated solution as that is impossible with Google Takeout's anti-automation measures, but GTR is an assistive solution. GTR takes a less than an hour to setup and less than 10 minutes every 2 months (or whatever interval you want) to use. The cost to backup 1TB on Azure every month is $1 dollar a month as long as you store each backup archive for 6 months at a minimum. You don't need a fast internet connection on your client to use this tool as all data transfer from Google to the backup destination is handled remotely by many servers in data centers. There are no bandwidth charges for the backup process, [however restoration in case of an emergency is fairly expensive](https://github.com/nelsonjchen/gargantuan-takeout-rocket/tree/main#restoration). All resources used are serverless and are practically highly scalable including to zero.
 
+## Repository Layout
+
+GTR is now organized as a monorepo while keeping the root documentation and product guide in place.
+
+- `apps/extension` - Chromium extension.
+- `apps/proxy` - Cloudflare Workers proxy.
+- `test/origins/gtr2-dev-server` - Go origin server for GTR 2 development and tests.
+
+Install dependencies in the component directory first, then run the component checks:
+
+```sh
+cd apps/extension
+pnpm test -- --runInBand
+pnpm typecheck
+pnpm fmt:check
+pnpm build
+
+cd ../proxy
+pnpm exec vitest run
+pnpm types:check
+pnpm lint
+pnpm build
+
+cd ../../test/origins/gtr2-dev-server
+go test ./...
+```
+
+The extension's default test suite includes a mocked end-to-end transfer of a
+32-byte fixture, plus download passthrough and failure checks. Run just that suite
+with `pnpm --dir apps/extension test:e2e:local`. Transfer-plan tests cover one-byte
+sources, small archives, partial chunks, and 50 GiB archives without live network
+access. Live Takeout testing should start with a one-time, single-product mini
+export before testing large backups. See [the backup journal](./BACKUP_JOURNAL.md)
+for the latest verified live run.
+
+For popup development, run `pnpm --dir apps/extension preview:popup` and open
+`http://127.0.0.1:8766/popup.html?state=active`. Change `state` to `history`,
+`mini`, `finalizing`, `expired`, `empty`, `configured`, `error`, `disconnected`,
+`loading`, or `save-error` to inspect each flow. This preview uses fake Chrome
+APIs and sample data; it does not use saved credentials or start transfers.
+Rebuild with `pnpm --dir apps/extension build` and refresh after source edits.
+
+To publish `apps/proxy` back to an independent mirror, split it from the monorepo history:
+
+```sh
+git subtree split --prefix=apps/proxy -b split/gtr-proxy
+```
+
 The only backup destination currently available in GTR is Microsoft Azure Blob Storage due to Azure's unique [API which allows commanding Azure Blob Storage to download from a remote URL][pbfu]. A Cloudflare Workers proxy is used to produce a method to GET from cookie protected endpoints and [a parallelism limitation][azb11] in the Azure Blob Storage API. Speeds of up to 350MB/s or more (with more possible overall from parallelism) for each transfer from Google Takeout to Azure Blob Storage's Archive Tier can be seen with this setup. 
 
 A [browser extension][ext] is provided to intercept downloads from Google Takeout and command Azure to download the file. Behind the scenes, the extension immediately stops and prevents the local download, grabs select Google cookies to authenticate requests, analyzes the size of the source file remotely to generate a download plan consisting of file chunks of 1000MB, specially encodes the URL so Azure is able to download from Google via the Cloudflare Workers proxy, executes the download plan by shotgunning all the download commands in parallel to Azure through the Cloudflare Worker proxy to transload the file from Google as quickly as possible, and commits all the 1000MB chunks into one seamless file on Azure. The download for each file completes in a few minutes with rather high limits on how many parallel downloads of this archive or other archives in the same takeout can be happening at once.
@@ -103,16 +151,16 @@ You may also want to configure Google Takeout to run automatically every two mon
 1. Initiate a [Google Takeout](https://takeout.google.com). It may take hours or day(s) to complete.
    * You may want to try this tool with something small and insubstantial on the first run to give it a try. Smaller takeout jobs take less time to be made available for download.
    * "Production" Takeout jobs are best done with 50GB archives to reduce the number of clicking required. You should use ZIP as the solid archives of TAR aren't useful on already compressed data.
-2. Once complete, visit the Azure Blob container you made in the preparation and "Create a SAS Signature" with all the permissions (Read, Add, Write, Create, and Delete).
+2. Once complete, visit the Azure Blob container you made in the preparation and create a short-lived container SAS with Read, Create, Write, and List permissions. Set its expiry to cover the backup session.
    * ![portal azure com_](https://user-images.githubusercontent.com/5363/163125758-7383aafa-ded8-4592-a753-5e8bb717c1df.png)
 3. `Generate SAS Token and URL` and copy the `Blob SAS URL`.
    * ![portal azure com_ (1)](https://user-images.githubusercontent.com/5363/163125969-1e151b8c-43e7-49e9-87e9-d3d788220d90.png)
    * Hint: there's a copy to clipboard button on the right edge of the field.
-4. Paste the Blob SAS URL into the extension popup at the correct field.
+4. Open Settings in the extension, paste the Blob SAS URL, and click Save settings. Check the displayed destination and expiry.
    * <img width="511" alt="image" src="https://user-images.githubusercontent.com/5363/163747552-22b51c99-553f-4aec-970c-a69cce4b940e.png">
-5. Enable the extension to intercept downloads with the checkmark popup.
+5. Turn on Send Takeout downloads to Azure. If access has expired, the popup shows Blocked and new downloads stay on the device until you save a valid SAS.
    * <img width="506" alt="image" src="https://user-images.githubusercontent.com/5363/163747584-850dd276-47e9-4dff-b5cf-20b61b948c58.png">
-6. I was too lazy to implement a decent progress bar or indicator, so you **must** inspect the service worker's network tab for "progress" or indications of errors. This also keeps the extension service worker from exiting.
+6. For large transfers, you **must** inspect the extension service worker and leave its DevTools window open to keep it from exiting. The popup now shows accepted-block progress and a separate Finalizing phase. A small archive can stay at 0% while its single block copies; Complete appears only after Azure accepts the final block list.
    * Chrome:
 
      <img width="802" alt="Screen Shot 2022-08-11 at 7 15 33 PM" src="https://user-images.githubusercontent.com/5363/184272694-ea4f2052-8389-4810-b35c-369c8581e326.png">
@@ -121,9 +169,9 @@ You may also want to configure Google Takeout to run automatically every two mon
      ![image](https://user-images.githubusercontent.com/5363/232265264-2bef2d5e-7057-48df-b5fc-4883345b0f49.png)
 7. Visit Google Takeout and *middle*-click (on a Mac, Cmd-Click) download on an archive for transloading. This will open a useless tab in the background and start a download from the background and it'll save you a page reload on the main page. Monitor the extension's UI. Watch for failures. Slow down if there are failures. In general, limit yourself to about three 50GB archives or ~150GB up in the air at a time. It took about 50 seconds for each 50GB archive for me.
 8. Notifications will come and go as each archive is transloaded into Azure Blob Storage.
-9. Once complete, check Azure to make sure everything has been retrieved and is available in the container.
+9. Once complete, reconcile every Google archive against its committed Azure blob name and exact byte size. Transfer details in the popup show the recorded archive size. Its grouped history only contains archives intercepted on this device; it is not a complete Google export inventory. Check Unconfirmed entries in Azure before retrying them.
    * Beware of downloading the archives to your local machine as Azure charges about $4.50 per 50GB download. Just check that they are there. If you wish to check the contents, you should spin up a virtual machine in Azure and download the data to that instance for inspection. That is beyond the scope of this guide.
-10. Disable the extension in the popup as it isnt needed. You may also want to turn off the extension altogether for extra memory savings. 
+10. Turn off Send Takeout downloads to Azure when the backup is verified. Switching it off affects new downloads; transfers already started continue running.
    * <img width="509" alt="image" src="https://user-images.githubusercontent.com/5363/163747622-4abef856-ac3b-4304-a6c2-2fccad9a41f9.png">
 
 ---

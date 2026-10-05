@@ -1,0 +1,20 @@
+{
+  "name": "gtr-cf-test-origin",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@9.0.6",
+  "type": "module",
+  "scripts": {
+    "build": "wrangler deploy --dry-run",
+    "deploy": "wrangler deploy",
+    "dev": "wrangler dev",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20241230.0",
+    "typescript": "^5.7.2",
+    "vitest": "2.1.8",
+    "wrangler": "^4.0.0"
+  }
+}
