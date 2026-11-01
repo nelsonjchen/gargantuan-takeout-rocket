@@ -6,12 +6,14 @@
  *
  */
 
-import { sourceToGtrProxySource, transload } from "./transload";
+import { QueueRuntime, readLocal, writeLocal } from "./queueRuntime";
 import { Download } from "./state";
 import { validateTransloadConfig } from "./config";
 export { validateTransloadConfig } from "./config";
-import prettyBytes from "pretty-bytes";
 import pako from "pako";
+import { ExportAutomation, exportPage } from "./exportAutomation";
+import { handoffNewDownload } from "./agentHandoff";
+import { v4 as uuid } from "uuid";
 
 console.log("initialized gtr extension");
 
@@ -120,10 +122,70 @@ export function isEligibleDownloadUrl(url: string | undefined): boolean {
   );
 }
 
-const activeTransfers = new Map<number, string>();
-chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message?.type?.startsWith("gtr-export-")) {
+    const page = exportPage(sender.url || "");
+    if (!page || sender.id !== chrome.runtime.id || sender.frameId !== 0)
+      return;
+    void runAutomation(async () => {
+      if (message.type === "gtr-export-start")
+        return automation.start(page, message.parts);
+      if (message.type === "gtr-export-pause") {
+        await automation.pause();
+        return "New parts paused. Captured transfers can continue.";
+      }
+      if (message.type === "gtr-export-tick") return automation.tick();
+      return "Unknown export action";
+    })
+      .then((notice) => sendResponse({ notice }))
+      .catch(() =>
+        sendResponse({
+          notice:
+            "Export queue could not be updated. No uncertain download will be retried automatically."
+        })
+      );
+    return true;
+  }
+  // Controls belong to this extension's UI, never arbitrary webpages.
+  if (sender.url && !sender.url.startsWith(chrome.runtime.getURL(""))) return;
   if (message?.type === "gtr-active-transfers") {
-    sendResponse({ names: Array.from(activeTransfers.values()) });
+    sendResponse({ names: Array.from(queue.active) });
+    return;
+  }
+  if (message?.type === "gtr-queue-status") {
+    void Promise.all([queue.jobs(), readLocal(["queuePaused", "downloads"])])
+      .then(([jobs, settings]) => {
+        sendResponse({
+          paused: !!settings.queuePaused,
+          legacy: Object.values(settings.downloads || {})
+            .filter(
+              (d: any) =>
+                d.status === "pending" && !jobs.some((j) => j.name === d.name)
+            )
+            .map((d: any) => d.name),
+          jobs: jobs.map(({ name, state, reason, updatedAt, retryAt }) => ({
+            name,
+            state,
+            reason,
+            updatedAt,
+            retryAt
+          }))
+        });
+      })
+      .catch(() => sendResponse({ error: "Could not read queue" }));
+    return true;
+  }
+  if (
+    message?.type === "gtr-queue-pause" ||
+    message?.type === "gtr-queue-resume"
+  ) {
+    void writeLocal({ queuePaused: message.type === "gtr-queue-pause" })
+      .then(() =>
+        message.type === "gtr-queue-resume" ? queue.resume() : undefined
+      )
+      .then(() => sendResponse({ ok: true }))
+      .catch(() => sendResponse({ error: "Could not update queue" }));
+    return true;
   }
 });
 
@@ -147,146 +209,92 @@ function saveDownload(download: Download): Promise<void> {
   return write;
 }
 
+export const queue = new QueueRuntime(getEncodedCookies, saveDownload);
+const automation = new ExportAutomation(queue);
+let automationWrites: Promise<unknown> = Promise.resolve();
+function runAutomation<T>(operation: () => Promise<T>): Promise<T> {
+  const result = automationWrites.then(operation);
+  automationWrites = result.catch(() => {});
+  return result;
+}
+// The alarm is a recovery mechanism for this queue, not a second backup monitor.
+queue.install();
+
 export async function captureDownload(
   downloadItem: chrome.downloads.DownloadItem,
   suggest: (suggestion?: chrome.downloads.DownloadFilenameSuggestion) => void
 ) {
-  let filenameReleased = false;
-  const releaseFilename = () => {
-    if (!filenameReleased) {
-      filenameReleased = true;
-      suggest();
-    }
-  };
   try {
-    await captureDownloadInternal(downloadItem, releaseFilename);
-  } finally {
-    activeTransfers.delete(downloadItem.id);
-    releaseFilename();
-  }
-}
-
-async function captureDownloadInternal(
-  downloadItem: chrome.downloads.DownloadItem,
-  releaseFilename: () => void
-) {
-  const [enabled, azureSasUrl, proxyBaseUrl] = await getConfig();
-  if (!enabled) {
-    console.log("Skipping interception of download.");
-    return;
-  }
-
-  const sourceUrl = downloadItem.finalUrl || downloadItem.url;
-  if (!isEligibleDownloadUrl(sourceUrl)) {
-    console.log("Skipping interception of ineligible download.", {
-      id: downloadItem.id,
-      filename: downloadItem.filename
-    });
-    return;
-  }
-
-  const configError = validateTransloadConfig(azureSasUrl, proxyBaseUrl);
-  if (configError) {
-    console.log("Skipping interception because settings are invalid.", {
-      id: downloadItem.id,
-      filename: downloadItem.filename,
-      reason: configError
-    });
-    return;
-  }
-
-  activeTransfers.set(downloadItem.id, downloadItem.filename);
-  console.log("download started:", {
-    id: downloadItem.id,
-    filename: downloadItem.filename
-  });
-  chrome.notifications.create(`transload-start-${downloadItem.filename}`, {
-    title: "🚀 GTR Transload Started",
-    message: `⏳ ${downloadItem.filename} started (disable interception in extension popup)`,
-    type: "basic",
-    iconUrl: "/logo512.png",
-    priority: 0
-  });
-  chrome.downloads.cancel(downloadItem.id);
-  releaseFilename();
-  console.log("chrome native download cancelled:", {
-    id: downloadItem.id,
-    filename: downloadItem.filename
-  });
-  const sas = azureSasUrl.trim();
-  const proxyBase = proxyBaseUrl?.trim();
-
-  // Add download to pending
-  const pendingDownload: Download = {
-    name: downloadItem.filename,
-    status: "pending",
-    phase: "inspecting",
-    startedAt: Date.now(),
-    updatedAt: Date.now()
-  };
-  await saveDownload({ ...pendingDownload });
-
-  let download: Download;
-  let prettySpeed: string = "";
-  try {
-    const now = new Date();
-
-    // gzip + base64 encode cookies
-    const encodedCookies = await getEncodedCookies(sourceUrl);
-
-    download = await transload(
-      sourceToGtrProxySource(sourceUrl, proxyBase, encodedCookies),
-      sas,
-      downloadItem.filename,
-      proxyBase,
-      undefined,
-      async (progress) => {
-        Object.assign(pendingDownload, progress, { updatedAt: Date.now() });
-        await saveDownload({ ...pendingDownload });
+    const [enabled, container, proxy] = await getConfig();
+    const source = downloadItem.finalUrl || downloadItem.url;
+    if (
+      !enabled ||
+      !isEligibleDownloadUrl(source) ||
+      validateTransloadConfig(container, proxy)
+    )
+      return;
+    if ((await readLocal("agentServiceEnabled")).agentServiceEnabled) {
+      const id = uuid().replace(/-/g, "");
+      const recordKey = `gtr-service-handoff:${downloadItem.id}`;
+      // This is only a submission receipt, not a proxy for extension controls.
+      await writeLocal({
+        [recordKey]: { id, name: downloadItem.filename, state: "requested" }
+      });
+      try {
+        const jobId = await handoffNewDownload({
+          id,
+          params: {
+            name: downloadItem.filename,
+            source,
+            container: container.trim(),
+            proxy: proxy?.trim() || "https://gtr-proxy.677472.xyz",
+            cookies: await getEncodedCookies(source)
+          }
+        });
+        await writeLocal({
+          [recordKey]: {
+            id,
+            jobId,
+            name: downloadItem.filename,
+            state: "acknowledged"
+          }
+        });
+        await saveDownload({
+          name: downloadItem.filename,
+          status: "pending",
+          phase: "delegated",
+          owner: "service",
+          updatedAt: Date.now()
+        });
+        await runAutomation(() => automation.captured(downloadItem));
+      } catch {
+        await saveDownload({
+          name: downloadItem.filename,
+          status: "failed",
+          owner: "service",
+          reason:
+            "Local service handoff is unconfirmed. Check the service's own job status before retrying.",
+          updatedAt: Date.now()
+        });
+      } finally {
+        // An unknown handoff never falls back to a second browser transfer or
+        // a multi-terabyte local download.
+        chrome.downloads.cancel(downloadItem.id);
       }
+      return;
+    }
+    // Persist ownership before cancelling the browser download. Storage failure
+    // leaves the native download intact instead of losing the user's request.
+    const captured = await queue.enqueue(
+      downloadItem.filename,
+      source,
+      container.trim()
     );
-    const then = new Date();
-    const duration = then.getTime() - now.getTime();
-    if (download.size) {
-      prettySpeed = `${prettyBytes(download.size)} @ ${prettyBytes(
-        (download.size / duration) * 1000
-      )}/s`;
-    }
-    download["reason"] = prettySpeed;
-  } catch (err) {
-    download = {
-      name: downloadItem.filename,
-      status: "failed"
-    };
-    if (err instanceof Error) {
-      download["reason"] = err.message;
-    }
+    chrome.downloads.cancel(downloadItem.id);
+    if (captured) await runAutomation(() => automation.captured(downloadItem));
+  } finally {
+    suggest();
   }
-
-  await saveDownload({
-    ...pendingDownload,
-    ...download,
-    updatedAt: Date.now()
-  });
-  chrome.notifications.clear(`transload-start-${downloadItem.filename}`);
-  if (download.status === "complete") {
-    chrome.notifications.create(`transload-complete-${downloadItem.filename}`, {
-      title: "🚀 GTR Transload Complete",
-      message: `✅ ${downloadItem.filename} complete (${prettySpeed}) (disable interception in extension popup)`,
-      type: "basic",
-      iconUrl: "/logo512.png",
-      priority: 0
-    });
-  } else {
-    chrome.notifications.create(`transload-failed-${downloadItem.filename}`, {
-      title: "🚀 GTR Transload Failed",
-      message: `❌ ${downloadItem.filename} failed (disable interception in extension popup)`,
-      type: "basic",
-      iconUrl: "/logo512.png",
-      priority: 0
-    });
-  }
-  console.log("Transload complete");
 }
 
 export function determineFilename(

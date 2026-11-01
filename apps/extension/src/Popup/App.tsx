@@ -3,6 +3,11 @@ import { useChromeStorageLocal } from "use-chrome-storage";
 import { Download } from "../state";
 import { destinationInfo, formatBytes, sortDownloads } from "./model";
 import ArchiveHistory from "./ArchiveHistory";
+import {
+  checkNativeConnection,
+  enableVerifiedHandoff,
+  NativeConnectionError
+} from "../agentHandoff";
 
 const defaultProxy = "https://gtr-proxy.677472.xyz";
 const takeout = "https://takeout.google.com/manage";
@@ -28,6 +33,75 @@ export default function App() {
   const [activeNames, setActiveNames] = useState<string[] | undefined>();
   const [workerChecked, setWorkerChecked] = useState(false);
   const [now, setNow] = useState(Date.now());
+  const [agentServiceEnabled, setAgentServiceEnabled] = useChromeStorageLocal(
+    "agentServiceEnabled",
+    false
+  );
+  const [agentNotice, setAgentNotice] = useState("");
+  const [checkingAgent, setCheckingAgent] = useState(false);
+  const [nativePermissionGranted, setNativePermissionGranted] =
+    useState<boolean>();
+  useEffect(() => {
+    void chrome.permissions
+      .contains({ permissions: ["nativeMessaging"] })
+      .then(setNativePermissionGranted)
+      .catch(() => setNativePermissionGranted(undefined));
+  }, []);
+  async function checkAgentConnection() {
+    setCheckingAgent(true);
+    try {
+      const capacity = await checkNativeConnection();
+      setAgentNotice(
+        `Local service connected. ${
+          capacity.paused ? "Queue paused." : "Queue enabled."
+        } ${capacity.availableSlots} transfer slots available.`
+      );
+    } catch (error) {
+      setAgentNotice(
+        error instanceof NativeConnectionError
+          ? error.message
+          : "[connection_check_failed] Could not verify the local service."
+      );
+    } finally {
+      setCheckingAgent(false);
+    }
+  }
+  async function restartIdleWorker() {
+    setCheckingAgent(true);
+    try {
+      await checkNativeConnection();
+      const idle = await new Promise<boolean>((resolve) =>
+        chrome.runtime.sendMessage({ type: "gtr-active-transfers" }, (reply) =>
+          resolve(
+            !chrome.runtime.lastError &&
+              Array.isArray(reply?.names) &&
+              reply.names.length === 0
+          )
+        )
+      );
+      if (!idle) {
+        setAgentNotice(
+          "The browser worker is busy or could not be checked. Finish current browser transfers before restarting it."
+        );
+        return;
+      }
+      chrome.runtime.reload();
+    } catch (error) {
+      setAgentNotice(
+        error instanceof NativeConnectionError
+          ? error.message
+          : "Could not safely restart the worker."
+      );
+    } finally {
+      setCheckingAgent(false);
+    }
+  }
+  const [queueStatus, setQueueStatus] = useState<{
+    paused: boolean;
+    legacy: string[];
+    jobs: { name: string; state: string }[];
+  }>();
+  const [queueError, setQueueError] = useState("");
   const loaded = enabledLoaded && proxyLoaded && sasLoaded && downloadsLoaded;
   const storageError = enabledError || proxyError || sasError || downloadsError;
 
@@ -49,6 +123,10 @@ export default function App() {
             );
         }
       );
+      chrome.runtime.sendMessage({ type: "gtr-queue-status" }, (response) => {
+        if (!chrome.runtime.lastError && response?.jobs)
+          setQueueStatus(response);
+      });
     };
     check();
     const timer = window.setInterval(check, 3000);
@@ -68,6 +146,8 @@ export default function App() {
     (d) =>
       d.status === "failed" ||
       (d.status === "pending" &&
+        d.phase !== "queued" &&
+        d.phase !== "waiting" &&
         workerChecked &&
         !activeNames?.includes(d.name))
   );
@@ -306,6 +386,200 @@ export default function App() {
         </details>
       </section>
       <section className="transfers" aria-labelledby="archives-heading">
+        <details className="monitor-note">
+          <summary>
+            Local agent service: {agentServiceEnabled ? "enabled" : "off"}
+          </summary>
+          <p>
+            The local service owns new transfer jobs and exposes its own status
+            and queue controls to programs running as your macOS user. It
+            receives Google download access and the configured Azure credential
+            through the native handoff. No network port is opened.
+          </p>
+          <p>
+            Register and start the reviewed GTR agent service before enabling
+            this option. Existing browser jobs and unresolved attempts stay
+            separate.
+          </p>
+          <button
+            type="button"
+            className="secondary-button"
+            disabled={checkingAgent || nativePermissionGranted === undefined}
+            onClick={() => {
+              if (agentServiceEnabled) {
+                setAgentServiceEnabled(false);
+                setAgentNotice(
+                  "New downloads will use the browser queue. Already handed-off service jobs continue."
+                );
+                return;
+              }
+              chrome.permissions.request(
+                { permissions: ["nativeMessaging"] },
+                (granted) => {
+                  if (chrome.runtime.lastError || !granted) {
+                    setAgentNotice(
+                      "Native handoff permission was not granted."
+                    );
+                    return;
+                  }
+                  setCheckingAgent(true);
+                  void enableVerifiedHandoff(
+                    !nativePermissionGranted,
+                    () =>
+                      new Promise<void>((resolve, reject) =>
+                        chrome.storage.local.set(
+                          { agentServiceEnabled: true },
+                          () =>
+                            chrome.runtime.lastError
+                              ? reject(
+                                  new Error("Could not save handoff setting")
+                                )
+                              : resolve()
+                        )
+                      ),
+                    () =>
+                      new Promise<boolean>((resolve) =>
+                        chrome.runtime.sendMessage(
+                          { type: "gtr-active-transfers" },
+                          (reply) =>
+                            resolve(
+                              !chrome.runtime.lastError &&
+                                Array.isArray(reply?.names) &&
+                                reply.names.length === 0
+                            )
+                        )
+                      ),
+                    () => chrome.runtime.reload()
+                  )
+                    .then((restarted) => {
+                      setNativePermissionGranted(true);
+                      if (restarted) return;
+                      setAgentNotice(
+                        nativePermissionGranted
+                          ? "Local service connected. Native handoff enabled for new downloads."
+                          : "Native permission granted. Restart GTR after current browser transfers finish so its worker can use the new API."
+                      );
+                    })
+                    .catch((error) => {
+                      setAgentNotice(
+                        error instanceof NativeConnectionError
+                          ? error.message
+                          : "[connection_check_failed] The local service could not be reached; handoff was not enabled."
+                      );
+                    })
+                    .finally(() => setCheckingAgent(false));
+                }
+              );
+            }}
+          >
+            {agentServiceEnabled
+              ? "Disable native handoff"
+              : "Enable native handoff"}
+          </button>
+          <button
+            type="button"
+            className="secondary-button"
+            disabled={checkingAgent}
+            onClick={() => {
+              void checkAgentConnection();
+            }}
+          >
+            {checkingAgent
+              ? "Checking local connection…"
+              : "Check local connection"}
+          </button>
+          <button
+            type="button"
+            className="secondary-button"
+            disabled={checkingAgent}
+            onClick={() => {
+              void restartIdleWorker();
+            }}
+          >
+            Restart idle worker
+          </button>
+          <p>
+            After the first native permission grant, restart an idle worker so
+            it can bind the new API. This restarts GTR; service-owned transfers
+            continue.
+          </p>
+          <p role="status">{agentNotice}</p>
+        </details>
+        {queueStatus && (
+          <div className="monitor-note">
+            <h2>Transfer queue</h2>
+            <p role="status">
+              {queueStatus.paused ? "Paused" : "Automatic recovery on"} ·{" "}
+              {queueStatus.jobs.filter((j) => j.state !== "complete").length}{" "}
+              unfinished
+            </p>
+            <p>
+              Plans are saved before copying. Interrupted jobs check Azure
+              before continuing. Keep the browser running; the queue resumes
+              after a restart.
+            </p>
+            {!!queueStatus.legacy.length && (
+              <p className="error-text">
+                {queueStatus.legacy.length} earlier jobs have no saved plan and
+                reserve transfer slots. Check their outcome before downloading
+                again: {queueStatus.legacy.join(", ")}
+              </p>
+            )}
+            <button
+              type="button"
+              className="secondary-button"
+              onClick={() => {
+                chrome.runtime.sendMessage(
+                  {
+                    type: queueStatus.paused
+                      ? "gtr-queue-resume"
+                      : "gtr-queue-pause"
+                  },
+                  (response) => {
+                    setQueueError(
+                      chrome.runtime.lastError || !response?.ok
+                        ? "Could not update the queue. Reopen the extension."
+                        : ""
+                    );
+                    if (response?.ok)
+                      setQueueStatus({
+                        ...queueStatus,
+                        paused: !queueStatus.paused
+                      });
+                  }
+                );
+              }}
+            >
+              {queueStatus.paused ? "Resume queue" : "Pause queue"}
+            </button>
+            <button
+              type="button"
+              className="secondary-button"
+              onClick={() => {
+                chrome.runtime.sendMessage(
+                  { type: "gtr-queue-resume" },
+                  (response) => {
+                    setQueueError(
+                      chrome.runtime.lastError || !response?.ok
+                        ? "Could not resume jobs."
+                        : ""
+                    );
+                    if (response?.ok)
+                      setQueueStatus({ ...queueStatus, paused: false });
+                  }
+                );
+              }}
+            >
+              Retry after fixing access
+            </button>
+            <p>Pause takes effect after current requests finish.</p>
+            {queueError && (
+              <p role="alert" className="error-text">
+                {queueError}
+              </p>
+            )}
+          </div>
+        )}
         <div className="section-heading">
           <h2 id="archives-heading">Archives</h2>
           <a
@@ -330,7 +604,7 @@ export default function App() {
                 }`
             : "Loading transfer history…"}
         </p>
-        {(enabled || !!running.length) && (
+        {!queueStatus && (enabled || !!running.length) && (
           <details className="monitor-note">
             <summary>Large transfers: keep DevTools open</summary>
             <p>

@@ -55,6 +55,9 @@ export function transferLabel(
 ) {
   if (download.status === "complete") return "Complete";
   if (download.status === "failed") return "Failed";
+  if (download.owner === "service") return "Managed by local service";
+  if (download.phase === "queued") return "Queued";
+  if (download.phase === "waiting") return "Waiting to retry";
   if (active === undefined)
     return checked ? "Status unavailable" : "Checking status";
   if (!active) return "Unconfirmed";

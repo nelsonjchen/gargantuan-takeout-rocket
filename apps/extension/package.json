@@ -1,6 +1,10 @@
 {
   "scripts": {
     "build": "node esbuild.js",
+    "agent:build": "node agent/build.cjs",
+    "agent:typecheck": "tsc --noEmit -p agent/tsconfig.json",
+    "agent:test:host": "python3 -m unittest discover -s agent/tests -p 'test_*.py'",
+    "agent:test:e2e": "node agent/build.cjs && python3 agent/test_end_to_end.py",
     "build:watch": "cross-env ESB_WATCH=true node esbuild.js",
     "preview:popup": "pnpm build && node scripts/preview-popup.mjs",
     "pkg": "cd public && zip -9 -r gtr-ext-unpacked.zip . && mv gtr-ext-unpacked.zip ../",

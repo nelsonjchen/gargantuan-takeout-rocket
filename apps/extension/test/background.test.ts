@@ -6,6 +6,18 @@ const mockCookies = [
 ];
 
 global.chrome = {
+  alarms: {
+    onAlarm: { addListener: jest.fn() },
+    get: jest.fn(async () => ({})),
+    create: jest.fn()
+  },
+  storage: {
+    onChanged: { addListener: jest.fn() },
+    local: {
+      setAccessLevel: jest.fn(async () => {}),
+      get: jest.fn((_keys, cb) => cb({}))
+    }
+  },
   cookies: {
     getAll: jest.fn((details, callback) => {
       if (callback) {
@@ -17,7 +29,9 @@ global.chrome = {
   },
   runtime: {
     lastError: undefined,
-    onMessage: { addListener: jest.fn() }
+    onMessage: { addListener: jest.fn() },
+    onStartup: { addListener: jest.fn() },
+    onInstalled: { addListener: jest.fn() }
   },
   downloads: {
     onDeterminingFilename: {

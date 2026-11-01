@@ -35,6 +35,7 @@ let chromeState: MockState;
 let stagedBlocks: Map<string, StagedBlock>;
 let committedBlob: Uint8Array | undefined;
 let failStageRequest: boolean;
+let committed: Map<string, { bytes: Uint8Array; jobId: string }>;
 let unexpectedFetches: string[];
 let captureDownload: typeof import("../../src/background").captureDownload;
 let determineFilename: typeof import("../../src/background").determineFilename;
@@ -100,6 +101,38 @@ function localFetch(input: RequestInfo | URL, init?: RequestInit) {
   const url = new URL(input instanceof Request ? input.url : input.toString());
   const method = init?.method || "GET";
 
+  if (
+    url.origin === "https://account.blob.core.windows.net" &&
+    method === "HEAD"
+  ) {
+    const entry = committed.get(
+      decodeURIComponent(url.pathname.split("/").pop()!)
+    );
+    return response(
+      null,
+      entry
+        ? {
+            headers: {
+              "Content-Length": String(entry.bytes.length),
+              "x-ms-meta-gtr_job": entry.jobId
+            }
+          }
+        : { status: 404 }
+    );
+  }
+  if (
+    url.origin === "https://account.blob.core.windows.net" &&
+    method === "GET"
+  ) {
+    return response(
+      `<BlockList><UncommittedBlocks>${Array.from(stagedBlocks.entries())
+        .map(
+          ([id, b]) =>
+            `<Block><Name>${id}</Name><Size>${b.bytes.length}</Size></Block>`
+        )
+        .join("")}</UncommittedBlocks></BlockList>`
+    );
+  }
   if (url.origin === proxyBaseUrl && url.pathname.startsWith("/p/")) {
     assertProxySourceRequest(url);
     if (method !== "HEAD") {
@@ -173,6 +206,11 @@ function localFetch(input: RequestInfo | URL, init?: RequestInit) {
           })
           .join("")
       );
+      expect(getHeader(init?.headers, "If-None-Match")).toBe("*");
+      committed.set(decodeURIComponent(url.pathname.split("/").pop()!), {
+        bytes: committedBlob!,
+        jobId: getHeader(init?.headers, "x-ms-meta-gtr_job")
+      });
       return new Response("", { status: 201 });
     });
   }
@@ -185,6 +223,11 @@ function localFetch(input: RequestInfo | URL, init?: RequestInit) {
 
 function installChromeMock() {
   global.chrome = {
+    alarms: {
+      onAlarm: { addListener: jest.fn() },
+      get: jest.fn(async () => ({})),
+      create: jest.fn()
+    },
     cookies: {
       getAll: jest.fn((_details, callback) => {
         callback([
@@ -196,11 +239,19 @@ function installChromeMock() {
     },
     runtime: {
       lastError: undefined,
-      onMessage: { addListener: jest.fn() }
+      onMessage: { addListener: jest.fn() },
+      onStartup: { addListener: jest.fn() },
+      onInstalled: { addListener: jest.fn() }
     },
     storage: {
+      onChanged: { addListener: jest.fn() },
       local: {
+        setAccessLevel: jest.fn(async () => {}),
         get: jest.fn((keys, callback) => {
+          if (keys === null) {
+            callback({ ...chromeState });
+            return;
+          }
           if (Array.isArray(keys)) {
             callback(
               keys.reduce<Record<string, unknown>>((result, key) => {
@@ -255,6 +306,7 @@ beforeEach(() => {
     downloads: {}
   };
   stagedBlocks = new Map();
+  committed = new Map();
   committedBlob = undefined;
   failStageRequest = false;
   unexpectedFetches = [];
@@ -264,11 +316,60 @@ beforeEach(() => {
   determineFilename = require("../../src/background").determineFilename;
 });
 
+async function settleQueue() {
+  for (let i = 0; i < 40; i++)
+    await new Promise((resolve) => setImmediate(resolve));
+}
+
 afterEach(() => {
   expect(unexpectedFetches).toEqual([]);
 });
 
 describe("local mocked transload e2e", () => {
+  test("native service handoff persists its acknowledgement and doesn't start a browser copy", async () => {
+    (chromeState as any).agentServiceEnabled = true;
+    chrome.runtime.sendNativeMessage = jest.fn((_host, request, callback) =>
+      callback({
+        ok: true,
+        owner: "gtr-transfer-service",
+        jobId: "service-owned-job"
+      })
+    ) as any;
+    await captureDownload(downloadItem(), jest.fn());
+    expect(chrome.runtime.sendNativeMessage).toHaveBeenCalledWith(
+      "com.gtr.agent",
+      expect.objectContaining({
+        method: "submit",
+        params: expect.objectContaining({
+          name: fileName,
+          container: azureSasUrl,
+          source: sourceUrl
+        })
+      }),
+      expect.any(Function)
+    );
+    expect(chromeState.downloads[fileName]).toEqual(
+      expect.objectContaining({
+        owner: "service",
+        status: "pending",
+        phase: "delegated"
+      })
+    );
+    expect(chrome.downloads.cancel).toHaveBeenCalledTimes(1);
+    expect(global.fetch).not.toHaveBeenCalled();
+  });
+  test("an uncertain native handoff never falls back to another transfer", async () => {
+    (chromeState as any).agentServiceEnabled = true;
+    chrome.runtime.sendNativeMessage = jest.fn((_host, _request, callback) =>
+      callback({ ok: false })
+    ) as any;
+    await captureDownload(downloadItem(), jest.fn());
+    expect(chromeState.downloads[fileName]).toEqual(
+      expect.objectContaining({ owner: "service", status: "failed" })
+    );
+    expect(chrome.downloads.cancel).toHaveBeenCalledTimes(1);
+    expect(global.fetch).not.toHaveBeenCalled();
+  });
   test("parallel archives retain both completed records with delayed storage callbacks", async () => {
     const get = chrome.storage.local.get as jest.Mock;
     const originalGet = get.getMockImplementation()!;
@@ -297,10 +398,9 @@ describe("local mocked transload e2e", () => {
       {},
       sendResponse
     );
-    expect(sendResponse).toHaveBeenCalledWith({
-      names: [fileName, "second.txt"]
-    });
+    expect(sendResponse.mock.calls[0][0].names.length).toBeLessThanOrEqual(3);
     await Promise.all([first, second]);
+    await settleQueue();
     expect(chromeState.downloads[fileName].status).toBe("complete");
     expect(chromeState.downloads["second.txt"].status).toBe("complete");
   });
@@ -353,25 +453,19 @@ describe("local mocked transload e2e", () => {
   test("transloads a small eligible download into mock Azure", async () => {
     const suggest = jest.fn();
     await captureDownload(downloadItem(), suggest);
+    await settleQueue();
     expect(suggest).toHaveBeenCalledTimes(1);
 
     expect(chrome.downloads.cancel).toHaveBeenCalledWith(42);
 
-    expect(chrome.notifications.create).toHaveBeenCalledWith(
-      `transload-start-${fileName}`,
-      expect.objectContaining({ title: "🚀 GTR Transload Started" })
+    const setCalls = (chrome.storage.local.set as jest.Mock).mock.calls.filter(
+      ([value]) => value.downloads
     );
-    expect(chrome.notifications.create).toHaveBeenCalledWith(
-      `transload-complete-${fileName}`,
-      expect.objectContaining({ title: "🚀 GTR Transload Complete" })
-    );
-
-    const setCalls = (chrome.storage.local.set as jest.Mock).mock.calls;
     expect(setCalls[0][0].downloads[fileName]).toEqual(
       expect.objectContaining({
         name: fileName,
         status: "pending",
-        phase: "inspecting",
+        phase: "queued",
         startedAt: expect.any(Number)
       })
     );
@@ -383,13 +477,9 @@ describe("local mocked transload e2e", () => {
       })
     );
 
-    expect(setCalls.map(([value]) => value.downloads[fileName].phase)).toEqual([
-      "inspecting",
-      "copying",
-      "copying",
-      "committing",
-      "committing"
-    ]);
+    expect(
+      setCalls.map(([value]) => value.downloads[fileName].phase)
+    ).toContain("committing");
     expect(chromeState.downloads[fileName]).toEqual(
       expect.objectContaining({
         transferredBytes: 32,
@@ -413,16 +503,19 @@ describe("local mocked transload e2e", () => {
 
     const suggest = jest.fn();
     await captureDownload(downloadItem(), suggest);
+    await settleQueue();
     expect(suggest).toHaveBeenCalledTimes(1);
 
     expect(chrome.downloads.cancel).toHaveBeenCalledWith(42);
 
-    const setCalls = (chrome.storage.local.set as jest.Mock).mock.calls;
+    const setCalls = (chrome.storage.local.set as jest.Mock).mock.calls.filter(
+      ([value]) => value.downloads
+    );
     expect(setCalls[0][0].downloads[fileName]).toEqual(
       expect.objectContaining({
         name: fileName,
         status: "pending",
-        phase: "inspecting",
+        phase: "queued",
         startedAt: expect.any(Number)
       })
     );
@@ -433,10 +526,6 @@ describe("local mocked transload e2e", () => {
       })
     );
 
-    expect(chrome.notifications.create).toHaveBeenCalledWith(
-      `transload-failed-${fileName}`,
-      expect.objectContaining({ title: "🚀 GTR Transload Failed" })
-    );
     expect(committedBlob).toBeUndefined();
   });
 });

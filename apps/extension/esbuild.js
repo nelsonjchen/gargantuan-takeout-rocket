@@ -2,7 +2,11 @@ const esbuild = require("esbuild");
 
 esbuild
   .context({
-    entryPoints: ["./src/background.ts", "./src/popup.tsx"],
+    entryPoints: [
+      "./src/background.ts",
+      "./src/popup.tsx",
+      "./src/takeoutPage.ts"
+    ],
     bundle: true,
     // Let's not minify to make the review easier
     minify: false,

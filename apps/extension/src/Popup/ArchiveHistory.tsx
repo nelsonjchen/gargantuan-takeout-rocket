@@ -19,7 +19,7 @@ function ArchiveRow({
 }) {
   const pending = download.status === "pending";
   const statusClass = pending
-    ? active
+    ? active || download.phase === "queued" || download.phase === "waiting"
       ? "pending"
       : "unknown"
     : download.status;
@@ -64,6 +64,13 @@ function ArchiveRow({
             : `${formatBytes(download.size)} saved to Azure`
           : download.status === "failed"
           ? failure.title
+          : download.owner === "service"
+          ? "This transfer belongs to the local GTR service. Its agent endpoint reports progress and completion."
+          : download.phase === "queued"
+          ? "Saved in the transfer queue. Waiting for a free slot or the next recovery wake."
+          : download.phase === "waiting"
+          ? safeReason(download.reason) ||
+            "Waiting to reconcile Azure and retry."
           : active
           ? download.phase === "committing"
             ? "All bytes copied. Waiting for Azure to finalize the archive."
