@@ -1,0 +1,6 @@
+dist
+node_modules
+transpiled
+/.idea/
+.envrc
+.env

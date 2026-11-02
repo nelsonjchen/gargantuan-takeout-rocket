@@ -1,0 +1,12 @@
+.DS_Store
+.env
+.env.*
+.idea/
+.vscode/
+node_modules/
+dist/
+build/
+out/
+coverage/
+*.zip
+*.crx

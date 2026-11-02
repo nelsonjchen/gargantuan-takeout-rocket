@@ -9,6 +9,33 @@ Just wanted to provide a journal of my backup escapades with GTR since:
 
 Top will be the latest.
 
+## November 2026
+
+* Completed the October 28 export on November 1: **216 available data parts, 11,302,318,033,249 bytes (11.30 decimal TB)**, plus the separate Google omission report. Every manifest filename and exact committed byte count was reconciled with Azure; staged blocks and retries were not counted as extra files. This is not an independent full-content checksum verification.
+* Google still omitted **Google Play Movies & TV → Streaming Services**. Preserving the report does not recover Google's missing data.
+* The durable local service carried the transfers independently of the extension worker and DevTools. Saved block IDs and ranges survived source expiry and transient copy timeouts. Six uncertain older attempts were recovered only after an explicit decision to accept an additional attempt; they were not silently treated as failed because Azure was empty.
+* Used 1 GiB ranges, ending with three files in flight and three block requests per file (nine maximum). Tested four files with two requests each (eight maximum): the first hour averaged about 200 MB/s versus about 187 MB/s beforehand. Later throughput fell and HTTP 524 timeouts increased, so returned to the original concurrency. Different files and time windows make this an observed comparison, not proof of a lasting speedup; copy timeouts also occurred after rollback and recovered.
+* An external agent handled repeated Google reauthentication with native Edge controls and an unlocked 1Password. This is tuned to my setup, not a login implementation bundled with GTR. Use the project as a starting point for your own periodic Takeout automation; you may need a different reauth solution. Sorry, reproducing this particular unattended workflow probably needs an AI agent today. Manual transfers and sign-in still work.
+* The one-shot runner finished and exited. No recurring future-export monitor, credential renewal, reboot auto-start or new retention policy was enabled.
+
+### Passkey automation troubleshooting
+
+* On November 1, Google Takeout's next passkey check stalled while ChatGPT's page debugger was attached in Edge Personal. 1Password was unlocked, but its inline sign-in button disappeared or became stale before the click could run.
+* **Observed workaround:** click Cancel on Edge's “ChatGPT started debugging this browser” banner, then use native Computer Use on the visible Edge window for the Google authentication step. After detaching, 1Password's saved-account sign-in button stayed clickable; clicking it returned Google to the export page without a user sign-in handoff.
+* The independent GTR service received refreshed access. A HEAD request through the configured proxy returned the expected archive content type and exact saved byte length for the unfinished file. Restarted the one-shot runner with that unfinished job's access, preserving saved block plans and the three-archive limit. Avoid tab automation calls that reattach the debugger during passkey sign-in.
+* This is evidence from this run, not proof that 1Password deliberately blocks all debugged pages. If the workaround stops working, check the actual prompt and unlock state rather than claiming unattended authentication succeeded. Never extract passkey material or copy credentials into the journal.
+
+## October 2026
+
+* 22 ZIP archives, sans YouTube and YouTube Music. About 673 GB (626.54 GiB), all available parts transloaded to Azure without any archive transfer failures.
+* **Codex drove this one.** Revived the project, polished the extension, watched Gmail for the export, and did the browser clicking through Computer Use. I wasn't the one clicking through Takeout.
+* Still a bit jank. Browser control needed recovery, Google wanted repeated sign-ins, and the extension still needed its service worker's DevTools window open. The passkey was handy again. Got it done, but there's still work before this is a reliable unattended workflow.
+* Started with a small Contacts-only Takeout, about 4.68 MB. Its Google and Azure copies matched by SHA-256, and the ZIP passed its CRC checks. For the full export, every archive's filename and exact byte size matched the committed Azure blob. Google didn't expose archive checksums, so that wasn't a full content checksum verification.
+* Google failed to export Google Play Movies & TV. All 22 available parts and the export report are backed up, but that missing data is still missing.
+* The popup is much more usable now: clearer settings, credential expiry, actual block progress, a separate finalizing step, and useful errors. Old pending entries no longer pretend they're still transferring.
+* Existing retention is still Archive after 2 days, delete after 180 days. Older backups are already gone from this container. This full backup becomes eligible for deletion April 3, 2027; the Contacts test April 2. Azure's background processing decides the actual deletion time.
+* Next up: stop needing DevTools, add a transfer queue, and make the Azure reconciliation part of the tool itself.
+
 ## March 2026
 
 * 9.8TB takeout, 149 archives again

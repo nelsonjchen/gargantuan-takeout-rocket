@@ -1,0 +1,45 @@
+{
+  "name": "gtr-proxy",
+  "version": "2.0.0",
+  "description": "GTR Proxy",
+  "main": "dist/worker.mjs",
+  "scripts": {
+    "build": "wrangler deploy --dry-run",
+    "predev": "npm run build",
+    "dev": "wrangler dev",
+    "dev:remote": "wrangler dev --remote",
+    "types:check": "tsc && tsc -p test/tsconfig.json",
+    "format": "prettier --write  '*.{json,js}' 'src/**/*.{js,ts}' 'test/**/*.{js,ts}'",
+    "lint": "eslint --max-warnings=0 src && prettier --check '*.{json,js}' 'src/**/*.{js,ts}' 'test/**/*.{js,ts}'",
+    "pretest": "npm run build",
+    "test": "vitest",
+    "deploy": "wrangler deploy"
+  },
+  "author": "author",
+  "license": "MIT OR Apache-2.0",
+  "eslintConfig": {
+    "root": true,
+    "extends": [
+      "typescript",
+      "prettier"
+    ]
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-pool-workers": "^0.6.4",
+    "@cloudflare/workers-types": "^4.20241230.0",
+    "@types/node": "^22.10.2",
+    "@types/pako": "^2.0.4",
+    "@typescript-eslint/eslint-plugin": "^5.45.0",
+    "@typescript-eslint/parser": "^5.45.0",
+    "eslint": "^8.28.0",
+    "eslint-config-prettier": "^8.1.0",
+    "eslint-config-typescript": "^3.0.0",
+    "prettier": "^2.8.0",
+    "typescript": "^5.7.2",
+    "vitest": "2.1.8",
+    "wrangler": "^4.0.0"
+  },
+  "dependencies": {
+    "pako": "^2.1.0"
+  }
+}

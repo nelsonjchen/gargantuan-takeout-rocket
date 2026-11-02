@@ -1,0 +1,6 @@
+node_modules
+build
+public/build
+test/cf-origin/node_modules
+test/cf-origin/.wrangler
+test/cf-origin/pnpm-lock.yaml

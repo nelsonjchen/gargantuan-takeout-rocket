@@ -1,0 +1,33 @@
+{
+  "manifest_version": 3,
+  "minimum_chrome_version": "102",
+  "name": "Gargantuan Takeout Rocket Helper Extension",
+  "version": "0.6.0",
+  "author": "Nelson Chen",
+  "description": "Helper Extension for evacuating Google Takeout and similar files to Azure.",
+  "permissions": ["notifications", "downloads", "storage", "cookies", "alarms"],
+  "optional_permissions": ["nativeMessaging"],
+  "host_permissions": ["*://*/*"],
+  "background": {
+    "service_worker": "build/background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://takeout.google.com/manage/archive/*"],
+      "js": ["build/takeoutPage.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "icons": {
+    "192": "logo192.png",
+    "512": "logo512.png"
+  },
+  "action": {
+    "default_icon": {
+      "192": "logo192.png",
+      "512": "logo512.png"
+    },
+    "default_title": "Popup",
+    "default_popup": "popup.html"
+  }
+}
