@@ -1,9 +1,16 @@
 export interface Download {
+  owner?: "service";
   name: string;
   status: "failed" | "complete" | "pending";
   reason?: string;
   size?: number;
-  phase?: "inspecting" | "copying" | "committing";
+  phase?:
+    | "delegated"
+    | "queued"
+    | "waiting"
+    | "inspecting"
+    | "copying"
+    | "committing";
   startedAt?: number;
   updatedAt?: number;
   transferredBytes?: number;

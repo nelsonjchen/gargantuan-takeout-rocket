@@ -1,15 +1,43 @@
 # 🚀 Gargantuan Takeout Rocket
 
-*Liftoff from Google Takeout into Azure Storage, repeatedly, **very** fast, like 1GB/s+ or 10 minutes total per takeout fast*
+*Google Takeout to Azure Storage, with resumable transfers and optional local agent control.*
 
 <img width="574" height="654" alt="Image" src="https://github.com/user-attachments/assets/5aeeda29-3fcc-4d82-83c7-5e9f4108de35" />
 
-* Setup Time: < 1hr
-* Every x month(s): 10 minutes.
+* Setup: configure Azure, a trusted proxy, and the browser extension.
+* Each export: authorize the backup, monitor progress, and reauthenticate when Google requires it. Transfer time varies.
 
 Gargantuan Takeout Rocket (GTR) is a toolkit of guides and software to help you take out your data from [Google Takeout][takeout] and put it somewhere *else* safe easily, periodically, and fast to make it easy to do the right thing of backing up your Google account and related services such as your YouTube account or Google Photos periodically.
 
-GTR is not a fully automated solution as that is impossible with Google Takeout's anti-automation measures, but GTR is an assistive solution. GTR takes a less than an hour to setup and less than 10 minutes every 2 months (or whatever interval you want) to use. The cost to backup 1TB on Azure every month is $1 dollar a month as long as you store each backup archive for 6 months at a minimum. You don't need a fast internet connection on your client to use this tool as all data transfer from Google to the backup destination is handled remotely by many servers in data centers. There are no bandwidth charges for the backup process, [however restoration in case of an emergency is fairly expensive](https://github.com/nelsonjchen/gargantuan-takeout-rocket/tree/main#restoration). All resources used are serverless and are practically highly scalable including to zero.
+GTR assists with Google Takeout backups. A durable browser queue can recover interrupted transfers, and an optional local service can own transfers independently of the browser worker. Google authentication, export authorization, and Azure access renewal still need attention; this is not a turnkey unattended backup system. The cost to backup 1TB on Azure every month is $1 dollar a month as long as you store each backup archive for 6 months at a minimum. You don't need a fast internet connection on your client to use this tool as all data transfer from Google to the backup destination is handled remotely by many servers in data centers. There are no bandwidth charges for the backup process, [however restoration in case of an emergency is fairly expensive](https://github.com/nelsonjchen/gargantuan-takeout-rocket/tree/main#restoration). The proxy and Azure transfer path are serverless; the optional local service requires a running computer and service process.
+
+The current agent workflow is tuned to the author's own macOS, Edge, 1Password,
+and private proxy setup. Google may require repeated sign-ins, and other users
+may need a reauthentication method that works for their own account, browser,
+and password manager. Transfer recovery does not guarantee unattended sign-in
+or discovery of future exports.
+
+Treat this as a starting point and reference for building your own periodic
+Takeout automation. Sorry, reproducing this particular unattended workflow
+probably needs an AI agent at the moment. The transfer code itself doesn't
+require AI, and you can still use it manually; you'll need to find a reauth
+solution that works for your setup.
+
+## Transfer automation
+
+- The default [browser queue](apps/extension/AUTOMATION.md) saves block plans,
+  reconciles Azure before retrying, and uses browser alarms for recovery.
+- The optional [local agent service](apps/extension/agent/README.md) accepts new
+  downloads through native messaging and exposes its own durable jobs through
+  private Unix sockets. The included installer targets Edge on macOS.
+- The service's one-shot export runner can fill available slots from a reviewed
+  manifest. It stops on expired access or uncertain outcomes; it does not install
+  a recurring monitor or discover future exports.
+
+An agent used native Edge controls and an unlocked 1Password Google passkey to
+refresh access during the November 2026 run. That workflow is documented as an
+observed setup-specific procedure, not a reauthentication feature shipped in GTR.
+See [authentication and recovery](apps/extension/AUTOMATION.md#authentication-and-manual-fallback).
 
 ## Repository Layout
 
@@ -59,13 +87,13 @@ To publish `apps/proxy` back to an independent mirror, split it from the monorep
 git subtree split --prefix=apps/proxy -b split/gtr-proxy
 ```
 
-The only backup destination currently available in GTR is Microsoft Azure Blob Storage due to Azure's unique [API which allows commanding Azure Blob Storage to download from a remote URL][pbfu]. A Cloudflare Workers proxy is used to produce a method to GET from cookie protected endpoints and [a parallelism limitation][azb11] in the Azure Blob Storage API. Speeds of up to 350MB/s or more (with more possible overall from parallelism) for each transfer from Google Takeout to Azure Blob Storage's Archive Tier can be seen with this setup. 
+The only backup destination currently available in GTR is Microsoft Azure Blob Storage due to Azure's [API which allows commanding Azure Blob Storage to download from a remote URL][pbfu]. A Cloudflare Workers proxy supplies access to cookie-protected Google endpoints and handles an Azure [parallelism limitation][azb11]. Throughput depends on Google access, proxy responses, Azure, and the selected concurrency; historical peak speeds are not a completion-time guarantee.
 
-A [browser extension][ext] is provided to intercept downloads from Google Takeout and command Azure to download the file. Behind the scenes, the extension immediately stops and prevents the local download, grabs select Google cookies to authenticate requests, analyzes the size of the source file remotely to generate a download plan consisting of file chunks of 1000MB, specially encodes the URL so Azure is able to download from Google via the Cloudflare Workers proxy, executes the download plan by shotgunning all the download commands in parallel to Azure through the Cloudflare Worker proxy to transload the file from Google as quickly as possible, and commits all the 1000MB chunks into one seamless file on Azure. The download for each file completes in a few minutes with rather high limits on how many parallel downloads of this archive or other archives in the same takeout can be happening at once.
+A [browser extension][ext] intercepts eligible Google Takeout downloads and captures the source access needed by the transfer owner. The default browser queue persists a plan before copying and uses bounded batches of 256 MiB ranges. With native handoff enabled, the local service owns the job and can use configurable range sizes and file/block concurrency. Azure copies archive bytes through the trusted proxy, commits the saved block list conditionally, and verifies the committed byte count and job marker. Successfully staged blocks are retained across retries; an unrelated existing blob is not overwritten. See the linked queue and service documentation for settings and recovery limits.
 
 A public instance of the Cloudflare Workers proxy is provided for demo purposes but users should setup and run their own [Cloudflare Workers proxy][proxy] as cookies are highly sensitive and should not be exposed to the public such as in a public instance. For most users who are looking to run their own Cloudflare Workers proxy instead of using the public Cloudflare Workers proxy, the free tier of Cloudflare Workers should suffice.
 
-The original author of GTR's Google account is about 3.25TB in size (80% Youtube Videos, 20% other, Google Photos ~200GB). Pre-GTR, the backup procedure would have taken at least 3 hours even with a [VPS Setup][vps_fxp] facilitating the transfer from Google Takeout as even large instances on the cloud with large disks, much memory, and many CPUs would eventually choke with too many files being downloaded in parallel. The highest speed seen was about 300MB/s total. It was also exhaustively high-touch and toilsome, requiring many clicks, reauthorizations, and setup of the workspace. By delegating the task of downloading to Azure with assists from CloudFlare Workers and the browser extension that makes up GTR, the original author is able to transfer the 3.25TB of 50GB Google Takeout files to Azure Storage in a few minutes at anytime with little to no setup.
+When the project started, the original author's Google account was about 3.25TB in size (80% Youtube Videos, 20% other, Google Photos ~200GB). Pre-GTR, the backup procedure would have taken at least 3 hours even with a [VPS Setup][vps_fxp] facilitating the transfer from Google Takeout as even large instances on the cloud with large disks, much memory, and many CPUs would eventually choke with too many files being downloaded in parallel. The highest speed seen was about 300MB/s total. It was also exhaustively high-touch and toilsome, requiring many clicks, reauthorizations, and setup of the workspace. By delegating the task of downloading to Azure with assists from CloudFlare Workers and the browser extension that makes up GTR, the original author was able to transfer the 3.25TB of 50GB Google Takeout files to Azure Storage in a few minutes at anytime with little to no setup.
 
 GTR is right for you if:
 

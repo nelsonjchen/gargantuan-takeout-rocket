@@ -8,6 +8,8 @@ test/cf-origin/.wrangler
 *.local
 *.log
 /public/build
+/agent/build
+__pycache__/
 .env
 *.zip
 .idea

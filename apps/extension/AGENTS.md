@@ -8,6 +8,10 @@ Treat this as security-sensitive extension code. It handles Google cookies, Azur
 
 - `src/background.ts`: extension service worker. Reads config from `chrome.storage.local`, intercepts downloads, cancels native downloads, encodes cookies, starts transloads, and writes download status.
 - `src/transload.ts`: plans chunked transfers and coordinates block staging/commit.
+- `src/transferQueue.ts`, `src/queueBackend.ts`, `src/queueRuntime.ts`: the installed worker's durable, bounded transfer path, timeout handling, Azure reconciliation, and alarm recovery. The older `transload.ts` remains for existing standalone callers/tests.
+- `src/exportAutomation.ts`, `src/takeoutPage.ts`: opt-in navigation through one export's Google download links. Uncertain navigation is reserved rather than replayed.
+- `AUTOMATION.md`: activation, recovery guarantees, sensitive storage, and live-validation limits.
+- `agent/`: independent durable transfer service, private Unix API, new-download native ingress, and staged installer. Read `agent/README.md` before changing it. This API must not mirror denied extension/profile observations; it owns only newly submitted jobs. Native registration/access requires specific approval.
 - `src/jeContainerClient.ts`: "just enough" Azure Blob client used by the transload flow.
 - `src/azb.ts`: Azure Blob SAS URL to proxy URL conversion.
 - `src/Popup/App.tsx`: popup UI and local extension settings.
@@ -71,4 +75,4 @@ Continue separating pure logic from Chrome and network boundaries. Useful next m
 - keep the parallel-storage and late-block regression tests when changing status updates
 - add focused tests for failure modes before touching the service-worker flow
 
-For user-facing behavior, remember this tool is assistive rather than fully automated. The user still clicks through Google Takeout; the extension should be predictable, reversible, and obvious about when interception is enabled.
+An explicitly enabled export can request subsequent parts from its open Takeout page. Google passkeys, credential renewal, unknown legacy outcomes, and future export authorization still require attention. Do not claim unattended browser operation from mocked tests alone. Keep the extension predictable, reversible, and obvious about interception and queue state.
