@@ -105,7 +105,8 @@ def ingest(directory, request):
     if result.get("ok"):
         receipt = result.get("result", {})
         if request["method"] == "capacity":
-            return {"ok": True, "result": {key: receipt.get(key) for key in ("availableSlots", "paused", "needsAttention")}}
+            fields = ("archiveLimit", "unfinishedJobs", "availableSlots", "paused", "needsAttention")
+            return {"ok": True, "result": {key: receipt.get(key) for key in fields}}
         return {"ok": True, "jobId": receipt.get("jobId"), "owner": "gtr-transfer-service"}
     return {"ok": False, "error": "submission_not_acknowledged"}
 
