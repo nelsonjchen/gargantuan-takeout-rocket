@@ -248,5 +248,8 @@ pnpm --dir apps/extension test -- --runInBand --watchman=false
 
 IPC tests use temporary user-only sockets, fake credentials and a paused service.
 They do not register a browser host, read extension state, or perform a live cloud
-transfer. Live new-job handoff and Azure commit verification remain activation
+transfer. The capacity end-to-end case carries actual native frames through the
+host and service, then checks the reply with the extension's real validator. It
+covers idle and unfinished jobs, including a changed file limit after restart.
+Live new-job handoff and Azure commit verification remain activation
 checks after approval.
