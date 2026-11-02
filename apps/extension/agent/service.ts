@@ -310,17 +310,20 @@ export class TransferService {
   }
   private async execute(request: Request): Promise<unknown> {
     if (request.method === "status") return { ok: true, result: this.status() };
-    if (request.method === "capacity")
+    if (request.method === "capacity") {
+      const unfinishedJobs = Object.values(this.state.jobs).filter(
+        (e) => e.job.state !== "complete"
+      ).length;
       return {
         ok: true,
         result: {
+          archiveLimit: this.archiveLimit,
+          unfinishedJobs,
           availableSlots: Math.max(
             0,
             this.archiveLimit -
               this.state.policy.reservations.length -
-              Object.values(this.state.jobs).filter(
-                (e) => e.job.state !== "complete"
-              ).length
+              unfinishedJobs
           ),
           paused: this.state.paused,
           needsAttention:
@@ -330,6 +333,7 @@ export class TransferService {
             )
         }
       };
+    }
     if (
       request.method !== "submit" &&
       request.method !== "retry" &&

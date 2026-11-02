@@ -370,6 +370,23 @@ describe("local mocked transload e2e", () => {
     expect(chrome.downloads.cancel).toHaveBeenCalledTimes(1);
     expect(global.fetch).not.toHaveBeenCalled();
   });
+  test("browser queue status excludes service history but retains genuine legacy holds", async () => {
+    chromeState.downloads = {
+      service: { name: "service", status: "pending", owner: "service" },
+      legacy: { name: "legacy", status: "pending" }
+    } as any;
+    const respond = jest.fn();
+    (chrome.runtime.onMessage.addListener as jest.Mock).mock.calls[0][0](
+      { type: "gtr-queue-status" },
+      {},
+      respond
+    );
+    await settleQueue();
+    expect(respond).toHaveBeenCalledWith(
+      expect.objectContaining({ legacy: ["legacy"] })
+    );
+    expect(global.fetch).not.toHaveBeenCalled();
+  });
   test("parallel archives retain both completed records with delayed storage callbacks", async () => {
     const get = chrome.storage.local.get as jest.Mock;
     const originalGet = get.getMockImplementation()!;

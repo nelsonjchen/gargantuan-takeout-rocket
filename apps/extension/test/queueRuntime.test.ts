@@ -189,3 +189,74 @@ test("export automation respects legacy uncertainty, occupied slots, and pause",
   expect(store["gtr-export-run"].enabled).toBe(false);
   expect(await automation.tick()).toContain("paused");
 });
+
+test.each([0, 1])(
+  "service-owned history leaves browser capacity available while preserving %i genuine legacy hold",
+  async (legacyCount) => {
+    const { backend, release } = pendingBackend();
+    store.agentServiceEnabled = false;
+    store.queuePaused = true;
+    for (let i = 0; i < 3; i++)
+      store.downloads[`service-${i}.zip`] = {
+        name: `service-${i}.zip`,
+        status: "pending",
+        owner: "service"
+      };
+    if (legacyCount)
+      store.downloads["legacy.zip"] = { name: "legacy.zip", status: "pending" };
+    const queue = runtime();
+    for (let i = 0; i < 3; i++)
+      await queue.enqueue(`browser-${i}.zip`, source + i, container);
+    store.queuePaused = false;
+    queue.wake();
+    await turns();
+    expect(backend.stage).toHaveBeenCalledTimes(3 - legacyCount);
+    expect(queue.active.size).toBe(3 - legacyCount);
+    release();
+    await turns();
+  }
+);
+
+function completedServiceExport(archiveLimit: number, unfinishedJobs: number) {
+  store.agentServiceEnabled = true;
+  store["gtr-export-run"] = {
+    page,
+    parts: [{ part: 1, url: source, name: "service.zip" }],
+    enabled: true,
+    next: 1
+  };
+  chrome.runtime.sendNativeMessage = jest.fn((_host, _request, callback) =>
+    callback({
+      ok: true,
+      result: {
+        archiveLimit,
+        unfinishedJobs,
+        availableSlots: Math.max(0, archiveLimit - unfinishedJobs),
+        paused: false,
+        needsAttention: false
+      }
+    })
+  ) as any;
+  return new ExportAutomation(runtime());
+}
+
+test.each([1, 2, 3, 4, 5, 6])(
+  "an idle %i-file service permits verified completion reporting",
+  async (archiveLimit) => {
+    const automation = completedServiceExport(archiveLimit, 0);
+    expect(await automation.tick()).toContain("their transfer jobs completed");
+    expect(chrome.tabs.create).not.toHaveBeenCalled();
+  }
+);
+test.each([
+  [4, 1],
+  [5, 2],
+  [6, 3]
+])(
+  "a %i-file service with %i unfinished jobs must not report completion despite three free slots",
+  async (archiveLimit, unfinishedJobs) => {
+    const automation = completedServiceExport(archiveLimit, unfinishedJobs);
+    expect(await automation.tick()).toContain("Waiting for its remaining jobs");
+    expect(chrome.tabs.create).not.toHaveBeenCalled();
+  }
+);

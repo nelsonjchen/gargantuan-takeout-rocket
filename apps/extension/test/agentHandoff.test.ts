@@ -12,7 +12,13 @@ beforeEach(() => {
       sendNativeMessage: jest.fn((_host, _request, callback) =>
         callback({
           ok: true,
-          result: { availableSlots: 3, paused: false, needsAttention: false }
+          result: {
+            archiveLimit: 3,
+            unfinishedJobs: 0,
+            availableSlots: 3,
+            paused: false,
+            needsAttention: false
+          }
         })
       )
     }
@@ -77,6 +83,8 @@ test("failed persistence prevents a restart", async () => {
 
 test("verifies the actual native roundtrip without sending download authentication", async () => {
   await expect(checkNativeConnection()).resolves.toEqual({
+    archiveLimit: 3,
+    unfinishedJobs: 0,
     availableSlots: 3,
     paused: false,
     needsAttention: false
@@ -101,7 +109,13 @@ test.each([4, 6])(
       (_host, _request, callback) =>
         callback({
           ok: true,
-          result: { availableSlots, paused: true, needsAttention: false }
+          result: {
+            archiveLimit: availableSlots,
+            unfinishedJobs: 0,
+            availableSlots,
+            paused: true,
+            needsAttention: false
+          }
         })
     );
     await expect(checkNativeConnection()).resolves.toMatchObject({
@@ -116,7 +130,13 @@ test.each([-1, 1.5, 7])(
       (_host, _request, callback) =>
         callback({
           ok: true,
-          result: { availableSlots, paused: true, needsAttention: false }
+          result: {
+            archiveLimit: 3,
+            unfinishedJobs: 0,
+            availableSlots,
+            paused: true,
+            needsAttention: false
+          }
         })
     );
     await expect(checkNativeConnection()).rejects.toThrow(
@@ -149,3 +169,23 @@ test.each([
     expect(error.message).not.toContain("SECRET");
   }
 );
+
+test.each([
+  { archiveLimit: undefined, unfinishedJobs: undefined, availableSlots: 3 },
+  { archiveLimit: 0, unfinishedJobs: 0, availableSlots: 0 },
+  { archiveLimit: 7, unfinishedJobs: 0, availableSlots: 3 },
+  { archiveLimit: 2, unfinishedJobs: 0, availableSlots: 3 },
+  { archiveLimit: 3, unfinishedJobs: -1, availableSlots: 3 },
+  { archiveLimit: 3, unfinishedJobs: 0.5, availableSlots: 3 }
+])("rejects missing or invalid completion metadata: %j", async (metadata) => {
+  (chrome.runtime.sendNativeMessage as jest.Mock).mockImplementation(
+    (_host, _request, callback) =>
+      callback({
+        ok: true,
+        result: { ...metadata, paused: false, needsAttention: false }
+      })
+  );
+  await expect(checkNativeConnection()).rejects.toThrow(
+    "Local service capacity is unavailable"
+  );
+});

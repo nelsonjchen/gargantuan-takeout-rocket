@@ -116,15 +116,15 @@ export class ExportAutomation {
       );
       if (legacy.length)
         return "Earlier transfers have unconfirmed outcomes. Resolve them in GTR before starting more parts.";
-      let serviceSlots: number | undefined;
+      let serviceUnfinishedJobs: number | undefined;
       if (data.agentServiceEnabled) {
         const capacity = await serviceCapacity();
         if (capacity.paused)
           return "The local transfer service is paused. Resume it through its agent endpoint.";
         if (capacity.needsAttention)
           return "The local service has a blocked job or unresolved reservation. Check its agent endpoint.";
-        serviceSlots = capacity.availableSlots;
-        if (!serviceSlots)
+        serviceUnfinishedJobs = capacity.unfinishedJobs;
+        if (!capacity.availableSlots)
           return "The local service's transfer slots are occupied. The next part will start automatically.";
       }
       if (jobs.some((j) => j.state === "blocked"))
@@ -132,7 +132,7 @@ export class ExportAutomation {
       if (jobs.filter((j) => j.state !== "complete").length >= MAX_TRANSFERS)
         return "Transfer slots are occupied. The next part will start automatically.";
       if (run.next >= run.parts.length) {
-        if (serviceSlots !== undefined && serviceSlots < MAX_TRANSFERS)
+        if (serviceUnfinishedJobs !== undefined && serviceUnfinishedJobs > 0)
           return "All parts handed to the local service. Waiting for its remaining jobs.";
         if (jobs.some((j) => j.state !== "complete"))
           return "All parts requested. Waiting for Azure verification.";

@@ -1,4 +1,6 @@
 export interface ServiceCapacity {
+  archiveLimit: number;
+  unfinishedJobs: number;
   availableSlots: number;
   paused: boolean;
   needsAttention: boolean;
@@ -109,9 +111,14 @@ export async function serviceCapacity(): Promise<ServiceCapacity> {
   const result = response.result;
   if (
     !result ||
+    !Number.isInteger(result.archiveLimit) ||
+    result.archiveLimit < 1 ||
+    result.archiveLimit > 6 ||
+    !Number.isSafeInteger(result.unfinishedJobs) ||
+    result.unfinishedJobs < 0 ||
     !Number.isInteger(result.availableSlots) ||
     result.availableSlots < 0 ||
-    result.availableSlots > 6 ||
+    result.availableSlots > result.archiveLimit ||
     typeof result.paused !== "boolean" ||
     typeof result.needsAttention !== "boolean"
   )

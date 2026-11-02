@@ -160,7 +160,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           legacy: Object.values(settings.downloads || {})
             .filter(
               (d: any) =>
-                d.status === "pending" && !jobs.some((j) => j.name === d.name)
+                d.owner !== "service" &&
+                d.status === "pending" &&
+                !jobs.some((j) => j.name === d.name)
             )
             .map((d: any) => d.name),
           jobs: jobs.map(({ name, state, reason, updatedAt, retryAt }) => ({

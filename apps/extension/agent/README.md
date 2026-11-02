@@ -49,6 +49,14 @@ There are two filesystem sockets, both mode 0600 inside a mode 0700 directory:
 - `ingest.sock`: new-job submission and a limited capacity response for Takeout
   discovery. The native host accepts no extension-observation or control command.
 
+The capacity response includes `archiveLimit`, `unfinishedJobs`, `availableSlots`,
+`paused` and `needsAttention`. Completion uses the unfinished-job count, not a
+comparison with the browser's fixed three-file limit. Rebuild/update the service
+and extension together: the extension rejects older capacity replies that lack
+the completion metadata rather than guessing whether transfers finished. Perform
+an upgrade after pausing and draining active work, using the reviewed installation
+procedure; the installer does not overwrite an existing service automatically.
+
 There is no HTTP listener, public URL, port forwarding or bearer token. Processes
 running as the same macOS user can operate this service. Browser access to the
 native host is restricted to the exact reviewed extension origin.

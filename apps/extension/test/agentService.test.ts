@@ -501,3 +501,31 @@ describe("private state and actual Unix endpoint", () => {
     ).rejects.toMatchObject({ code: "ENOENT" });
   });
 });
+
+test.each([1, 2, 3, 4, 5, 6])(
+  "capacity reports configured limit and unfinished count through a real commit for limit %i",
+  async (archiveLimit) => {
+    const f = fixture(20, [], archiveLimit);
+    const capacity = async () =>
+      ((await f.service.request(request("capacity"), true)) as any).result;
+    expect(await capacity()).toMatchObject({
+      archiveLimit,
+      unfinishedJobs: 0,
+      availableSlots: archiveLimit
+    });
+    await f.service.request(request("submit", submission), true);
+    expect(await capacity()).toMatchObject({
+      archiveLimit,
+      unfinishedJobs: 1,
+      availableSlots: archiveLimit - 1
+    });
+    await f.service.request(request("resume"));
+    await f.service.tick();
+    expect(f.service.status().jobs[0].state).toBe("complete");
+    expect(await capacity()).toMatchObject({
+      archiveLimit,
+      unfinishedJobs: 0,
+      availableSlots: archiveLimit
+    });
+  }
+);

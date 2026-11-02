@@ -178,7 +178,9 @@ export class QueueRuntime {
       // Unconfirmed legacy jobs reserve slots until their outcome is resolved.
       const legacy = Object.values(settings.downloads || {}).filter(
         (d: any) =>
-          d.status === "pending" && !jobs.some((j) => j.name === d.name)
+          d.owner !== "service" &&
+          d.status === "pending" &&
+          !jobs.some((j) => j.name === d.name)
       ).length;
       const ready = jobs
         .filter((j) => j.state !== "complete")
